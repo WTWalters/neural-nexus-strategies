@@ -1,9 +1,11 @@
-#Git Ignore File
+# Virtual Environment
+venv/
+env/
+.env
 
 # Python
-__pycache__/
 *.py[cod]
-*$py.class
+__pycache__/
 *.so
 .Python
 build/
@@ -27,33 +29,17 @@ wheels/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
+media/
+staticfiles/
 
-# React / Node
-node_modules/
-/frontend/build
-.npm
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# IDEs
+# IDEs and Editors
 .idea/
 .vscode/
 *.swp
 *.swo
-.zed/logs/
+*~
 
-# Docker
-.docker/
-docker-compose.override.yml
-
-# Operating System
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -61,14 +47,3 @@ docker-compose.override.yml
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Virtual Environment
-venv/
-env/
-ENV/
-
-# Misc
-*.bak
-*.tmp
-*.temp
-.aider*
