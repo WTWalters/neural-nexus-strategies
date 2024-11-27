@@ -1,7 +1,9 @@
 // src/app/page.tsx
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BlogSearch } from "@/components/blog/BlogSearch";
+import { ArrowRight } from "lucide-react";
+import FeaturedInsight from "@/components/marketing/home/featured-insight";
+import EnhancedFeaturesSection from "@/components/marketing/home/enhanced-features-section";
 
 export default function Home() {
     return (
@@ -35,45 +37,11 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="py-16 bg-gray-50">
-                <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {/* Feature 1 */}
-                        <div className="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 className="text-xl font-semibold text-primary-600 mb-3">
-                                Fractional CDO Services
-                            </h3>
-                            <p className="text-gray-600">
-                                Expert data leadership without the cost of a
-                                full-time executive.
-                            </p>
-                        </div>
+            {/* Adding Featured Insight */}
+            <FeaturedInsight />
 
-                        {/* Feature 2 */}
-                        <div className="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 className="text-xl font-semibold text-primary-600 mb-3">
-                                Data Strategy Consulting
-                            </h3>
-                            <p className="text-gray-600">
-                                Comprehensive data strategy development and
-                                implementation.
-                            </p>
-                        </div>
-
-                        {/* Feature 3 */}
-                        <div className="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 className="text-xl font-semibold text-primary-600 mb-3">
-                                AI Readiness
-                            </h3>
-                            <p className="text-gray-600">
-                                Prepare your organization for successful AI
-                                adoption.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            {/* Use the component instead of inline features */}
+            <EnhancedFeaturesSection />
         </main>
     );
 }

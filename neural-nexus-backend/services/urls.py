@@ -2,13 +2,17 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from services.views import ServiceCategoryViewSet, ServiceViewSet
+from services.views import ServiceCategoryViewSet, ServiceViewSet, ServiceDetailView
 
 router = DefaultRouter()
 router.register('services', ServiceViewSet, basename='service')
 router.register('categories', ServiceCategoryViewSet, basename='category')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),  # Changed this line
+    path('api/services/<str:slug>/', ServiceDetailView.as_view(), name='service-detail'),
+]
+
 
 # Let's also modify our view to add a package_types endpoint
 # services/views.py

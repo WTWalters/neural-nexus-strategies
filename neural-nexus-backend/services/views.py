@@ -131,3 +131,10 @@ class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
         services = Service.objects.filter(category=category, is_active=True)
         serializer = ServiceSerializer(services, many=True)
         return Response(serializer.data)
+
+from rest_framework.generics import RetrieveAPIView
+
+class ServiceDetailView(RetrieveAPIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+    lookup_field = 'slug'
