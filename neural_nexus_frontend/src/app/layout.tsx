@@ -1,15 +1,14 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: "Neural Nexus Strategies",
-    description: "Transform your organization with expert data leadership",
+    description: "Data Strategy and AI Consulting Services",
 };
 
 export default function RootLayout({
@@ -19,8 +18,12 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="min-h-screen bg-gradient-to-b from-white to-primary-50">
-                {children}
+            <body className={inter.className}>
+                <div className="min-h-screen flex flex-col">
+                    <Header />
+                    <main className="flex-grow">{children}</main>
+                    <Footer />
+                </div>
             </body>
         </html>
     );

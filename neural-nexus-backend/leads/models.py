@@ -217,3 +217,28 @@ class LeadScore(models.Model):
 
     def __str__(self):
         return f"{self.contact} - {self.score_type} Score: {self.score}"
+
+# leads/models.py - Add this to your existing models
+
+class NewsletterSubscription(models.Model):
+    SUBSCRIPTION_SOURCES = [
+        ('BANNER', 'Homepage Banner'),
+        ('CONTENT_END', 'Content End'),
+    ]
+
+    first_name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    source = models.CharField(max_length=20, choices=SUBSCRIPTION_SOURCES)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    # Metrics tracking
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    time_to_signup = models.IntegerField(null=True, blank=True)  # Time in seconds from page load to signup
+
+    def __str__(self):
+        return f"{self.email} - {self.source}"
+
+    class Meta:
+        ordering = ['-subscribed_at']

@@ -3,6 +3,7 @@
 import { notFound } from "next/navigation";
 import { BlogSidebar } from "@/components/marketing/blog/blog-sidebar";
 import { BlogBreadcrumb } from "@/components/marketing/blog/blog-breadcrumb";
+import { NewsletterContentEnd } from "@/components/marketing/newsletter/newsletter-content-end"; // Add this import
 import { getBlogPost } from "@/lib/api/blog";
 import { formatDate, formatContent } from "@/lib/utils";
 
@@ -13,11 +14,8 @@ interface BlogPostPageProps {
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-    // Ensure params.slug is properly awaited
-    const slug = await Promise.resolve(params.slug);
-
     try {
-        const post = await getBlogPost(slug);
+        const post = await getBlogPost(params.slug); // Remove unnecessary Promise.resolve
 
         if (!post) {
             notFound();
@@ -96,6 +94,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 __html: formatContent(post.content),
                             }}
                         />
+
+                        {/* Add newsletter component after the content */}
+                        <div className="mt-16">
+                            <NewsletterContentEnd />
+                        </div>
                     </article>
 
                     <div className="md:w-1/3">

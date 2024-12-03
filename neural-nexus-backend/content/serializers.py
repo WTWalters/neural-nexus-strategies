@@ -3,8 +3,9 @@
 from rest_framework import serializers
 from .models import (
     BlogPost, Category, Tag, BlogAnalytics, Resource,
-    ResourceDownload, LeadMagnet, NewsletterSubscriber
+    ResourceDownload, LeadMagnet
 )
+from leads.models import NewsletterSubscription  # Add this import
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,9 +76,9 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         model = ResourceDownload
         fields = [
             'id', 'resource', 'subscriber', 'email', 'first_name',
-            'company', 'downloaded_at', 'source_url', 'converted_to_subscriber'
+            'company', 'downloaded_at', 'source_url'
         ]
-        read_only_fields = ['downloaded_at', 'converted_to_subscriber', 'subscriber']
+        read_only_fields = ['downloaded_at', 'subscriber']
 
 class ResourceSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
@@ -104,29 +105,6 @@ class ResourceSerializer(serializers.ModelSerializer):
         resource.tags.set(tag_ids)
         return resource
 
-class NewsletterSubscriberSerializer(serializers.ModelSerializer):
-    interests = TagSerializer(many=True, read_only=True)
-    interest_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        write_only=True,
-        required=False
-    )
-    downloaded_resources = ResourceSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = NewsletterSubscriber
-        fields = [
-            'id', 'email', 'first_name', 'is_active', 'source',
-            'interests', 'interest_ids', 'downloaded_resources',
-            'subscribed_at', 'last_engagement'
-        ]
-        read_only_fields = ['subscribed_at', 'last_engagement']
-
-    def create(self, validated_data):
-        interest_ids = validated_data.pop('interest_ids', [])
-        subscriber = super().create(validated_data)
-        subscriber.interests.set(interest_ids)
-        return subscriber
 
 class LeadMagnetSerializer(serializers.ModelSerializer):
     resource = ResourceSerializer(read_only=True)

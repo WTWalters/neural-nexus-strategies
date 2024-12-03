@@ -11,13 +11,14 @@ from django.db.models import Count, Q, Sum, Avg
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import (
     Category, BlogPost, Resource, LeadMagnet,
-    NewsletterSubscriber, Tag, BlogAnalytics, ResourceDownload
+    Tag, BlogAnalytics, ResourceDownload
 )
 from .serializers import (
     CategorySerializer, BlogPostSerializer, ResourceSerializer,
-    LeadMagnetSerializer, NewsletterSubscriberSerializer,
-    TagSerializer, BlogAnalyticsSerializer
+    LeadMagnetSerializer, TagSerializer, BlogAnalyticsSerializer
 )
+# Add this import if not already present
+from leads.models import NewsletterSubscription
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
@@ -130,19 +131,18 @@ class ResourceViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
         if email:
-            # Create or update subscriber
-            subscriber, created = NewsletterSubscriber.objects.get_or_create(
+            # Create or update subscriber using the leads app model
+            subscriber, created = NewsletterSubscription.objects.get_or_create(
                 email=email,
                 defaults={
                     'first_name': request.data.get('first_name', ''),
-                    'source': 'resource_download'
+                    'source': 'CONTENT_END'
                 }
             )
 
             # Create download record
             download = ResourceDownload.objects.create(
                 resource=resource,
-                subscriber=subscriber,
                 email=email,
                 first_name=request.data.get('first_name', ''),
                 company=request.data.get('company', ''),
@@ -164,68 +164,12 @@ class ResourceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({
             "download_url": resource.file_url
         })
-
 class LeadMagnetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = LeadMagnet.objects.filter(is_active=True)
     serializer_class = LeadMagnetSerializer
     lookup_field = 'slug'
 
 
-class NewsletterViewSet(viewsets.GenericViewSet):
-    queryset = NewsletterSubscriber.objects.all()
-    serializer_class = NewsletterSubscriberSerializer
-    permission_classes = []  # Allow anonymous subscriptions
-
-    @action(detail=False, methods=['post'])
-    def subscribe(self, request):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "status": "success",
-                "message": "Successfully subscribed to newsletter.",
-                "data": serializer.data
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['post'])
-    def unsubscribe(self, request):
-        email = request.data.get('email')
-        try:
-            subscriber = NewsletterSubscriber.objects.get(email=email)
-            subscriber.is_active = False
-            subscriber.save()
-            return Response({
-                "status": "success",
-                "message": "Successfully unsubscribed from newsletter."
-            })
-        except NewsletterSubscriber.DoesNotExist:
-            return Response({
-                "status": "error",
-                "message": "Email not found."
-            }, status=status.HTTP_404_NOT_FOUND)
-
-    @action(detail=False, methods=['post'])
-    def resubscribe(self, request):
-        email = request.data.get('email')
-        try:
-            subscriber = NewsletterSubscriber.objects.get(email=email)
-            if subscriber.is_active:
-                return Response({
-                    "status": "error",
-                    "message": "Email is already subscribed."
-                }, status=status.HTTP_400_BAD_REQUEST)
-            subscriber.is_active = True
-            subscriber.save()
-            return Response({
-                "status": "success",
-                "message": "Successfully resubscribed to newsletter."
-            })
-        except NewsletterSubscriber.DoesNotExist:
-            return Response({
-                "status": "error",
-                "message": "Email not found."
-            }, status=status.HTTP_404_NOT_FOUND)
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()

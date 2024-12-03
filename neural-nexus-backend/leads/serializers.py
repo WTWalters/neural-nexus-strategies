@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Contact, Interaction, ROICalculation, LeadScore
+from .models import Contact, Interaction, ROICalculation, LeadScore, NewsletterSubscription
 
 class InteractionSerializer(serializers.ModelSerializer):
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
@@ -119,3 +119,8 @@ class ROICalculationSummarySerializer(serializers.ModelSerializer):
 
     def get_contact_name(self, obj):
         return f"{obj.contact.first_name} {obj.contact.last_name}" if obj.contact else ""
+
+class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsletterSubscription
+        fields = ['first_name', 'email', 'source']

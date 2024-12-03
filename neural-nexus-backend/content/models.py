@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from leads.models import NewsletterSubscription  # Add this import at the top
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
@@ -100,13 +101,18 @@ class Resource(models.Model):
 
 class ResourceDownload(models.Model):
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE, related_name='downloads')
-    subscriber = models.ForeignKey('NewsletterSubscriber', on_delete=models.CASCADE, related_name='resource_downloads')  # Add this line
+    subscriber = models.ForeignKey(
+            NewsletterSubscription,
+            on_delete=models.CASCADE,
+            related_name='resource_downloads',
+            null=True,  # Allow null for non-gated resources
+            blank=True
+        )
     email = models.EmailField()
     first_name = models.CharField(max_length=100, blank=True)
     company = models.CharField(max_length=200, blank=True)
     downloaded_at = models.DateTimeField(auto_now_add=True)
     source_url = models.URLField(blank=True)
-    converted_to_subscriber = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ['email', 'resource']
@@ -124,21 +130,3 @@ class LeadMagnet(models.Model):
 
     def __str__(self):
         return self.title
-
-class NewsletterSubscriber(models.Model):
-    email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=100, blank=True)
-    is_active = models.BooleanField(default=True)
-    source = models.CharField(max_length=50, blank=True)
-    interests = models.ManyToManyField(Tag, blank=True)
-    downloaded_resources = models.ManyToManyField(
-        Resource,
-        through='ResourceDownload',
-        through_fields=('subscriber', 'resource'),  # Add this line
-        related_name='subscribers'
-    )
-    subscribed_at = models.DateTimeField(auto_now_add=True)
-    last_engagement = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.email

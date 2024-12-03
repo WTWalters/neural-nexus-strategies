@@ -1,14 +1,79 @@
 # leads/views.py
 
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from .models import Contact, ROICalculation
+from django.core.mail import send_mail
+from .models import Contact, ROICalculation, Interaction, NewsletterSubscription
 from .calculator import ROICalculator
-from .serializers import ROICalculatorInputSerializer, ROICalculationSerializer
+from .serializers import ROICalculatorInputSerializer, ROICalculationSerializer, NewsletterSubscriptionSerializer
 from .exports import ROIReportGenerator
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Add ContactFormView
+class ContactFormView(APIView):
+    def post(self, request):
+        try:
+            print("Received data:", request.data)  # For debugging
+
+            contact = Contact.objects.create(
+                first_name=request.data.get('firstName', ''),  # Updated from 'name'
+                last_name=request.data.get('lastName', ''),    # Added this line
+                email=request.data.get('email'),
+                company=request.data.get('company', ''),
+                phone=request.data.get('phone', ''),
+                source='WEBSITE',
+                status='NEW'
+            )
+
+            # Create interaction record
+            Interaction.objects.create(
+                contact=contact,
+                type='FORM',
+                description=request.data.get('message', '')
+            )
+
+            # Send email notification
+            try:
+                send_mail(
+                    subject=f'New Contact Form Submission: {contact.first_name} {contact.last_name}',
+                    message=f"""
+                    New contact form submission received:
+
+                    Name: {contact.first_name} {contact.last_name}
+                    Email: {contact.email}
+                    Company: {contact.company}
+                    Phone: {contact.phone}
+
+                    Message:
+                    {request.data.get('message', '')}
+                    """,
+                    from_email='noreply@neuralnexus.ai',
+                    recipient_list=['whitney.walters@gmail.com'],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                print(f"Email sending failed: {str(e)}")
+
+            return Response({
+                'status': 'success',
+                'message': 'Thank you for your message. We will contact you soon.'
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            print(f"Error processing contact form: {str(e)}")
+            return Response({
+                'status': 'error',
+                'message': 'There was an error processing your request. Please try again.',
+                'detail': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class ROICalculatorViewSet(viewsets.ModelViewSet):
     """
@@ -94,3 +159,45 @@ class ROICalculatorViewSet(viewsets.ModelViewSet):
             {"error": "contact_id is required"},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class NewsletterSubscriptionView(APIView):
+    def post(self, request):
+        try:
+            # Basic validation
+            email = request.data.get('email', '').lower().strip()
+            first_name = request.data.get('firstName', '').strip()
+            source = request.data.get('source', 'BANNER')
+
+            if not email or not first_name:
+                return Response(
+                    {'message': 'Email and first name are required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Check for existing subscription
+            if NewsletterSubscription.objects.filter(email=email).exists():
+                return Response(
+                    {'message': 'This email is already subscribed'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Create subscription
+            subscription = NewsletterSubscription.objects.create(
+                email=email,
+                first_name=first_name,
+                source=source,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+
+            return Response(
+                {'message': 'Successfully subscribed to newsletter'},
+                status=status.HTTP_201_CREATED
+            )
+
+        except Exception as e:
+            return Response(
+                {'message': 'An error occurred while processing your subscription'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

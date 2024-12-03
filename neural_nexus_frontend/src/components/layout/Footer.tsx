@@ -1,50 +1,19 @@
 // src/components/layout/Footer.tsx
+"use client";
 import Link from "next/link";
 
-export function Footer() {
+export default function Footer() {
     return (
-        <footer className="bg-gray-50 border-t">
-            <div className="container mx-auto px-4 py-12 md:py-16">
-                {/* Main Footer Content */}
+        <footer className="bg-gray-900 text-white">
+            <div className="container mx-auto px-4 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {/* Company Info */}
-                    <div className="space-y-4">
-                        <Link
-                            href="/"
-                            className="text-xl font-bold text-primary-600"
-                        >
-                            Neural Nexus
-                        </Link>
-                        <p className="text-sm text-gray-600 mt-2">
-                            Transforming organizations through strategic data
-                            leadership and AI innovation.
-                        </p>
-                        <div className="space-y-2 pt-4">
-                            <a
-                                href="mailto:contact@neuralnexus.ai"
-                                className="text-sm text-gray-600 hover:text-primary-600 block"
-                            >
-                                contact@neuralnexus.ai
-                            </a>
-                            <a
-                                href="tel:+1234567890"
-                                className="text-sm text-gray-600 hover:text-primary-600 block"
-                            >
-                                (123) 456-7890
-                            </a>
-                        </div>
-                    </div>
-
-                    {/* Services */}
                     <div>
-                        <h3 className="font-semibold text-gray-900 mb-4">
-                            Services
-                        </h3>
-                        <ul className="space-y-3">
+                        <h3 className="font-bold text-lg mb-4">Services</h3>
+                        <ul className="space-y-2">
                             <li>
                                 <Link
                                     href="/services/fractional-cdo"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     Fractional CDO
                                 </Link>
@@ -52,7 +21,7 @@ export function Footer() {
                             <li>
                                 <Link
                                     href="/services/data-strategy"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     Data Strategy
                                 </Link>
@@ -60,73 +29,49 @@ export function Footer() {
                             <li>
                                 <Link
                                     href="/services/ai-readiness"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     AI Readiness
                                 </Link>
                             </li>
-                            <li>
-                                <Link
-                                    href="/services/consulting"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
-                                >
-                                    Consulting Services
-                                </Link>
-                            </li>
                         </ul>
                     </div>
-
-                    {/* Resources */}
                     <div>
-                        <h3 className="font-semibold text-gray-900 mb-4">
-                            Resources
-                        </h3>
-                        <ul className="space-y-3">
-                            <li>
-                                <Link
-                                    href="/case-studies"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
-                                >
-                                    Case Studies
-                                </Link>
-                            </li>
+                        <h3 className="font-bold text-lg mb-4">Resources</h3>
+                        <ul className="space-y-2">
                             <li>
                                 <Link
                                     href="/blog"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     Blog
                                 </Link>
                             </li>
                             <li>
                                 <Link
-                                    href="/resources"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    href="/case-studies"
+                                    className="hover:text-blue-400"
                                 >
-                                    Resource Library
+                                    Case Studies
                                 </Link>
                             </li>
                             <li>
                                 <Link
-                                    href="/newsletter"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    href="/resources"
+                                    className="hover:text-blue-400"
                                 >
-                                    Newsletter
+                                    Downloads
                                 </Link>
                             </li>
                         </ul>
                     </div>
-
-                    {/* Company */}
                     <div>
-                        <h3 className="font-semibold text-gray-900 mb-4">
-                            Company
-                        </h3>
-                        <ul className="space-y-3">
+                        <h3 className="font-bold text-lg mb-4">Company</h3>
+                        <ul className="space-y-2">
                             <li>
                                 <Link
                                     href="/about"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     About Us
                                 </Link>
@@ -134,7 +79,7 @@ export function Footer() {
                             <li>
                                 <Link
                                     href="/contact"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     Contact
                                 </Link>
@@ -142,51 +87,24 @@ export function Footer() {
                             <li>
                                 <Link
                                     href="/careers"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
+                                    className="hover:text-blue-400"
                                 >
                                     Careers
                                 </Link>
                             </li>
-                            <li>
-                                <Link
-                                    href="/book-call"
-                                    className="text-sm text-gray-600 hover:text-primary-600"
-                                >
-                                    Book a Call
-                                </Link>
-                            </li>
                         </ul>
                     </div>
-                </div>
-
-                {/* Bottom Footer */}
-                <div className="border-t border-gray-200 mt-12 pt-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="text-sm text-gray-600">
-                            © {new Date().getFullYear()} Neural Nexus
-                            Strategies. All rights reserved.
-                        </div>
-                        <div className="flex space-x-6 mt-4 md:mt-0">
-                            <Link
-                                href="/privacy"
-                                className="text-sm text-gray-600 hover:text-primary-600"
-                            >
-                                Privacy Policy
-                            </Link>
-                            <Link
-                                href="/terms"
-                                className="text-sm text-gray-600 hover:text-primary-600"
-                            >
-                                Terms of Service
-                            </Link>
-                            <Link
-                                href="/cookies"
-                                className="text-sm text-gray-600 hover:text-primary-600"
-                            >
-                                Cookie Policy
-                            </Link>
-                        </div>
+                    <div>
+                        <h3 className="font-bold text-lg mb-4">Contact</h3>
+                        <p>Email: contact@neuralnexus.ai</p>
+                        <p>Phone: (555) 123-4567</p>
                     </div>
+                </div>
+                <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p>
+                        &copy; {new Date().getFullYear()} Neural Nexus
+                        Strategies. All rights reserved.
+                    </p>
                 </div>
             </div>
         </footer>

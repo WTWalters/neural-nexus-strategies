@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import FeaturedInsight from "@/components/marketing/home/featured-insight";
 import EnhancedFeaturesSection from "@/components/marketing/home/enhanced-features-section";
+import NewsletterBanner from "@/components/marketing/newsletter/NewsletterBanner"; // Add this import
+import Layout from "@/components/layout/Layout";
 
 export default function Home() {
     return (
@@ -36,6 +38,9 @@ export default function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* Newsletter Banner */}
+            <NewsletterBanner />
 
             {/* Adding Featured Insight */}
             <FeaturedInsight />

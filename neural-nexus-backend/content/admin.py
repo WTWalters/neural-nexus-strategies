@@ -1,7 +1,7 @@
 # content/admin.py
 
 from django.contrib import admin
-from .models import Category, BlogPost, Resource, LeadMagnet, NewsletterSubscriber
+from .models import Category, BlogPost, Resource, LeadMagnet
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -33,10 +33,3 @@ class LeadMagnetAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'value_proposition')
     prepopulated_fields = {'slug': ('title',)}
     ordering = ('-created_at',)
-
-@admin.register(NewsletterSubscriber)
-class NewsletterSubscriberAdmin(admin.ModelAdmin):
-    list_display = ('email', 'first_name', 'is_active', 'subscribed_at', 'last_engagement')
-    list_filter = ('is_active',)
-    search_fields = ('email', 'first_name')
-    ordering = ('-subscribed_at',)
