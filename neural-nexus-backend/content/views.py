@@ -11,11 +11,14 @@ from django.db.models import Count, Q, Sum, Avg
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import (
     Category, BlogPost, Resource, LeadMagnet,
-    Tag, BlogAnalytics, ResourceDownload
+    Tag, BlogAnalytics, ResourceDownload,Campaign,
+    LandingPage, ABTest, Variant, VariantVisit
 )
 from .serializers import (
     CategorySerializer, BlogPostSerializer, ResourceSerializer,
-    LeadMagnetSerializer, TagSerializer, BlogAnalyticsSerializer
+    LeadMagnetSerializer, TagSerializer, BlogAnalyticsSerializer,
+    CampaignSerializer, LandingPageSerializer,
+    ABTestSerializer, VariantSerializer, VariantVisitSerializer
 )
 # Add this import if not already present
 from leads.models import NewsletterSubscription
@@ -232,3 +235,110 @@ class BlogAnalyticsViewSet(viewsets.ModelViewSet):
                 {"detail": "Blog post not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class CampaignViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Campaign.objects.all()
+    serializer_class = CampaignSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        queryset = Campaign.objects.all()
+        status = self.request.query_params.get('status', None)
+        if status:
+            queryset = queryset.filter(status=status.upper())
+        return queryset
+
+class LandingPageViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = LandingPageSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        return LandingPage.objects.filter(is_active=True)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Handle A/B test variant selection
+        variant = self._get_or_assign_variant(instance, request.session)
+
+        if variant:
+            # Track the visit
+            VariantVisit.objects.create(
+                variant=variant,
+                session_id=request.session.session_key
+            )
+            # Use variant content
+            serializer = self.get_serializer(instance)
+            data = serializer.data
+            data['content'] = variant.content
+            return Response(data)
+
+        # No A/B test, return normal content
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def _get_or_assign_variant(self, landing_page, session):
+        active_test = ABTest.objects.filter(
+            landing_page=landing_page,
+            is_active=True,
+            start_date__lte=timezone.now(),
+            end_date__isnull=True
+        ).first()
+
+        if not active_test:
+            return None
+
+        # Check if variant is already assigned to this session
+        session_key = f'ab_test_{active_test.id}'
+        variant_id = session.get(session_key)
+
+        if variant_id:
+            try:
+                return Variant.objects.get(id=variant_id)
+            except Variant.DoesNotExist:
+                pass
+
+        # Assign new variant based on traffic distribution
+        variants = list(active_test.variants.all())
+        if not variants:
+            return None
+
+        # Simple random distribution based on traffic_percentage
+        import random
+        total = sum(v.traffic_percentage for v in variants)
+        r = random.uniform(0, total)
+        cumulative = 0
+        for variant in variants:
+            cumulative += variant.traffic_percentage
+            if r <= cumulative:
+                session[session_key] = variant.id
+                return variant
+
+        return variants[0]  # Fallback to first variant
+
+class ABTestViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ABTest.objects.filter(is_active=True)
+    serializer_class = ABTestSerializer
+
+    @action(detail=True, methods=['post'])
+    def record_conversion(self, request, pk=None):
+        test = self.get_object()
+        variant_id = request.session.get(f'ab_test_{test.id}')
+
+        if not variant_id:
+            return Response(
+                {'error': 'No variant assigned'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        visit = VariantVisit.objects.filter(
+            variant_id=variant_id,
+            session_id=request.session.session_key,
+            converted=False
+        ).first()
+
+        if visit:
+            visit.converted = True
+            visit.conversion_timestamp = timezone.now()
+            visit.save()
+
+        return Response({'status': 'conversion recorded'})

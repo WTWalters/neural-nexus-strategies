@@ -3,7 +3,8 @@
 from rest_framework import serializers
 from .models import (
     BlogPost, Category, Tag, BlogAnalytics, Resource,
-    ResourceDownload, LeadMagnet
+    ResourceDownload, LeadMagnet, Campaign, LandingPage,
+    ABTest, Variant, VariantVisit
 )
 from leads.models import NewsletterSubscription  # Add this import
 
@@ -118,3 +119,51 @@ class LeadMagnetSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = ['slug', 'conversion_rate', 'created_at', 'updated_at']
+
+class CampaignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Campaign
+        fields = [
+            'id', 'name', 'slug', 'description', 'status',
+            'start_date', 'end_date', 'created_by',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_by', 'created_at', 'updated_at']
+
+class VariantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Variant
+        fields = ['id', 'name', 'content', 'traffic_percentage']
+
+class ABTestSerializer(serializers.ModelSerializer):
+    variants = VariantSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ABTest
+        fields = [
+            'id', 'name', 'description', 'landing_page',
+            'start_date', 'end_date', 'is_active',
+            'created_by', 'variants'
+        ]
+        read_only_fields = ['created_by']
+
+class LandingPageSerializer(serializers.ModelSerializer):
+    ab_tests = ABTestSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LandingPage
+        fields = [
+            'id', 'title', 'slug', 'campaign', 'content',
+            'meta_title', 'meta_description', 'is_active',
+            'created_by', 'created_at', 'updated_at', 'ab_tests'
+        ]
+        read_only_fields = ['created_by', 'created_at', 'updated_at']
+
+class VariantVisitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VariantVisit
+        fields = [
+            'id', 'variant', 'session_id', 'timestamp',
+            'converted', 'conversion_timestamp'
+        ]
+        read_only_fields = ['timestamp']

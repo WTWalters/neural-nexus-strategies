@@ -1,0 +1,43 @@
+neural_nexus_frontend
+├── public
+└── src
+    ├── __tests__
+    │   └── components
+    ├── app
+    │   ├── (marketing)
+    │   │   └── blog
+    │   │       └── [slug]
+    │   ├── about
+    │   ├── api
+    │   │   ├── backend-test
+    │   │   ├── newsletter
+    │   │   │   └── subscribe
+    │   │   └── test
+    │   ├── contact
+    │   ├── fonts
+    │   ├── services
+    │   │   ├── [slug]
+    │   │   ├── ai-readiness
+    │   │   ├── data-strategy
+    │   │   └── fractional-cdo
+    │   └── test-helper
+    ├── components
+    │   ├── calculators
+    │   ├── contact
+    │   ├── layout
+    │   ├── marketing
+    │   │   ├── blog
+    │   │   ├── home
+    │   │   ├── newsletter
+    │   │   └── services
+    │   └── ui
+    ├── lib
+    │   ├── api
+    │   └── utils
+    ├── tests
+    │   ├── components
+    │   └── integration
+    ├── types
+    └── utils
+
+41 directories

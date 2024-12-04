@@ -130,3 +130,99 @@ class LeadMagnet(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Campaign(models.Model):
+    STATUS_CHOICES = [
+        ('DRAFT', 'Draft'),
+        ('ACTIVE', 'Active'),
+        ('PAUSED', 'Paused'),
+        ('COMPLETED', 'Completed')
+    ]
+
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class LandingPage(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='landing_pages')
+    content = models.JSONField()  # Stores page structure and content
+    meta_title = models.CharField(max_length=200, blank=True)
+    meta_description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+class ABTest(models.Model):
+    landing_page = models.ForeignKey(LandingPage, on_delete=models.CASCADE, related_name='ab_tests')
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'A/B Test'
+        verbose_name_plural = 'A/B Tests'
+
+    def __str__(self):
+        return f"{self.name} - {self.landing_page.title}"
+
+class Variant(models.Model):
+    ab_test = models.ForeignKey(ABTest, on_delete=models.CASCADE, related_name='variants')
+    name = models.CharField(max_length=50)  # A, B, etc.
+    content = models.JSONField()  # Variant-specific content
+    traffic_percentage = models.IntegerField(default=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.ab_test.name} - Variant {self.name}"
+
+class VariantVisit(models.Model):
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, related_name='visits')
+    session_id = models.CharField(max_length=100)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    converted = models.BooleanField(default=False)
+    conversion_timestamp = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-timestamp']
