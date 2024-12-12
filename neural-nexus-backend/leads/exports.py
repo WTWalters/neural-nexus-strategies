@@ -1,3 +1,34 @@
+"""ROI report generation utilities for Neural Nexus Solutions.
+
+This module provides functionality to generate ROI (Return on Investment) analysis
+reports in various formats including Excel and PDF. It uses the ROICalculation model
+to generate detailed reports with company information, current state metrics, and
+projected ROI results.
+
+Example usage:
+    calculation = ROICalculation.objects.get(id=1)
+    generator = ROIReportGenerator(calculation)
+
+    # Generate Excel report
+    excel_buffer = generator.generate_excel()
+
+    # Generate PDF report
+    pdf_buffer = generator.generate_pdf()
+
+Typical usage example:
+    from leads.exports import ROIReportGenerator
+    from leads.models import ROICalculation
+
+    def export_roi_report(calculation_id: int, format: str) -> BytesIO:
+        calculation = ROICalculation.objects.get(id=calculation_id)
+        generator = ROIReportGenerator(calculation)
+
+        if format == 'excel':
+            return generator.generate_excel()
+        return generator.generate_pdf()
+"""
+
+
 from datetime import datetime
 from decimal import Decimal
 import xlsxwriter
@@ -10,18 +41,55 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from .models import ROICalculation
 
 class ROIReportGenerator:
-    """Generate ROI analysis reports in various formats"""
+    """Generates ROI analysis reports in Excel and PDF formats.
+
+    This class handles the generation of detailed ROI analysis reports,
+    formatting data for presentation, and creating professional-looking
+    documents for client distribution.
+
+    Attributes:
+        calculation: ROICalculation instance containing analysis data
+        contact: Contact instance associated with the ROI calculation
+    """
 
     def __init__(self, calculation: ROICalculation):
+        """Initializes the report generator with an ROI calculation.
+
+               Args:
+                   calculation: ROICalculation instance to generate reports from
+        """
+        self.calculation = calculation
+        self.contact = calculation.contact
         self.calculation = calculation
         self.contact = calculation.contact
 
     def format_currency(self, value: Decimal) -> str:
-        """Format decimal values as currency"""
+        """Formats decimal values as USD currency strings.
+
+        Args:
+            value: Decimal value to format as currency
+
+        Returns:
+            str: Formatted currency string (e.g., "$1,234.56")
+        """
         return "${:,.2f}".format(value)
 
     def generate_excel(self) -> BytesIO:
-        """Generate an Excel report of the ROI analysis"""
+        """Generates an Excel workbook containing the ROI analysis.
+
+        Creates a formatted Excel report with company information,
+        current state metrics, and ROI analysis results.
+
+        Returns:
+            BytesIO: Buffer containing the generated Excel workbook
+
+        Note:
+            The generated Excel file includes:
+            - Company information
+            - Current state metrics
+            - Projected improvements
+            - ROI calculations
+        """
         buffer = BytesIO()
         workbook = xlsxwriter.Workbook(buffer)
         worksheet = workbook.add_worksheet("ROI Analysis")
@@ -108,7 +176,21 @@ class ROIReportGenerator:
         return buffer
 
     def generate_pdf(self) -> BytesIO:
-        """Generate a PDF report of the ROI analysis"""
+        """Generates a PDF document containing the ROI analysis.
+
+                Creates a professionally formatted PDF report with company information,
+                ROI results, and data visualizations.
+
+                Returns:
+                    BytesIO: Buffer containing the generated PDF document
+
+                Note:
+                    The generated PDF includes:
+                    - Company header and information
+                    - ROI summary table
+                    - Formatted metrics and calculations
+                    - Professional styling and layout
+                """
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter,
                               rightMargin=72, leftMargin=72,

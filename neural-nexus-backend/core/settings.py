@@ -1,5 +1,32 @@
 # core/settings.py
 
+"""Django settings for Neural Nexus Backend project.
+
+This module contains all the configuration settings for the Neural Nexus Backend,
+including database configuration, installed apps, middleware setup, and various Django
+REST Framework configurations.
+
+Attributes:
+    BASE_DIR (Path): Base directory path for the project
+    SECRET_KEY (str): Django secret key loaded from environment variables
+    DEBUG (bool): Debug mode flag
+    ALLOWED_HOSTS (list): List of allowed hosts for the application
+    INSTALLED_APPS (list): List of installed Django applications
+    DATABASES (dict): Database configuration settings
+    REST_FRAMEWORK (dict): Django REST Framework settings
+    SPECTACULAR_SETTINGS (dict): DRF Spectacular API documentation settings
+
+Environment Variables:
+    DJANGO_SECRET_KEY: Secret key for Django
+    DJANGO_DEBUG: Debug mode flag (default: 'True')
+    DJANGO_ALLOWED_HOSTS: Comma-separated list of allowed hosts
+    DB_NAME: PostgreSQL database name
+    DB_USER: Database user
+    DB_PASSWORD: Database password
+    DB_HOST: Database host
+    DB_PORT: Database port
+    EMAIL_*: Email configuration variables
+"""
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -8,6 +35,7 @@ from decouple import config
 # Load environment variables
 load_dotenv()
 
+# Core Django Settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,7 +47,8 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-# Application definition
+# Application Configuration
+# Built-in Django apps, third-party apps, and local apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -33,6 +62,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'drf_spectacular',
+    'rangefilter',
 
     # Local apps
     'services.apps.ServicesConfig',
@@ -40,8 +70,10 @@ INSTALLED_APPS = [
     'leads',
 ]
 
+# Middleware Configuration
+# Note: Order is important, especially for security
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Add at the top
+    'corsheaders.middleware.CorsMiddleware',  # CORS handling must come first
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,6 +84,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# URL and Template Configuration
 ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
@@ -72,7 +105,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database
+# Database Configuration
+# Uses PostgreSQL with environment variable configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -84,7 +118,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+# Authentication and Password Validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -100,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# Internationalization and Localization Settings
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -170,7 +204,9 @@ SPECTACULAR_SETTINGS = {
         'name': 'Proprietary',
     },
 }
-# Add these CORS settings at the bottom of the file
+
+# CORS Configuration
+# Controls which domains can access the API
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
@@ -180,7 +216,8 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 
 
-#Email settings
+# Email Configuration
+# Uses environment variables for secure email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)

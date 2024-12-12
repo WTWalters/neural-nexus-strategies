@@ -1,20 +1,59 @@
 # content/serializers.py
 
+"""Serializers for Neural Nexus content management system.
+
+This module contains serializers for converting content models to/from JSON,
+handling data validation, and managing nested relationships between models.
+
+Serializers:
+    TagSerializer: Handles content tags
+    CategorySerializer: Manages content categories
+    BlogPostSerializer: Processes blog post content with related data
+    ResourceSerializer: Handles downloadable resources
+    LeadMagnetSerializer: Manages lead generation content
+    CampaignSerializer: Handles marketing campaigns
+    LandingPageSerializer: Processes campaign landing pages
+    ABTestSerializer: Manages A/B testing configurations
+"""
+
 from rest_framework import serializers
 from .models import (
     BlogPost, Category, Tag, BlogAnalytics, Resource,
     ResourceDownload, LeadMagnet, Campaign, LandingPage,
-    ABTest, Variant, VariantVisit
+    ABTest, Variant, VariantVisit, CaseStudy, CaseStudyCategory  # Added CaseStudyCategory here
 )
 from leads.models import NewsletterSubscription  # Add this import
 
 class TagSerializer(serializers.ModelSerializer):
+    """Serializer for content tags.
+
+    Attributes:
+        id (int): Tag identifier
+        name (str): Tag name
+        slug (str): URL-friendly version of name (read-only)
+    """
     class Meta:
         model = Tag
         fields = ['id', 'name', 'slug']
         read_only_fields = ['slug']
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Serializer for blog posts with nested relationships.
+
+    Handles creation and updating of blog posts including related
+    categories, tags, and analytics data.
+
+    Attributes:
+        category (CategorySerializer): Nested category data
+        category_id (int): Category identifier for write operations
+        tags (TagSerializer): List of associated tags
+        tag_ids (list): Tag IDs for write operations
+        analytics (BlogAnalyticsSerializer): Associated analytics data
+
+    Methods:
+        create: Handles blog post creation with related tags
+        update: Updates blog post and manages tag relationships
+    """
     class Meta:
         model = Category
         fields = ['id', 'name', 'slug', 'description']
@@ -60,6 +99,14 @@ class BlogPostSerializer(serializers.ModelSerializer):
         read_only_fields = ['slug', 'created_at', 'updated_at', 'view_count']
 
     def create(self, validated_data):
+        """Creates a blog post with associated tags.
+
+        Args:
+            validated_data: Validated data from request
+
+        Returns:
+            BlogPost: Created blog post instance with tags
+        """
         tag_ids = validated_data.pop('tag_ids', [])
         blog_post = super().create(validated_data)
         blog_post.tags.set(tag_ids)
@@ -82,6 +129,16 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         read_only_fields = ['downloaded_at', 'subscriber']
 
 class ResourceSerializer(serializers.ModelSerializer):
+    """Serializer for downloadable resources.
+
+    Handles resource creation and updating with associated tags
+    and download tracking.
+
+    Attributes:
+        tags (TagSerializer): Associated resource tags
+        tag_ids (list): Tag IDs for write operations
+        download_count (int): Number of resource downloads (read-only)
+    """
     tags = TagSerializer(many=True, read_only=True)
     tag_ids = serializers.ListField(
         child=serializers.IntegerField(),
@@ -136,6 +193,14 @@ class VariantSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'content', 'traffic_percentage']
 
 class ABTestSerializer(serializers.ModelSerializer):
+    """Serializer for A/B testing configuration.
+
+        Manages A/B test setup including variants and tracking data.
+
+        Attributes:
+            variants (VariantSerializer): List of test variants
+            landing_page (int): Associated landing page ID
+        """
     variants = VariantSerializer(many=True, read_only=True)
 
     class Meta:
@@ -167,3 +232,33 @@ class VariantVisitSerializer(serializers.ModelSerializer):
             'converted', 'conversion_timestamp'
         ]
         read_only_fields = ['timestamp']
+
+
+class CaseStudyCategorySerializer(serializers.ModelSerializer):
+    """Serializer for case study categories."""
+    case_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CaseStudyCategory
+        fields = ['id', 'name', 'slug', 'description', 'case_count']
+        read_only_fields = ['slug']
+
+    def get_case_count(self, obj):
+        return obj.case_studies.filter(status='PUBLISHED').count()
+
+class CaseStudySerializer(serializers.ModelSerializer):
+    """Serializer for case studies with nested category data."""
+    category = CaseStudyCategorySerializer(read_only=True)
+    category_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = CaseStudy
+        fields = [
+            'id', 'title', 'slug', 'industry', 'client_name', 'category',
+            'category_id', 'challenge', 'solution', 'results',
+            'implementation_timeline', 'testimonial', 'excerpt',
+            'featured_image', 'status', 'is_featured', 'view_count',
+            'seo_title', 'seo_description', 'seo_keywords',
+            'published_at', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['slug', 'view_count', 'created_at', 'updated_at']

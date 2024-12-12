@@ -3,22 +3,26 @@
 import django_filters
 
 from rest_framework import viewsets, filters, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter
 from django.utils import timezone
-from django.db.models import Count, Q, Sum, Avg
+from django.db.models import Count, Q, Sum, Avg, F
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import (
     Category, BlogPost, Resource, LeadMagnet,
     Tag, BlogAnalytics, ResourceDownload,Campaign,
-    LandingPage, ABTest, Variant, VariantVisit
+    LandingPage, ABTest, Variant, VariantVisit,
+    CaseStudy, CaseStudyCategory  # Added CaseStudyCategory
 )
 from .serializers import (
     CategorySerializer, BlogPostSerializer, ResourceSerializer,
     LeadMagnetSerializer, TagSerializer, BlogAnalyticsSerializer,
     CampaignSerializer, LandingPageSerializer,
-    ABTestSerializer, VariantSerializer, VariantVisitSerializer
+    ABTestSerializer, VariantSerializer,
+    VariantVisitSerializer, CaseStudySerializer,
+    CaseStudyCategorySerializer  # Add this line
 )
 # Add this import if not already present
 from leads.models import NewsletterSubscription
@@ -342,3 +346,71 @@ class ABTestViewSet(viewsets.ReadOnlyModelViewSet):
             visit.save()
 
         return Response({'status': 'conversion recorded'})
+
+class CaseStudyFilterSet(FilterSet):
+    created_after = DateTimeFilter(field_name='created_at', lookup_expr='gte')
+    created_before = DateTimeFilter(field_name='created_at', lookup_expr='lte')
+    industry = django_filters.CharFilter(field_name='industry')
+
+    class Meta:
+        model = CaseStudy
+        fields = {
+            'is_featured': ['exact'],
+            'status': ['exact'],
+        }
+
+class CaseStudyPagination(PageNumberPagination):
+    """Custom pagination for case studies."""
+    page_size = 12
+    page_size_query_param = 'page_size'
+    max_page_size = 24
+
+class CaseStudyCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for case study categories."""
+    queryset = CaseStudyCategory.objects.all()
+    serializer_class = CaseStudyCategorySerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        """Only return active categories that have published cases."""
+        return CaseStudyCategory.objects.filter(
+            is_active=True,
+            case_studies__status='PUBLISHED'
+        ).distinct()
+
+class CaseStudyViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for case studies with enhanced filtering."""
+    serializer_class = CaseStudySerializer
+    lookup_field = 'slug'
+    pagination_class = CaseStudyPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'client_name', 'challenge', 'solution', 'industry']
+    ordering_fields = ['published_at', 'created_at', 'view_count']
+    ordering = ['-published_at']
+
+    def get_queryset(self):
+        queryset = CaseStudy.objects.filter(status='PUBLISHED')
+
+        # Category filtering
+        category_slug = self.request.query_params.get('category')
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+
+        # Industry filtering
+        industry = self.request.query_params.get('industry')
+        if industry:
+            queryset = queryset.filter(industry=industry)
+
+        # Featured filtering
+        is_featured = self.request.query_params.get('featured')
+        if is_featured:
+            queryset = queryset.filter(is_featured=True)
+
+        return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        """Increment view count on retrieve."""
+        instance = self.get_object()
+        instance.view_count = F('view_count') + 1
+        instance.save(update_fields=['view_count'])
+        return super().retrieve(request, *args, **kwargs)

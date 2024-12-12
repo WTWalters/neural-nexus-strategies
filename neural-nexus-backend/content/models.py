@@ -1,10 +1,37 @@
 # content/models.py
+
+"""Models for Neural Nexus content management system.
+
+This module contains the database models for managing content including blog posts,
+resources, campaigns, and A/B testing functionality.
+
+Models:
+    Tag: Content categorization tags
+    Category: Content categories
+    BlogPost: Blog content entries
+    BlogAnalytics: Analytics for blog posts
+    Resource: Downloadable content resources
+    ResourceDownload: Resource download tracking
+    LeadMagnet: Lead generation content
+    Campaign: Marketing campaign management
+    LandingPage: Campaign landing pages
+    ABTest: A/B testing configuration
+    Variant: A/B test variants
+    VariantVisit: A/B test visit tracking
+"""
+
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 from leads.models import NewsletterSubscription  # Add this import at the top
 
 class Tag(models.Model):
+    """Content categorization tag model.
+
+        Attributes:
+            name (str): The tag name
+            slug (str): URL-friendly version of the name
+        """
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
 
@@ -12,11 +39,19 @@ class Tag(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        """Automatically generates slug from name if not provided."""
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
 class Category(models.Model):
+    """Content category model.
+
+        Attributes:
+            name (str): Category name
+            slug (str): URL-friendly version of name
+            description (str): Category description
+        """
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
@@ -29,6 +64,21 @@ class Category(models.Model):
         return self.name
 
 class BlogPost(models.Model):
+    """Blog post content model.
+
+    Attributes:
+        title (str): Post title
+        slug (str): URL-friendly title
+        author (User): Post author
+        category (Category): Post category
+        tags (ManyToMany[Tag]): Associated tags
+        content (str): Main post content
+        status (str): Publication status (DRAFT/PUBLISHED/ARCHIVED)
+        is_featured (bool): Featured post flag
+        seo_* (str): SEO metadata fields
+        published_at (datetime): Publication timestamp
+        view_count (int): Number of post views
+    """
     STATUS_CHOICES = [
         ('DRAFT', 'Draft'),
         ('PUBLISHED', 'Published'),
@@ -71,6 +121,15 @@ class BlogAnalytics(models.Model):
         verbose_name_plural = "blog analytics"
 
 class Resource(models.Model):
+    """Downloadable resource model.
+
+    Attributes:
+        title (str): Resource title
+        resource_type (str): Type of resource (GUIDE/TEMPLATE/etc.)
+        is_gated (bool): Whether resource requires registration
+        download_count (int): Number of downloads
+        lead_magnet_conversion_rate (Decimal): Conversion rate percentage
+    """
     RESOURCE_TYPES = [
         ('GUIDE', 'Guide'),
         ('TEMPLATE', 'Template'),
@@ -133,6 +192,15 @@ class LeadMagnet(models.Model):
 
 
 class Campaign(models.Model):
+    """Marketing campaign model.
+
+    Attributes:
+        name (str): Campaign name
+        status (str): Campaign status (DRAFT/ACTIVE/PAUSED/COMPLETED)
+        start_date (datetime): Campaign start date
+        end_date (datetime): Campaign end date
+        created_by (User): Campaign creator
+    """
     STATUS_CHOICES = [
         ('DRAFT', 'Draft'),
         ('ACTIVE', 'Active'),
@@ -185,6 +253,15 @@ class LandingPage(models.Model):
         super().save(*args, **kwargs)
 
 class ABTest(models.Model):
+    """A/B testing configuration model.
+
+    Attributes:
+        landing_page (LandingPage): Associated landing page
+        name (str): Test name
+        is_active (bool): Test active status
+        start_date (datetime): Test start date
+        end_date (datetime): Test end date
+    """
     landing_page = models.ForeignKey(LandingPage, on_delete=models.CASCADE, related_name='ab_tests')
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -204,6 +281,14 @@ class ABTest(models.Model):
         return f"{self.name} - {self.landing_page.title}"
 
 class Variant(models.Model):
+    """A/B test variant visit tracking model.
+
+    Attributes:
+        variant (Variant): The variant being tested
+        session_id (str): Visitor session ID
+        converted (bool): Whether visit led to conversion
+        conversion_timestamp (datetime): When conversion occurred
+    """
     ab_test = models.ForeignKey(ABTest, on_delete=models.CASCADE, related_name='variants')
     name = models.CharField(max_length=50)  # A, B, etc.
     content = models.JSONField()  # Variant-specific content
@@ -226,3 +311,88 @@ class VariantVisit(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+
+class CaseStudyCategory(models.Model):
+    """Category model for case studies.
+
+    Replaces the previous hardcoded CATEGORY_CHOICES with a dynamic model
+    that can be managed through the admin interface.
+    """
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Case Study Categories"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class CaseStudy(models.Model):
+    """Case study content model.
+    """
+    STATUS_CHOICES = [
+        ('DRAFT', 'Draft'),
+        ('PUBLISHED', 'Published'),
+        ('ARCHIVED', 'Archived')
+    ]
+
+   # Basic Info
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    industry = models.CharField(max_length=100)
+    client_name = models.CharField(max_length=200)
+    # Replace the category field
+    category = models.ForeignKey(
+        CaseStudyCategory,
+        on_delete=models.PROTECT,
+        null=True,  # Add this temporarily
+        blank=True,  # Add this too for consistency
+        related_name='case_studies',
+        help_text="Primary service category this case study relates to"
+    )
+
+    # Content
+    challenge = models.TextField()
+    solution = models.TextField()
+    results = models.JSONField()
+    implementation_timeline = models.TextField()
+    testimonial = models.TextField(blank=True)
+
+    # Meta Fields
+    excerpt = models.TextField(blank=True, help_text="Brief summary for cards and previews")
+    featured_image = models.URLField(blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='DRAFT')
+    is_featured = models.BooleanField(default=False)
+    view_count = models.IntegerField(default=0)
+
+    # SEO Fields
+    seo_title = models.CharField(max_length=200, blank=True)
+    seo_description = models.TextField(blank=True)
+    seo_keywords = models.CharField(max_length=500, blank=True)
+
+    # Timestamps
+    published_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-published_at', '-created_at']
+        verbose_name_plural = "Case Studies"
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)

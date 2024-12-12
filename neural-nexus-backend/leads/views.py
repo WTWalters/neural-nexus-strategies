@@ -6,11 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.db import transaction
 from django.core.mail import send_mail
 from .models import Contact, ROICalculation, Interaction, NewsletterSubscription
 from .calculator import ROICalculator
 from .serializers import ROICalculatorInputSerializer, ROICalculationSerializer, NewsletterSubscriptionSerializer
 from .exports import ROIReportGenerator
+from .services.contact_management import ContactManagementService
+from .services.device_tracking import DeviceTrackingService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,58 +22,74 @@ logger = logging.getLogger(__name__)
 class ContactFormView(APIView):
     def post(self, request):
         try:
-            print("Received data:", request.data)  # For debugging
+            with transaction.atomic():
+                # Extract base contact data
+                contact_data = {
+                    'first_name': request.data.get('firstName', '').strip(),
+                    'last_name': request.data.get('lastName', '').strip(),
+                    'email': request.data.get('email', '').lower().strip(),
+                    'company': request.data.get('company', '').strip(),
+                    'phone': request.data.get('phone', '').strip(),
+                    'source': 'WEBSITE'
+                }
 
-            contact = Contact.objects.create(
-                first_name=request.data.get('firstName', ''),  # Updated from 'name'
-                last_name=request.data.get('lastName', ''),    # Added this line
-                email=request.data.get('email'),
-                company=request.data.get('company', ''),
-                phone=request.data.get('phone', ''),
-                source='WEBSITE',
-                status='NEW'
-            )
+                # Extract tracking data
+                tracking_data = request.data.get('tracking', {})
+                device_id = tracking_data.get('deviceId')
+                device_info = tracking_data.get('deviceInfo', {})
 
-            # Create interaction record
-            Interaction.objects.create(
-                contact=contact,
-                type='FORM',
-                description=request.data.get('message', '')
-            )
-
-            # Send email notification
-            try:
-                send_mail(
-                    subject=f'New Contact Form Submission: {contact.first_name} {contact.last_name}',
-                    message=f"""
-                    New contact form submission received:
-
-                    Name: {contact.first_name} {contact.last_name}
-                    Email: {contact.email}
-                    Company: {contact.company}
-                    Phone: {contact.phone}
-
-                    Message:
-                    {request.data.get('message', '')}
-                    """,
-                    from_email='noreply@neuralnexus.ai',
-                    recipient_list=['whitney.walters@gmail.com'],
-                    fail_silently=True,
+                # Create or update contact with identity
+                contact, created = ContactManagementService.create_contact_with_identity(
+                    **contact_data
                 )
-            except Exception as e:
-                print(f"Email sending failed: {str(e)}")
 
-            return Response({
-                'status': 'success',
-                'message': 'Thank you for your message. We will contact you soon.'
-            }, status=status.HTTP_201_CREATED)
+                # Track device if we have device info
+                if device_id and contact.identity:
+                    DeviceTrackingService.track_device(
+                        identity=contact.identity,
+                        fingerprint=device_id,
+                        user_agent=device_info.get('userAgent')
+                    )
+
+                # Create interaction record
+                Interaction.objects.create(
+                    contact=contact,
+                    type='FORM',
+                    description=request.data.get('message', '')
+                )
+
+                # Send email notification
+                try:
+                    send_mail(
+                        subject=f'New Contact Form Submission: {contact.first_name} {contact.last_name}',
+                        message=f"""
+                        New contact form submission received:
+
+                        Name: {contact.first_name} {contact.last_name}
+                        Email: {contact.email}
+                        Company: {contact.company}
+                        Phone: {contact.phone}
+
+                        Message:
+                        {request.data.get('message', '')}
+                        """,
+                        from_email='noreply@neuralnexus.ai',
+                        recipient_list=['whitney.walters@gmail.com'],
+                        fail_silently=True,
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to send email notification: {str(e)}")
+
+                return Response({
+                    'status': 'success',
+                    'message': 'Thank you for your message. We will contact you soon.'
+                }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print(f"Error processing contact form: {str(e)}")
+            logger.error(f"Error processing contact form: {str(e)}")
             return Response({
                 'status': 'error',
-                'message': 'There was an error processing your request. Please try again.',
-                'detail': str(e)
+                'message': 'There was an error processing your request. Please try again.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -199,5 +218,33 @@ class NewsletterSubscriptionView(APIView):
         except Exception as e:
             return Response(
                 {'message': 'An error occurred while processing your subscription'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class LeadScoringView(APIView):
+    def get(self, request, contact_id):
+        try:
+            contact = Contact.objects.get(id=contact_id)
+            scores = LeadScoringService.calculate_scores(contact)
+            total_score = LeadScoringService.get_total_score(contact)
+
+            # Get historical scores
+            historical_scores = LeadScore.objects.filter(contact=contact).order_by('-created_at')
+            historical_data = LeadScoreSerializer(historical_scores, many=True).data
+
+            return Response({
+                'total_score': total_score,
+                'current_scores': scores,
+                'historical_scores': historical_data
+            })
+        except Contact.DoesNotExist:
+            return Response(
+                {'error': 'Contact not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error calculating lead scores: {str(e)}")
+            return Response(
+                {'error': 'Error calculating scores'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

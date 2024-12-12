@@ -1,12 +1,15 @@
 # leads/admin.py
 
 from django.contrib import admin
+from rangefilter.filters import DateRangeFilter
 from .models import (
     Contact,
     Interaction,
     ROICalculation,
     LeadScore,
-    NewsletterSubscription  # Add this import
+    NewsletterSubscription,  # Add this import
+    Identity, IdentityEmail,
+    IdentityDevice
 )
 
 
@@ -89,3 +92,169 @@ class NewsletterSubscriptionAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+@admin.register(Identity)
+class IdentityAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'primary_email',
+        'is_anonymous',
+        'is_verified',
+        'first_seen_at',
+        'last_seen_at'
+    )
+    list_display_links = ('id', 'primary_email')  # Add this line
+    date_hierarchy = 'first_seen_at'              # Add this line
+    list_filter = (
+        'is_anonymous',
+        'is_verified',
+        'marketing_consent',
+        'analytics_consent',
+        ('first_seen_at', DateRangeFilter),  # Now this should work
+        'source_of_first_identification',
+    )
+    search_fields = (
+        'primary_email',
+        'anonymous_id',
+        'last_ip_address'
+    )
+    readonly_fields = (
+        'id',
+        'first_seen_at',
+        'last_seen_at',
+        'consent_updated_at'
+    )
+    fieldsets = (
+        ('Identity Information', {
+            'fields': (
+                'primary_email',
+                'anonymous_id',
+                'current_session_id'
+            )
+        }),
+        ('Status', {
+            'fields': (
+                'is_anonymous',
+                'is_verified',
+                'source_of_first_identification'
+            )
+        }),
+        ('Tracking', {
+            'fields': (
+                'last_ip_address',
+                'last_user_agent',
+                'first_seen_at',
+                'last_seen_at'
+            )
+        }),
+        ('Consent', {
+            'fields': (
+                'marketing_consent',
+                'analytics_consent',
+                'consent_updated_at'
+            )
+        }),
+        ('Merge Information', {
+            'fields': ('merged_with',)
+        })
+    )
+    actions = ['mark_as_verified', 'reset_consent']
+
+@admin.action(description="Mark selected identities as verified")
+def mark_as_verified(self, request, queryset):
+    queryset.update(is_verified=True)
+    self.message_user(request, f"{queryset.count()} identities marked as verified")
+
+@admin.action(description="Reset consent settings")
+def reset_consent(self, request, queryset):
+           queryset.update(
+               marketing_consent=True,
+               analytics_consent=True,
+               consent_updated_at=timezone.now()
+           )
+           self.message_user(request, f"Reset consent for {queryset.count()} identities")
+
+# leads/admin.py - Add with your other admin registrations
+@admin.register(IdentityEmail)
+class IdentityEmailAdmin(admin.ModelAdmin):
+    list_display = (
+        'email',
+        'identity',
+        'is_primary',
+        'is_verified',
+        'first_seen_at',
+        'last_used_at'
+    )
+    list_filter = (
+        'is_primary',
+        'is_verified',
+        ('first_seen_at', DateRangeFilter),
+        ('verified_at', DateRangeFilter),
+    )
+    search_fields = ('email', 'identity__primary_email')
+    raw_id_fields = ('identity',)
+    readonly_fields = (
+        'first_seen_at',
+        'last_used_at',
+        'verification_sent_at',
+        'verified_at'
+    )
+    fieldsets = (
+        ('Email Information', {
+            'fields': ('identity', 'email', 'is_primary')
+        }),
+        ('Verification', {
+            'fields': (
+                'is_verified',
+                'verification_sent_at',
+                'verified_at'
+            )
+        }),
+        ('Tracking', {
+            'fields': ('first_seen_at', 'last_used_at')
+        })
+    )
+
+    actions = ['mark_as_verified', 'send_verification_email']
+
+    @admin.action(description="Mark selected emails as verified")
+    def mark_as_verified(self, request, queryset):
+        for email in queryset:
+            email.mark_as_verified()
+        self.message_user(request, f"{queryset.count()} emails marked as verified")
+
+    @admin.action(description="Send verification emails")
+    def send_verification_email(self, request, queryset):
+        for email in queryset:
+            email.send_verification()
+        self.message_user(
+            request,
+            f"Verification emails sent to {queryset.count()} addresses"
+        )
+
+@admin.register(IdentityDevice)
+class IdentityDeviceAdmin(admin.ModelAdmin):
+    list_display = (
+        'fingerprint_short',
+        'identity',
+        'first_seen_at',
+        'last_seen_at',
+        'is_active'
+    )
+    list_filter = (
+        'is_active',
+        ('first_seen_at', DateRangeFilter),
+        ('last_seen_at', DateRangeFilter),
+    )
+    search_fields = ('fingerprint', 'identity__primary_email', 'user_agent')
+    raw_id_fields = ('identity',)
+    readonly_fields = ('first_seen_at', 'last_seen_at')
+
+    def fingerprint_short(self, obj):
+        """Display truncated fingerprint"""
+        return f"{obj.fingerprint[:8]}..."
+    fingerprint_short.short_description = 'Fingerprint'
+
+    def get_queryset(self, request):
+        """Optimize admin queries"""
+        return super().get_queryset(request).select_related('identity')

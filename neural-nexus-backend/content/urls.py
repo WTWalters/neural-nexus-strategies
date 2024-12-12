@@ -16,6 +16,7 @@ router.register(r'lead-magnets', views.LeadMagnetViewSet)
 router.register(r'campaigns', CampaignViewSet)
 router.register(r'landing-pages', LandingPageViewSet, basename='landingpage')
 router.register(r'ab-tests', ABTestViewSet)
+router.register(r'case-studies', views.CaseStudyViewSet, basename='casestudy')
 
 urlpatterns = router.urls
 

@@ -3,6 +3,11 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+import uuid
+from typing import Optional, List
+from django.db.models import Manager
 
 class Contact(models.Model):
     LEAD_SOURCES = [
@@ -25,6 +30,14 @@ class Contact(models.Model):
         ('INACTIVE', 'Inactive')
     ]
 
+    # Identity Management
+    identity = models.OneToOneField(
+        'Identity',
+        on_delete=models.PROTECT,  # Prevent deletion of contacts through identity
+        null=True,  # Allow null for migration
+        blank=True,
+        related_name='contact'
+    )
     # Basic Information
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -242,3 +255,243 @@ class NewsletterSubscription(models.Model):
 
     class Meta:
         ordering = ['-subscribed_at']
+
+
+class IdentityManager(Manager):
+    def create_anonymous(self, anonymous_id: str, **kwargs) -> 'Identity':
+        """Create a new anonymous identity."""
+        return self.create(
+            anonymous_id=anonymous_id,
+            is_anonymous=True,
+            **kwargs
+        )
+
+    def get_or_create_from_email(self, email: str, **kwargs) -> tuple['Identity', bool]:
+        """Get or create an identity from email address."""
+        identity = self.filter(primary_email=email).first()
+        if identity:
+            return identity, False
+
+        return self.create(
+            primary_email=email,
+            is_anonymous=False,
+            **kwargs
+        ), True
+
+class Identity(models.Model):
+    """
+    Core identity model for tracking users across multiple touchpoints.
+    Supports both anonymous and known users with merging capabilities.
+    """
+    # Primary Fields
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    primary_email = models.EmailField(null=True, blank=True, unique=True)
+    anonymous_id = models.CharField(max_length=100, null=True, blank=True, unique=True)
+    current_session_id = models.CharField(max_length=100, null=True, blank=True)
+
+    # Status Fields
+    is_active = models.BooleanField(default=True)
+    is_anonymous = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
+    first_seen_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+    source_of_first_identification = models.CharField(max_length=50, null=True, blank=True)
+
+    # Tracking Fields
+    last_ip_address = models.GenericIPAddressField(null=True, blank=True)
+    last_user_agent = models.TextField(blank=True)
+
+    # Consent Fields
+    marketing_consent = models.BooleanField(default=True)  # Default opt-in as specified
+    analytics_consent = models.BooleanField(default=True)  # Default opt-in as specified
+    consent_updated_at = models.DateTimeField(null=True, blank=True)
+
+    # Merge Tracking
+    merged_with = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='merged_identities',
+        help_text="Points to the primary identity if this was merged"
+    )
+
+    objects = IdentityManager()
+
+    class Meta:
+        verbose_name_plural = "Identities"
+        indexes = [
+            models.Index(fields=['anonymous_id']),
+            models.Index(fields=['primary_email']),
+            models.Index(fields=['current_session_id']),
+        ]
+
+    def __str__(self):
+        if self.primary_email:
+            return f"Identity: {self.primary_email}"
+        return f"Anonymous: {self.anonymous_id[:8]}"
+
+    def clean(self):
+        """Validate the identity model."""
+        if not self.anonymous_id and not self.primary_email:
+            raise ValidationError(
+                "Either anonymous_id or primary_email must be provided"
+            )
+
+        if self.merged_with and self.merged_with == self:
+            raise ValidationError("An identity cannot be merged with itself")
+
+    def save(self, *args, **kwargs):
+        """Override save to run validations and update timestamps."""
+        self.clean()
+        if not self.consent_updated_at and (self.marketing_consent or self.analytics_consent):
+            self.consent_updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    # Identity Management Methods
+    def mark_as_verified(self) -> None:
+        """Mark the identity as verified."""
+        self.is_verified = True
+        self.save(update_fields=['is_verified'])
+
+    def update_session(self, session_id: str, ip_address: Optional[str] = None,
+                      user_agent: Optional[str] = None) -> None:
+        """Update session and tracking information."""
+        self.current_session_id = session_id
+        if ip_address:
+            self.last_ip_address = ip_address
+        if user_agent:
+            self.last_user_agent = user_agent
+        self.last_seen_at = timezone.now()
+        self.save(update_fields=[
+            'current_session_id', 'last_ip_address',
+            'last_user_agent', 'last_seen_at'
+        ])
+
+    def convert_to_known(self, email: str, source: str) -> None:
+        """Convert an anonymous identity to a known identity."""
+        if not self.is_anonymous:
+            return
+
+        self.primary_email = email
+        self.is_anonymous = False
+        self.source_of_first_identification = source
+        self.save(update_fields=[
+            'primary_email', 'is_anonymous',
+            'source_of_first_identification'
+        ])
+
+    # Consent Management Methods
+    def update_consent(self, marketing: bool = None, analytics: bool = None) -> None:
+        """Update consent settings."""
+        updated = False
+        if marketing is not None and marketing != self.marketing_consent:
+            self.marketing_consent = marketing
+            updated = True
+        if analytics is not None and analytics != self.analytics_consent:
+            self.analytics_consent = analytics
+            updated = True
+
+        if updated:
+            self.consent_updated_at = timezone.now()
+            self.save(update_fields=[
+                'marketing_consent', 'analytics_consent',
+                'consent_updated_at'
+            ])
+
+# leads/models.py - Add this with your other models
+class IdentityEmail(models.Model):
+    """
+    Tracks multiple email addresses associated with an Identity.
+    Supports primary/secondary emails and verification status.
+    """
+    identity = models.ForeignKey(
+        Identity,
+        on_delete=models.CASCADE,
+        related_name='emails'
+    )
+    email = models.EmailField(unique=True)
+    is_primary = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    verification_sent_at = models.DateTimeField(null=True, blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    first_seen_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Identity Email"
+        verbose_name_plural = "Identity Emails"
+        ordering = ['-is_primary', '-last_used_at']
+        indexes = [
+            models.Index(fields=['email']),
+            models.Index(fields=['identity', 'is_primary']),
+        ]
+
+    def __str__(self):
+        return f"{self.email} ({'Primary' if self.is_primary else 'Secondary'})"
+
+    def save(self, *args, **kwargs):
+        # If this is marked as primary, ensure no other emails for this identity are primary
+        if self.is_primary:
+            IdentityEmail.objects.filter(
+                identity=self.identity,
+                is_primary=True
+            ).exclude(id=self.id).update(is_primary=False)
+        super().save(*args, **kwargs)
+
+    def mark_as_verified(self):
+        """Mark the email as verified and record verification time."""
+        self.is_verified = True
+        self.verified_at = timezone.now()
+        self.save(update_fields=['is_verified', 'verified_at'])
+
+    def send_verification(self):
+        """Send verification email and record when it was sent."""
+        # TODO: Implement actual email sending logic
+        self.verification_sent_at = timezone.now()
+        self.save(update_fields=['verification_sent_at'])
+
+class IdentityDevice(models.Model):
+    identity = models.ForeignKey(
+        'Identity',
+        on_delete=models.CASCADE,
+        related_name='devices'
+    )
+    fingerprint = models.CharField(
+        max_length=255,
+        db_index=True,
+        help_text="Unique device fingerprint hash"
+    )
+    first_seen_at = models.DateTimeField(
+        default=timezone.now,
+        help_text="When this device was first associated with the identity"
+    )
+    last_seen_at = models.DateTimeField(
+        auto_now=True,
+        help_text="Last time this device was active"
+    )
+    user_agent = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Last known user agent string"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Whether this device is still actively used"
+    )
+
+    class Meta:
+        unique_together = ['identity', 'fingerprint']
+        indexes = [
+            models.Index(fields=['fingerprint']),
+            models.Index(fields=['last_seen_at']),
+        ]
+        ordering = ['-last_seen_at']
+
+    def __str__(self):
+        return f"Device {self.fingerprint[:8]}... ({self.identity})"
+
+    def mark_seen(self):
+        """Update the last_seen_at timestamp"""
+        self.last_seen_at = timezone.now()
+        self.save(update_fields=['last_seen_at'])
