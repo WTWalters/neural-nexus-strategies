@@ -1,19 +1,40 @@
-import type { Config } from 'jest'
-import nextJest from 'next/jest'
+import type { Config } from 'jest';
+import nextJest from 'next/jest';
 
 const createJestConfig = nextJest({
-    dir: './',
-})
+  dir: './',
+});
 
-const customJestConfig: Config = {
-    setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-    testEnvironment: 'jest-environment-jsdom',
-    moduleNameMapper: {
-        '^@/components/(.*)$': '<rootDir>/src/components/$1',
-        '^@/pages/(.*)$': '<rootDir>/src/pages/$1',
-        '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
+const config: Config = {
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  coverageDirectory: 'coverage',
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+    '!src/types/**/*',
+    '!src/**/index.{js,jsx,ts,tsx}',
+  ],
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
-    testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
-}
+  },
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname',
+  ],
+};
 
-export default createJestConfig(customJestConfig)
+export default createJestConfig(config);
