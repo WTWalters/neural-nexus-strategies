@@ -1,5 +1,5 @@
 // src/mocks/server.ts
-import { setupServer } from "msw/node";
+const { setupServer } = require("msw/node"); // Use require instead of import
 import { handlers } from "./handlers";
 
 export const server = setupServer(...handlers);

@@ -1,18 +1,37 @@
 // src/setupTests.ts
+import { TextEncoder, TextDecoder } from "node:util";
+
+// Set up TextEncoder before any other imports
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+// Now we can safely import the rest
 import "@testing-library/jest-dom";
 import { configure } from "@testing-library/react";
-import { createServer } from "@/mocks/server";
+import { server } from "./mocks/server";
+import { JSDOM } from "jsdom";
+import { Response, Request, Headers } from "undici";
 
-// Setup MSW
-const server = createServer();
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+// Set up window object
+const dom = new JSDOM("<!doctype html><html><body></body></html>");
+global.window = dom.window;
+global.document = dom.window.document;
+global.navigator = dom.window.navigator;
+
+// Set up web API polyfills
+global.Response = Response;
+global.Request = Request;
+global.Headers = Headers;
 
 // Configure Testing Library
 configure({
   testIdAttribute: "data-test-id",
 });
+
+// Start MSW Server
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 // Global test setup
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -22,16 +41,13 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 // Mock window.matchMedia
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+window.matchMedia = jest.fn().mockImplementation((query) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  dispatchEvent: jest.fn(),
+}));
