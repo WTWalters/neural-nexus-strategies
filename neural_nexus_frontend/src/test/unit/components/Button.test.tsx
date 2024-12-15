@@ -1,5 +1,5 @@
 // src/__tests__/unit/components/Button.test.tsx
-import { render, screen } from "@/tests/test-utils";
+import { render, screen } from "@/test/test-utils";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 

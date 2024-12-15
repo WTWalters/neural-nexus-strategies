@@ -1,5 +1,5 @@
 // src/__tests__/unit/components/Input.test.tsx
-import { render, screen } from "@/tests/test-utils";
+import { render, screen } from "@/test/test-utils";
 import { Input } from "@/components/ui/input";
 
 describe("Input Component", () => {

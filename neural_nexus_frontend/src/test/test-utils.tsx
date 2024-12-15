@@ -1,4 +1,4 @@
-// src/tests/test-utils.tsx
+// src/test/test-utils.tsx
 import React from "react";
 import { render as rtlRender } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

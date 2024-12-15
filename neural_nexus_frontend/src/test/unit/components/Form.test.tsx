@@ -1,5 +1,5 @@
 // src/__tests__/unit/components/Form.test.tsx
-import { render, screen, waitFor } from "@/tests/test-utils";
+import { render, screen, waitFor } from "@/test/test-utils";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
