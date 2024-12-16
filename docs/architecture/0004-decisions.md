@@ -85,3 +85,4 @@ This document tracks key architectural decisions for the Neural Nexus Strategies
 
 - v1.0 (December 2024): Initial architecture decisions
 - Next review: March 2025
+Note
