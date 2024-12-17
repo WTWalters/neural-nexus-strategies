@@ -1,10 +1,8 @@
 // src/components/ui/button/types.ts
-import { BaseProps, VariantProps } from "../_lib/types";
+import { BaseButtonProps } from "@/components/_lib/types";
 
-export interface ButtonProps extends BaseProps, VariantProps {
+export interface ButtonProps extends BaseButtonProps {
+  // Existing button-specific props remain
   asChild?: boolean;
-  disabled?: boolean;
   fullWidth?: boolean;
-  loading?: boolean;
-  onClick?: () => void;
 }

@@ -1,7 +1,8 @@
 // src/components/ui/alert/types.ts
-import { BaseProps } from "../_lib/types";
+import { BaseProps, VariantProps } from "@/components/_lib/types";
 
-export interface AlertProps extends BaseProps {
-  variant?: "default" | "destructive";
+export interface AlertProps extends BaseProps, VariantProps {
   title?: string;
+  description?: string;
+  variant?: "default" | "destructive";
 }

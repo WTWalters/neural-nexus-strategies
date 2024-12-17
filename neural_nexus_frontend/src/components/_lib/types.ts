@@ -2,6 +2,7 @@ import { ComponentPropsWithoutRef, ReactNode } from "react";
 
 /**
  * Base props that all components can extend
+ * Maintains compatibility with existing components
  */
 export interface BaseProps {
   className?: string;
@@ -15,22 +16,19 @@ export type BaseElementProps<T extends HTMLElement> =
   ComponentPropsWithoutRef<T>;
 
 /**
- * Component size variants
- */
-export type SizeVariant = "sm" | "md" | "lg" | "xl";
-
-/**
  * Common variant props used across components
+ * Extended to include all variants while maintaining backward compatibility
  */
 export interface VariantProps {
   variant?:
     | "default"
+    | "outline"
+    | "ghost"
+    | "link"
     | "primary"
     | "secondary"
-    | "ghost"
-    | "destructive"
-    | "link";
-  size?: SizeVariant;
+    | "destructive";
+  size?: "default" | "sm" | "md" | "lg" | "xl";
 }
 
 /**
@@ -43,6 +41,7 @@ export interface BaseFieldProps extends BaseProps {
   disabled?: boolean;
   description?: string;
   id?: string;
+  name?: string;
 }
 
 /**
@@ -51,6 +50,8 @@ export interface BaseFieldProps extends BaseProps {
 export interface BaseLayoutProps extends BaseProps {
   as?: keyof JSX.IntrinsicElements;
   id?: string;
+  padding?: boolean;
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 /**
@@ -64,10 +65,14 @@ export interface BaseCardProps extends BaseProps {
     src: string;
     alt: string;
   };
+  onClick?: () => void;
+  href?: string;
+  elevated?: boolean;
 }
 
 /**
  * Base props for button components
+ * Extends existing ButtonProps while adding new features
  */
 export interface BaseButtonProps
   extends BaseElementProps<HTMLButtonElement>,
@@ -75,6 +80,8 @@ export interface BaseButtonProps
   isLoading?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  fullWidth?: boolean;
+  asChild?: boolean;
 }
 
 /**
@@ -85,6 +92,7 @@ export interface BaseNavigationItem {
   label: string;
   icon?: ReactNode;
   isExternal?: boolean;
+  isActive?: boolean;
 }
 
 /**
@@ -94,4 +102,36 @@ export interface BaseFormProps extends BaseProps {
   onSubmit: (data: any) => Promise<void> | void;
   isLoading?: boolean;
   submitLabel?: string;
+  resetLabel?: string;
+  showReset?: boolean;
+}
+
+/**
+ * Base props for section components
+ */
+export interface BaseSectionProps extends BaseLayoutProps {
+  title?: string;
+  subtitle?: string;
+  backgroundVariant?: "default" | "alternate" | "primary";
+}
+
+/**
+ * Base props for input components
+ */
+export interface BaseInputProps
+  extends BaseElementProps<HTMLInputElement>,
+    BaseFieldProps {
+  type?: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
+  placeholder?: string;
+}
+
+/**
+ * Base props for select components
+ */
+export interface BaseSelectProps extends BaseFieldProps {
+  options: Array<{
+    value: string | number;
+    label: string;
+  }>;
+  placeholder?: string;
 }
