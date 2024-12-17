@@ -84,3 +84,5 @@ local/
 .directory
 .Spotlight-V100
 .Trashes
+
+*storybook.log

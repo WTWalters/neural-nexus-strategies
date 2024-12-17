@@ -5,13 +5,14 @@ const createJestConfig = nextJest({
 });
 
 const customJestConfig = {
-  setupFilesAfterEnv: ["<rootDir>/src/test/setup/jest.setup.ts"],
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
   testEnvironment: "jest-environment-jsdom",
-  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
   moduleNameMapper: {
-    "^@/components/(.*)$": "<rootDir>/src/components/$1",
-    "^@/pages/(.*)$": "<rootDir>/src/pages/$1",
-    "^@/lib/(.*)$": "<rootDir>/src/lib/$1",
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
+  // Add Storybook support
+  transform: {
+    "^.+\\.stories\\.[jt]sx?$": "@storybook/addon-storyshots/injectFileName",
   },
 };
 

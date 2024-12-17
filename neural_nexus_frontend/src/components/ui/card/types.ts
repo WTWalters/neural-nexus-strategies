@@ -1,17 +1,6 @@
 // src/components/ui/card/types.ts
-import { BaseProps } from "../_lib/types";
+import { BaseCardProps } from "@/components/_lib/types";
 
-export interface CardProps extends BaseProps {
-  title?: string;
-  footer?: React.ReactNode;
-  header?: React.ReactNode;
+export interface CardProps extends BaseCardProps {
+  // Any card-specific props
 }
-
-export interface CardHeaderProps extends BaseProps {
-  title: string;
-  description?: string;
-}
-
-export interface CardFooterProps extends BaseProps {}
-
-export interface CardContentProps extends BaseProps {}

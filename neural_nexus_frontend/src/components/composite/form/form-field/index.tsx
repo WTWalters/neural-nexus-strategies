@@ -1,13 +1,15 @@
-import React from 'react'
-import { cn } from '@/lib/utils'
-import { FormFieldProps } from './types'
+"use client";
+
+import React, { useId } from "react";
+import { cn } from "@/lib/utils";
+import { FormFieldProps } from "./types";
 import {
   FormItem,
   FormLabel,
   FormControl,
   FormDescription,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form";
 
 export const FormField: React.FC<FormFieldProps> = ({
   label,
@@ -19,18 +21,20 @@ export const FormField: React.FC<FormFieldProps> = ({
   children,
   className,
   showRequiredIndicator = true,
-  id,
+  id: customId,
+  ...props
 }) => {
+  const generatedId = useId();
+  const id = customId ?? generatedId;
+
   return (
-    <FormItem 
-      className={cn('w-full', className)}
+    <FormItem
+      className={cn("w-full", className)}
       data-testid="form-field"
+      {...props}
     >
       {label && (
-        <FormLabel 
-          htmlFor={id}
-          className={cn(error && 'text-destructive')}
-        >
+        <FormLabel htmlFor={id} className={cn(error && "text-destructive")}>
           {label}
           {required && showRequiredIndicator && (
             <span className="text-destructive ml-1">*</span>
@@ -40,8 +44,8 @@ export const FormField: React.FC<FormFieldProps> = ({
       <FormControl>
         {React.cloneElement(children, {
           id,
-          'aria-describedby': description ? `${id}-description` : undefined,
-          'aria-invalid': error ? 'true' : undefined,
+          "aria-describedby": description ? `${id}-description` : undefined,
+          "aria-invalid": error ? "true" : undefined,
           disabled,
           ...children.props,
         })}
@@ -56,5 +60,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       )}
       {error && <FormMessage>{error}</FormMessage>}
     </FormItem>
-  )
-}
+  );
+};
+
+export default FormField;
