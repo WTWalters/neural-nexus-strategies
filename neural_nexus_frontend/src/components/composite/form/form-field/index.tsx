@@ -22,9 +22,15 @@ export const FormField: React.FC<FormFieldProps> = ({
   id,
 }) => {
   return (
-    <FormItem className={cn('w-full', className)}>
+    <FormItem 
+      className={cn('w-full', className)}
+      data-testid="form-field"
+    >
       {label && (
-        <FormLabel htmlFor={id}>
+        <FormLabel 
+          htmlFor={id}
+          className={cn(error && 'text-destructive')}
+        >
           {label}
           {required && showRequiredIndicator && (
             <span className="text-destructive ml-1">*</span>
@@ -35,11 +41,16 @@ export const FormField: React.FC<FormFieldProps> = ({
         {React.cloneElement(children, {
           id,
           'aria-describedby': description ? `${id}-description` : undefined,
+          'aria-invalid': error ? 'true' : undefined,
           disabled,
           ...children.props,
         })}
       </FormControl>
-      {description && <FormDescription>{description}</FormDescription>}
+      {description && (
+        <FormDescription id={`${id}-description`}>
+          {description}
+        </FormDescription>
+      )}
       {helperText && !error && (
         <p className="text-sm text-muted-foreground mt-1">{helperText}</p>
       )}
