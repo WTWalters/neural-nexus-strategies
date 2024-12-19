@@ -9,11 +9,7 @@ const customJestConfig = {
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-  },
-  // Add Storybook support
-  transform: {
-    "^.+\\.stories\\.[jt]sx?$": "@storybook/addon-storyshots/injectFileName",
-  },
+  }
 };
 
 module.exports = createJestConfig(customJestConfig);

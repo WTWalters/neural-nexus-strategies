@@ -1,11 +1,26 @@
 // src/setupTests.ts
 
-// Must come before any imports or other code
+// Must come before any imports
 import { TextEncoder, TextDecoder } from "node:util";
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
-// Mock the Node environment
+// Mock matchMedia
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// Mock the BroadcastChannel
 const mockBroadcastChannel = {
   name: "",
   postMessage: jest.fn(),
@@ -18,17 +33,10 @@ const mockBroadcastChannel = {
 };
 
 Object.assign(global, {
-  // Don't redefine TextEncoder/TextDecoder here since we did it above
   BroadcastChannel: jest.fn().mockImplementation(() => mockBroadcastChannel),
-  Response: class Response {},
-  Request: class Request {},
-  Headers: class Headers {},
 });
 
 // Now import everything else
 import "@testing-library/jest-dom";
 import "whatwg-fetch";
 import { configure } from "@testing-library/react";
-import { server } from "./mocks/server";
-
-// Rest of the setup...

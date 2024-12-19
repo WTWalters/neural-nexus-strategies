@@ -1,103 +1,98 @@
+// section-header.test.tsx
 import { render, screen } from "@testing-library/react";
-import { Button } from "@/components/ui/button";
 import { SectionHeader } from "./index";
 
 describe("SectionHeader", () => {
-  it("renders title correctly", () => {
-    render(<SectionHeader title="Test Title" />);
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
+  const defaultProps = {
+    title: "Test Section",
+  };
+
+  it("renders with basic props", () => {
+    render(<SectionHeader {...defaultProps} />);
+    expect(screen.getByText("Test Section")).toHaveClass("text-2xl");
   });
 
   it("renders subtitle when provided", () => {
-    render(<SectionHeader title="Test Title" subtitle="Test Subtitle" />);
-    expect(screen.getByText("Test Subtitle")).toBeInTheDocument();
-  });
-
-  it("renders actions when provided", () => {
-    render(
-      <SectionHeader
-        title="Test Title"
-        actions={<Button>Test Action</Button>}
-      />,
+    render(<SectionHeader {...defaultProps} subtitle="Test subtitle" />);
+    expect(screen.getByText("Test subtitle")).toHaveClass(
+      "text-muted-foreground",
     );
-    expect(
-      screen.getByRole("button", { name: "Test Action" }),
-    ).toBeInTheDocument();
   });
 
-  it("applies size classes correctly", () => {
-    const { rerender } = render(<SectionHeader title="Test Title" size="lg" />);
-    expect(screen.getByText("Test Title")).toHaveClass("text-3xl");
+  it("applies correct size classes", () => {
+    const { rerender } = render(<SectionHeader {...defaultProps} size="sm" />);
+    expect(screen.getByText("Test Section")).toHaveClass("text-lg");
 
-    rerender(<SectionHeader title="Test Title" size="sm" />);
-    expect(screen.getByText("Test Title")).toHaveClass("text-lg");
+    rerender(<SectionHeader {...defaultProps} size="lg" />);
+    expect(screen.getByText("Test Section")).toHaveClass("text-3xl");
   });
 
-  it("applies alignment classes correctly", () => {
-    const { container, rerender } = render(
-      <SectionHeader title="Test Title" align="center" />,
-    );
-    expect(container.firstChild).toHaveClass("text-center");
-
-    rerender(<SectionHeader title="Test Title" align="right" />);
-    expect(container.firstChild).toHaveClass("text-right");
-  });
-
-  it("shows divider when divider prop is true", () => {
-    const { container } = render(<SectionHeader title="Test Title" divider />);
+  it("adds divider when specified", () => {
+    const { container } = render(<SectionHeader {...defaultProps} divider />);
     expect(container.firstChild).toHaveClass("border-b");
   });
 
-  it("accepts and applies additional className", () => {
+  it("applies correct alignment", () => {
+    const { rerender } = render(
+      <SectionHeader {...defaultProps} align="center" />,
+    );
+    expect(
+      screen.getByText("Test Section").parentElement?.parentElement,
+    ).toHaveClass("text-center");
+
+    rerender(<SectionHeader {...defaultProps} align="right" />);
+    expect(
+      screen.getByText("Test Section").parentElement?.parentElement,
+    ).toHaveClass("text-right");
+  });
+
+  it("renders actions", () => {
+    render(
+      <SectionHeader
+        {...defaultProps}
+        actions={<button>Test action</button>}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Test action" }),
+    ).toBeInTheDocument();
+  });
+
+  it("positions actions correctly with center alignment", () => {
+    render(
+      <SectionHeader
+        {...defaultProps}
+        align="center"
+        actions={<button>Test action</button>}
+      />,
+    );
+    const actionContainer = screen.getByRole("button", {
+      name: "Test action",
+    }).parentElement;
+    expect(actionContainer).toHaveClass("flex-1", "justify-end");
+  });
+
+  it("applies custom className", () => {
     const { container } = render(
-      <SectionHeader title="Test Title" className="test-class" />,
+      <SectionHeader {...defaultProps} className="test-class" />,
     );
     expect(container.firstChild).toHaveClass("test-class");
   });
 
-  it("handles multiple action elements", () => {
-    render(
-      <SectionHeader
-        title="Test Title"
-        actions={
-          <>
-            <Button>Action 1</Button>
-            <Button>Action 2</Button>
-          </>
-        }
-      />,
-    );
-    expect(
-      screen.getByRole("button", { name: "Action 1" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Action 2" }),
-    ).toBeInTheDocument();
+  it("maintains responsive text sizes", () => {
+    const { container } = render(<SectionHeader {...defaultProps} size="md" />);
+    const titleElement = screen.getByText("Test Section");
+    expect(titleElement).toHaveClass("text-2xl", "font-bold", "tracking-tight");
   });
 
-  it("maintains correct layout with all props", () => {
-    const { container } = render(
+  it("handles long titles and subtitles", () => {
+    render(
       <SectionHeader
-        title="Test Title"
-        subtitle="Test Subtitle"
-        actions={<Button>Action</Button>}
-        size="md"
-        align="center"
-        divider
-        className="custom-class"
+        title="Very long title that should still be handled gracefully"
+        subtitle="And an equally long subtitle that needs to be displayed properly"
       />,
     );
-
-    // Check all elements are present
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
-    expect(screen.getByText("Test Subtitle")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Action" })).toBeInTheDocument();
-
-    // Check layout classes
-    expect(container.firstChild).toHaveClass(
-      "border-b",
-      "text-center",
-      "custom-class",
-    );
+    expect(screen.getByText(/Very long title/)).toBeInTheDocument();
+    expect(screen.getByText(/equally long subtitle/)).toBeInTheDocument();
   });
 });

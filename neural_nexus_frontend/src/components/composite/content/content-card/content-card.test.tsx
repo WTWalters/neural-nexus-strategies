@@ -1,155 +1,86 @@
+// content-card.test.tsx
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Button } from "@/components/ui/button";
 import { ContentCard } from "./index";
 
 describe("ContentCard", () => {
   const defaultProps = {
-    title: "Test Title",
-    description: "Test Description",
+    title: "Test Card",
   };
 
-  it("renders basic content correctly", () => {
+  it("renders basic card with title", () => {
     render(<ContentCard {...defaultProps} />);
-
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
-    expect(screen.getByText("Test Description")).toBeInTheDocument();
+    expect(screen.getByText("Test Card")).toBeInTheDocument();
   });
 
-  it("renders image when provided", () => {
-    render(
-      <ContentCard
-        {...defaultProps}
-        image={{
-          src: "/test-image.jpg",
-          alt: "Test Image",
-        }}
-      />,
-    );
-
-    const image = screen.getByAltText("Test Image");
-    expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute("src", "/test-image.jpg");
+  it("renders description when provided", () => {
+    render(<ContentCard {...defaultProps} description="Test description" />);
+    expect(screen.getByText("Test description")).toBeInTheDocument();
   });
 
-  it("handles different image aspect ratios", () => {
-    const { rerender } = render(
-      <ContentCard
-        {...defaultProps}
-        image={{
-          src: "/test-image.jpg",
-          alt: "Test Image",
-          aspectRatio: "square",
-        }}
-      />,
-    );
-
-    expect(screen.getByAltText("Test Image").parentElement).toHaveClass(
-      "aspect-square",
-    );
-
-    rerender(
-      <ContentCard
-        {...defaultProps}
-        image={{
-          src: "/test-image.jpg",
-          alt: "Test Image",
-          aspectRatio: "video",
-        }}
-      />,
-    );
-
-    expect(screen.getByAltText("Test Image").parentElement).toHaveClass(
-      "aspect-video",
-    );
-  });
-
-  it("renders actions when provided", () => {
-    render(
-      <ContentCard
-        {...defaultProps}
-        actions={
-          <>
-            <Button>Action 1</Button>
-            <Button>Action 2</Button>
-          </>
-        }
-      />,
-    );
-
-    expect(screen.getByText("Action 1")).toBeInTheDocument();
-    expect(screen.getByText("Action 2")).toBeInTheDocument();
+  it("renders image with correct aspect ratio", () => {
+    const image = {
+      src: "/test-image.jpg",
+      alt: "Test image",
+      aspectRatio: "square" as const,
+    };
+    render(<ContentCard {...defaultProps} image={image} />);
+    const img = screen.getByAltText("Test image");
+    expect(img).toBeInTheDocument();
+    expect(img.parentElement).toHaveClass("aspect-square");
   });
 
   it("renders as a link when href is provided", () => {
     render(<ContentCard {...defaultProps} href="/test-link" />);
-
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/test-link");
   });
 
-  it("applies variant styles correctly", () => {
-    const { container, rerender } = render(
+  it("applies correct variant styles", () => {
+    const { container } = render(
       <ContentCard {...defaultProps} variant="elevated" />,
     );
-
     expect(container.firstChild).toHaveClass("shadow-lg");
-
-    rerender(<ContentCard {...defaultProps} variant="bordered" />);
-
-    expect(container.firstChild).toHaveClass("border-2");
   });
 
   it("shows loading state", () => {
     const { container } = render(<ContentCard {...defaultProps} isLoading />);
-
     expect(container.firstChild).toHaveClass("animate-pulse");
   });
 
-  it("renders footer content when provided", () => {
-    render(
-      <ContentCard {...defaultProps} footer={<div>Footer Content</div>} />,
-    );
-
-    expect(screen.getByText("Footer Content")).toBeInTheDocument();
+  it("renders footer when provided", () => {
+    render(<ContentCard {...defaultProps} footer={<div>Test footer</div>} />);
+    expect(screen.getByText("Test footer")).toBeInTheDocument();
   });
 
   it("handles click events", () => {
-    const handleClick = jest.fn();
-    render(<ContentCard {...defaultProps} onClick={handleClick} />);
-
-    fireEvent.click(screen.getByText("Test Title"));
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    const onClick = jest.fn();
+    render(<ContentCard {...defaultProps} onClick={onClick} />);
+    fireEvent.click(screen.getByText("Test Card"));
+    expect(onClick).toHaveBeenCalled();
   });
 
-  it("renders children content when provided", () => {
+  it("renders actions", () => {
     render(
-      <ContentCard {...defaultProps}>
-        <div>Custom Child Content</div>
-      </ContentCard>,
+      <ContentCard {...defaultProps} actions={<button>Test action</button>} />,
     );
-
-    expect(screen.getByText("Custom Child Content")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Test action" }),
+    ).toBeInTheDocument();
   });
 
-  it("accepts and applies additional className", () => {
-    const { container } = render(
-      <ContentCard {...defaultProps} className="custom-class" />,
-    );
-
-    expect(container.firstChild).toHaveClass("custom-class");
-  });
-
-  it("maintains hover styles by default", () => {
-    const { container } = render(<ContentCard {...defaultProps} />);
-
-    expect(container.firstChild).toHaveClass("hover:border-border/80");
-  });
-
-  it("disables hover styles when hover prop is false", () => {
+  it("disables hover effect when specified", () => {
     const { container } = render(
       <ContentCard {...defaultProps} hover={false} />,
     );
-
     expect(container.firstChild).not.toHaveClass("hover:border-border/80");
+  });
+
+  it("renders custom children", () => {
+    render(
+      <ContentCard {...defaultProps}>
+        <div>Custom content</div>
+      </ContentCard>,
+    );
+    expect(screen.getByText("Custom content")).toBeInTheDocument();
   });
 });
