@@ -28,8 +28,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       default: "bg-primary text-primary-foreground hover:bg-primary/90",
+<<<<<<< HEAD
       outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
       destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+=======
+      outline:
+        "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+      destructive:
+        "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+>>>>>>> 440558b (refactor: Update button to use design tokens consistently)
       ghost: "hover:bg-accent hover:text-accent-foreground",
     };
 
