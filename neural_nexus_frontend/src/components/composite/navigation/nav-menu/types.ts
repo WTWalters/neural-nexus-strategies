@@ -1,45 +1,23 @@
-import { BaseProps } from "@/components/_lib/types";
-import { ReactNode } from "react";
+// src/components/composite/navigation/nav-menu/types.ts
+import { NavigationMenuProps as RadixNavigationMenuProps } from "@radix-ui/react-navigation-menu";
 
 export interface NavMenuItem {
   label: string;
   href?: string;
-  icon?: ReactNode;
+  icon?: React.ReactNode;
   description?: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  children?: NavMenuItem[];
   isExternal?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
 }
 
-export interface NavMenuProps extends BaseProps {
-  /**
-   * The trigger element that opens the menu
-   */
-  trigger: ReactNode;
-
-  /**
-   * Array of menu items
-   */
+export interface NavMenuProps
+  extends Omit<RadixNavigationMenuProps, "children"> {
+  trigger: React.ReactNode;
   items: NavMenuItem[];
-
-  /**
-   * Side the menu should appear from
-   */
   side?: "top" | "right" | "bottom" | "left";
-
-  /**
-   * Alignment of the menu
-   */
   align?: "start" | "center" | "end";
-
-  /**
-   * Whether the menu is open by default
-   */
   defaultOpen?: boolean;
-
-  /**
-   * Whether to show icons in menu items
-   */
   showIcons?: boolean;
+  className?: string;
 }
