@@ -1,4 +1,4 @@
-// src/test/test-utils.tsx
+// src/test/utils/test-utils.tsx
 import React from "react";
 import { render as rtlRender } from "@testing-library/react";
 import { ThemeProvider } from "@/components/theme-provider";

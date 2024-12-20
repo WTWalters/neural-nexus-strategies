@@ -46,6 +46,13 @@ const mockBroadcastChannel = {
   dispatchEvent: jest.fn(),
 };
 
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 Object.assign(global, {
   BroadcastChannel: jest.fn().mockImplementation(() => mockBroadcastChannel),
 });

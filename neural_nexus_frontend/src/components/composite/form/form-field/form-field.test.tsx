@@ -1,11 +1,14 @@
-import { render, screen } from "@testing-library/react";
+//src/components/composite/form/form-field/form-field.test.tsx
+
+import { screen } from "@testing-library/react";
 import { FormField } from "./index";
 import { Input } from "@/components/ui/input";
+import { renderWithForm } from "@/test/utils/form";
 
 describe("FormField", () => {
   it("renders with label and children", () => {
-    render(
-      <FormField label="Email">
+    renderWithForm(
+      <FormField name="test" label="Email">
         <Input placeholder="Enter email" />
       </FormField>,
     );
@@ -15,31 +18,32 @@ describe("FormField", () => {
   });
 
   it("shows required indicator when required prop is true", () => {
-    render(
-      <FormField label="Username" required>
+    renderWithForm(
+      <FormField name="test" label="Username" required>
         <Input placeholder="Enter username" />
       </FormField>,
     );
 
-    const label = screen.getByText("Username");
+    expect(screen.getByText("Username")).toBeInTheDocument();
     expect(screen.getByText("*")).toHaveClass("text-destructive");
   });
 
   it("displays error message when error prop is provided", () => {
-    const errorMessage = "This field is required";
-    render(
-      <FormField label="Password" error={errorMessage}>
+    renderWithForm(
+      <FormField name="test" label="Password" error="This field is required">
         <Input type="password" />
       </FormField>,
     );
 
-    expect(screen.getByText(errorMessage)).toHaveClass("text-destructive");
+    expect(screen.getByText("This field is required")).toHaveClass(
+      "text-destructive",
+    );
   });
 
   it("renders description when provided", () => {
     const description = "Must be at least 8 characters";
-    render(
-      <FormField label="Password" description={description}>
+    renderWithForm(
+      <FormField name="test" label="Password" description={description}>
         <Input type="password" />
       </FormField>,
     );
@@ -48,8 +52,8 @@ describe("FormField", () => {
   });
 
   it("passes className to wrapper element", () => {
-    render(
-      <FormField label="Test" className="mt-4">
+    renderWithForm(
+      <FormField name="test" label="Test" className="mt-4">
         <Input />
       </FormField>,
     );
@@ -58,8 +62,8 @@ describe("FormField", () => {
   });
 
   it("applies error styles to label when error is present", () => {
-    render(
-      <FormField label="Test" error="Error message">
+    renderWithForm(
+      <FormField name="test" label="Test" error="Error message">
         <Input />
       </FormField>,
     );

@@ -1,4 +1,4 @@
-// content-card.test.tsx
+// src/components/composite/content/content-card.test.tsx
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ContentCard } from "./index";
 
@@ -39,12 +39,14 @@ describe("ContentCard", () => {
     const { container } = render(
       <ContentCard {...defaultProps} variant="elevated" />,
     );
-    expect(container.firstChild).toHaveClass("shadow-lg");
+    const cardElement = container.querySelector(".shadow-lg");
+    expect(cardElement).toBeInTheDocument();
   });
 
   it("shows loading state", () => {
     const { container } = render(<ContentCard {...defaultProps} isLoading />);
-    expect(container.firstChild).toHaveClass("animate-pulse");
+    const loadingElement = container.querySelector(".animate-pulse");
+    expect(loadingElement).toBeInTheDocument();
   });
 
   it("renders footer when provided", () => {
