@@ -51,10 +51,12 @@ describe("Card Components", () => {
     });
 
     it("preserves line breaks when preserveLineBreaks is true", () => {
-      render(<CardTitle preserveLineBreaks>Multiline\nTitle</CardTitle>);
-      expect(screen.getByText("Multiline\nTitle")).toHaveClass(
-        "whitespace-pre-line",
-      );
+      const text = "Multiline\nTitle";
+      render(<CardTitle preserveLineBreaks>{text}</CardTitle>);
+      // Find by role instead of exact text
+      const title = screen.getByRole("heading");
+      expect(title).toHaveClass("whitespace-pre-line");
+      expect(title.textContent).toBe("Multiline\nTitle");
     });
   });
 
@@ -73,7 +75,9 @@ describe("Card Components", () => {
   describe("CardContent", () => {
     it("renders with default padding", () => {
       render(<CardContent>Content</CardContent>);
-      expect(screen.getByText("Content")).toHaveClass("p-6");
+      const content = screen.getByText("Content");
+      expect(content).toHaveClass("p-6");
+      expect(content).toHaveClass("pt-0");
     });
 
     it("removes padding when noPadding is true", () => {

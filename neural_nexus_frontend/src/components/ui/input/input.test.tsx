@@ -1,7 +1,17 @@
 // File: src/components/ui/input/input.test.tsx
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Search, Mail } from "lucide-react";
-import { Input } from "./index";
+import { Input } from "@/components/ui/input";
+
+describe("Input Component", () => {
+  it("applies error styles when error prop is true", () => {
+    render(<Input error={true} />);
+    const wrapper = screen.getByRole("textbox").parentElement;
+    expect(wrapper).toHaveClass("border-[var(--colors-form-error)]");
+    expect(screen.getByRole("textbox")).toHaveAttribute("data-error", "true");
+  });
+});
 
 describe("Input", () => {
   it("renders with default styles", () => {
@@ -68,6 +78,14 @@ describe("Input", () => {
     render(<Input className="custom-class" />);
     const wrapper = screen.getByRole("textbox").parentElement;
     expect(wrapper).toHaveClass("custom-class");
+  });
+
+  it("applies error styles when error prop is true", () => {
+    render(<Input error={true} />);
+    const wrapper = screen.getByRole("textbox").parentElement;
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveAttribute("data-error", "true");
+    expect(wrapper).toHaveClass("border-[var(--colors-form-error)]");
   });
 
   it("prioritizes loading state over end icon", () => {

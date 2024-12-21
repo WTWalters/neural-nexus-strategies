@@ -36,7 +36,7 @@ describe("FormField", () => {
     );
 
     expect(screen.getByText("This field is required")).toHaveClass(
-      "text-destructive",
+      "text-[var(--colors-form-error)]",
     );
   });
 
@@ -48,7 +48,9 @@ describe("FormField", () => {
       </FormField>,
     );
 
-    expect(screen.getByText(description)).toHaveClass("text-muted-foreground");
+    expect(screen.getByText(description)).toHaveClass(
+      "text-[var(--colors-form-placeholder)]",
+    );
   });
 
   it("passes className to wrapper element", () => {

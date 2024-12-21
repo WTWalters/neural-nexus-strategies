@@ -25,9 +25,9 @@ describe("Label", () => {
 
   it("renders required indicator when required prop is true", () => {
     render(<Label required>Required Label</Label>);
-    const asterisk = screen.getByText("Required Label").nextElementSibling;
+    const label = screen.getByText("Required Label");
+    const asterisk = label.querySelector("[aria-hidden='true']");
     expect(asterisk).toBeInTheDocument();
-    expect(asterisk).toHaveAttribute("aria-hidden", "true");
   });
 
   it("applies srOnly class when srOnly prop is true", () => {
@@ -45,15 +45,14 @@ describe("Label", () => {
 
   it("combines error and required states correctly", () => {
     render(
-      <Label error required>
-        Error Required Label
+      <Label required error>
+        Test Label
       </Label>,
     );
-    const label = screen.getByText("Error Required Label");
-    const asterisk = label.nextElementSibling;
-
-    expect(label).toHaveClass("text-[var(--colors-label-error)]");
-    expect(asterisk).toHaveClass("text-[var(--colors-label-error)]");
+    const label = screen.getByText("Test Label");
+    const asterisk = label.querySelector("[aria-hidden='true']");
+    expect(label.className).toContain("text-[var(--colors-label-error)]");
+    expect(asterisk?.className).toContain("text-[var(--colors-label-error)]");
   });
 
   it("applies custom className correctly", () => {

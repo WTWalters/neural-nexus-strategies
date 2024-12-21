@@ -1,14 +1,17 @@
-// File: src/components/ui/form/index.tsx
+// src/components/ui/form/index.tsx
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
-import { Controller, FormProvider, useFormContext } from "react-hook-form";
+import {
+  Controller,
+  FormProvider,
+  useFormContext,
+  ControllerProps,
+  FieldValues,
+} from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { AlertCircle, Info } from "lucide-react";
-import type {
-  FormFieldContextValue,
-  FormItemContextValue,
+import { Info, AlertCircle } from "lucide-react";
+import {
   FormFieldProps,
   FormItemProps,
   FormLabelProps,
@@ -19,15 +22,20 @@ import type {
 
 const Form = FormProvider;
 
+type FormFieldContextValue<
+  TFieldValues extends Record<string, any> = Record<string, any>,
+> = {
+  name: string;
+};
+
 const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
 );
 
-const FormField = <
-  TFieldValues extends Record<string, any> = Record<string, any>,
->(
-  props: FormFieldProps<TFieldValues>,
-) => {
+// Update FormField to use the imported types
+const FormField = <TFieldValues extends FieldValues = FieldValues>({
+  ...props
+}: FormFieldProps<TFieldValues>) => {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />
@@ -58,6 +66,10 @@ const useFormField = () => {
   };
 };
 
+type FormItemContextValue = {
+  id: string;
+};
+
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 );
@@ -68,15 +80,7 @@ const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
 
     return (
       <FormItemContext.Provider value={{ id }}>
-        <div
-          ref={ref}
-          className={cn(
-            "space-y-2",
-            "text-[var(--colors-form-foreground)]",
-            className,
-          )}
-          {...props}
-        />
+        <div ref={ref} className={cn("space-y-2", className)} {...props} />
       </FormItemContext.Provider>
     );
   },
@@ -90,9 +94,13 @@ const FormLabel = React.forwardRef<
   const { error, formItemId } = useFormField();
 
   return (
-    <Label
+    <LabelPrimitive.Root
       ref={ref}
-      className={cn(error && "text-[var(--colors-form-error)]", className)}
+      className={cn(
+        "text-sm font-medium leading-none",
+        error && "text-[var(--colors-label-error)]",
+        className,
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -126,7 +134,7 @@ FormControl.displayName = "FormControl";
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   FormDescriptionProps
->(({ className, withIcon, ...props }, ref) => {
+>(({ className, withIcon, children, ...props }, ref) => {
   const { formDescriptionId } = useFormField();
 
   return (
@@ -140,8 +148,14 @@ const FormDescription = React.forwardRef<
       )}
       {...props}
     >
-      {withIcon && <Info className="h-4 w-4" />}
-      {props.children}
+      {withIcon && (
+        <Info
+          className="h-4 w-4"
+          data-testid="form-info-icon"
+          aria-hidden="true"
+        />
+      )}
+      {children}
     </p>
   );
 });
@@ -167,7 +181,13 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
         )}
         {...props}
       >
-        {showIcon && <AlertCircle className="h-4 w-4" />}
+        {showIcon && (
+          <AlertCircle
+            className="h-4 w-4"
+            data-testid="form-error-icon"
+            aria-hidden="true"
+          />
+        )}
         {body}
       </p>
     );
