@@ -6,70 +6,72 @@ As we build out the Neural Nexus Strategies frontend, we need a consistent and s
 
 ## Decision
 
-We will implement a hierarchical component library structure with the following organization:
+We will implement a hierarchical component library structure with clear organization, testing requirements, and implementation guidelines.
 
-```
+### Directory Structure
+```typescript
 src/
 ├── components/
-│   ├── core/           # Base components like Button, Input, Card
-│   ├── composite/      # Components composed of multiple core components
-│   ├── features/       # Feature-specific components
-│   └── layouts/        # Layout components and containers
-├── hooks/             # Custom React hooks
-├── utils/             # Utility functions
-└── tests/             # Test utilities and helpers
-```
+│   ├── ui/              # Primitive components
+│   │   ├── button/
+│   │   ├── input/
+│   │   └── form/
+│   ├── composite/       # Composed components
+│   │   └── forms/
+│   ├── features/        # Feature-specific
+│   └── layout/          # Layout components
+├── hooks/               # Custom React hooks
+├── utils/              # Utility functions
+└── tests/              # Test utilities
+Component Types
 
-### Component Guidelines
+Primitive Components (ui/)
 
-1. Core Components
-   - Must be fully typed with TypeScript
-   - Must include comprehensive test coverage
-   - Must support theme customization
-   - Must be accessible (WCAG 2.1 AA compliant)
+Basic building blocks
+Highly reusable
+Minimal business logic
+Must be fully typed with TypeScript
+Must include comprehensive test coverage
+Must support theme customization
+Must be accessible (WCAG 2.1 AA compliant)
+Composite Components (composite/)
 
-2. Composite Components
-   - Should leverage core components
-   - Should maintain consistent styling patterns
-   - Should include integration tests
+Built from primitive components
+Should leverage core components
+Should maintain consistent styling patterns
+Should include integration tests
+May contain business logic
+Specific to feature domains
+Feature Components (features/)
 
-3. Feature Components
-   - Should be isolated to specific feature domains
-   - Should leverage composite and core components
-   - Should include feature-specific tests
+Should be isolated to specific feature domains
+Should leverage composite and core components
+Should include feature-specific tests
+Should follow business domain organization
+Layout Components (layout/)
 
-4. Layout Components
-   - Should be responsive by default
-   - Should support theme customization
-   - Should include layout-specific tests
+Should be responsive by default
+Should support theme customization
+Should include layout-specific tests
+Page structure elements
+Template components
+Implementation
 
-### Testing Requirements
+Component Architecture
 
-1. Unit Tests
-   - Component rendering
-   - Props validation
-   - Event handling
-   - Accessibility checks
+// Component structure
+├── index.ts        # Public API
+├── Component.tsx   # Main component
+├── types.ts        # TypeScript interfaces
+├── styles.ts       # Styled components/CSS
+└── __tests__/      # Component tests
+Component Template
 
-2. Integration Tests
-   - Component interactions
-   - State management
-   - Side effects
-
-3. Visual Regression Tests
-   - Component appearance
-   - Theme variations
-   - Responsive behavior
-
-## Implementation
-
-### Component Template
-```typescript
 import React from 'react'
 import { styled } from '../../../styles'
 import { ComponentProps } from './types'
 
-export const Component: React.FC<ComponentProps> = ({ 
+export const Component: React.FC<ComponentProps> = ({
   children,
   ...props
 }) => {
@@ -83,38 +85,103 @@ export const Component: React.FC<ComponentProps> = ({
 const StyledComponent = styled.div`
   // Styled components definition
 `
-```
+Testing Requirements
 
-### Test Template
-```typescript
-import { render, screen } from '@testing-library/react'
-import { Component } from './Component'
+Unit Tests
 
-describe('Component', () => {
-  it('renders correctly', () => {
-    render(<Component>Test</Component>)
-    expect(screen.getByText('Test')).toBeInTheDocument()
-  })
-})
-```
+Component rendering
+Props validation
+Event handling
+Accessibility checks
+State changes
+Integration Tests
 
-## Consequences
+Component interactions
+Form submissions
+Data flow
+State management
+Side effects
+Visual Testing
 
-### Positive
-- Consistent component development patterns
-- Clear organization and discoverability
-- Enforced testing standards
-- Maintainable codebase
+Component appearance
+Theme variations
+Responsive behavior
+Visual regression tests
+Best Practices
 
-### Negative
-- Initial setup overhead
-- Learning curve for new developers
-- Additional testing requirements
+Component Design
 
-## Status
+Make components composable
+Keep components pure when possible
+Use TypeScript for type safety
+Document component APIs
+Follow single responsibility principle
+Styling
+
+Use Tailwind utilities
+Follow design token system
+Maintain responsive design
+Support theme variants
+Accessibility
+
+Follow WAI-ARIA guidelines
+Include keyboard navigation
+Support screen readers
+Test with accessibility tools
+Version Control
+
+One component per file
+Clear file naming
+Feature branches for new components
+PR reviews for component changes
+Component documentation updates
+Documentation
+
+Component Documentation
+
+Usage examples
+Props documentation
+Accessibility notes
+Browser support
+Storybook Stories
+
+Visual documentation
+Interactive examples
+Prop controls
+Theme previews
+Consequences
+
+Positive
+
+Consistent component development patterns
+Clear organization and discoverability
+Enforced testing standards
+Maintainable codebase
+Improved developer experience
+Negative
+
+Initial setup overhead
+Learning curve for new developers
+Additional testing requirements
+Documentation maintenance
+Future Considerations
+
+Performance
+
+Code splitting
+Lazy loading
+Bundle size monitoring
+Maintenance
+
+Component deprecation process
+Breaking change policies
+Version management
+Status
 
 Accepted
 
-## Notes
+Version History
 
-This ADR should be reviewed quarterly to ensure it continues to meet project needs.
+v1.0 (December 2024): Initial version
+v1.1 (December 2024): Merged implementation details
+Next review: March 2025
