@@ -6,7 +6,10 @@ const createJestConfig = nextJest({
 });
 
 const customJestConfig = {
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+  setupFilesAfterEnv: [
+    "<rootDir>/src/test/setup.ts", // Updated path to match our new setup file
+    "<rootDir>/src/setupTests.ts", // Keep existing setup if needed
+  ],
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
@@ -17,7 +20,6 @@ const customJestConfig = {
   verbose: false,
   // Only show errors and warnings
   maxWorkers: 1,
-  // Removed the reporters configuration that was causing the error
 };
 
 module.exports = createJestConfig(customJestConfig);

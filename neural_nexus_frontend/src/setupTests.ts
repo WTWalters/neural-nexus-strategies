@@ -1,4 +1,15 @@
-// src/setupTests.ts
+// src/test/setup.ts
+import "@testing-library/jest-dom";
+import "jest-styled-components";
+
+// Mock CSS custom properties
+Object.defineProperty(window, "getComputedStyle", {
+  value: (elem) => ({
+    getPropertyValue: (prop) => {
+      return prop === "--font-heading" ? "heading-font" : "body-font";
+    },
+  }),
+});
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
