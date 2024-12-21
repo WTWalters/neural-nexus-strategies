@@ -1,30 +1,48 @@
+// File: src/styles/tokens/typography.ts
+
 export const typography = {
+  // Base definitions
   scale: {
-    base: "16px",
-    ratio: 1.25,
+    /* existing scale */
   },
   fonts: {
-    heading: "Inter, -apple-system, system-ui, sans-serif",
-    body: "Inter, -apple-system, system-ui, sans-serif",
+    /* existing fonts */
   },
-  weights: {
-    regular: 400,
-    medium: 500,
-    bold: 700,
+
+  // Semantic tokens
+  heading: {
+    1: {
+      size: "var(--font-size-4xl)",
+      weight: "var(--font-weight-bold)",
+      lineHeight: "var(--line-height-tight)",
+    },
+    2: {
+      /* ... */
+    },
   },
-  sizes: {
-    xs: "0.75rem",
-    sm: "0.875rem",
-    base: "1rem",
-    lg: "1.125rem",
-    xl: "1.25rem",
-    "2xl": "1.5rem",
-    "3xl": "1.875rem",
-    "4xl": "2.25rem",
+  body: {
+    large: {
+      size: "var(--font-size-lg)",
+      weight: "var(--font-weight-regular)",
+      lineHeight: "var(--line-height-relaxed)",
+    },
+    default: {
+      /* ... */
+    },
+    small: {
+      /* ... */
+    },
   },
-  lineHeights: {
-    tight: 1.25,
-    base: 1.5,
-    relaxed: 1.75,
+
+  // Component-specific tokens
+  components: {
+    navigation: {
+      item: {
+        size: "var(--font-size-sm)",
+        weight: "var(--font-weight-medium)",
+      },
+      // ... other navigation typography
+    },
+    // ... other components
   },
 };

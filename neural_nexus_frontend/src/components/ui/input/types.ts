@@ -1,6 +1,41 @@
-// src/components/ui/input/types.ts
-import { BaseInputProps } from "@/components/_lib/types";
+// File: src/components/ui/input/types.ts
+import { BaseProps } from "@/components/_lib/types";
 
-export interface InputProps extends BaseInputProps {
-  // Any input-specific props
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement>,
+    BaseProps {
+  /**
+   * Error state or message
+   */
+  error?: boolean | string;
+
+  /**
+   * Size variant of the input
+   */
+  size?: "sm" | "default" | "lg";
+
+  /**
+   * Whether to display a loading state
+   */
+  isLoading?: boolean;
+
+  /**
+   * Whether to show an icon at the start of the input
+   */
+  startIcon?: React.ReactNode;
+
+  /**
+   * Whether to show an icon at the end of the input
+   */
+  endIcon?: React.ReactNode;
+
+  /**
+   * Whether to show a clear button
+   */
+  isClearable?: boolean;
+
+  /**
+   * Callback when the clear button is clicked
+   */
+  onClear?: () => void;
 }
