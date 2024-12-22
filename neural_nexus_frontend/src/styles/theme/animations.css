@@ -1,0 +1,18 @@
+/* src/styles/theme/animations.css */
+
+:root {
+  /* Duration tokens */
+  --animation-duration-instant: 0ms;
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 250ms;
+  --animation-duration-slow: 350ms;
+  --animation-duration-slower: 500ms;
+
+  /* Easing tokens */
+  --animation-easing-linear: linear;
+  --animation-easing-easeIn: cubic-bezier(0.4, 0, 1, 1);
+  --animation-easing-easeOut: cubic-bezier(0, 0, 0.2, 1);
+  --animation-easing-easeInOut: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-easing-emphasizedDecelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+  --animation-easing-emphasizedAccelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+}
