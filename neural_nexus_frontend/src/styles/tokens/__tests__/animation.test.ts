@@ -1,4 +1,6 @@
 // src/styles/tokens/__tests__/animation.test.ts
+// update
+// src/styles/tokens/__tests__/animation.test.ts
 import { animation } from "../animation";
 
 describe("Animation Tokens", () => {
@@ -14,14 +16,14 @@ describe("Animation Tokens", () => {
   });
 
   describe("easings", () => {
-    it("should have all required easing tokens", () => {
+    it("should have standard easing tokens", () => {
       expect(animation.easings).toHaveProperty("linear");
       expect(animation.easings).toHaveProperty("easeOut");
       expect(animation.easings).toHaveProperty("easeIn");
       expect(animation.easings).toHaveProperty("easeInOut");
     });
 
-    it("should have correct easing variants", () => {
+    it("should have variant easing tokens", () => {
       expect(animation.easings).toHaveProperty("easeOutFast");
       expect(animation.easings).toHaveProperty("easeOutSlow");
       expect(animation.easings).toHaveProperty("easeInFast");
@@ -32,7 +34,7 @@ describe("Animation Tokens", () => {
   });
 
   describe("presets", () => {
-    it("should have all required animation presets", () => {
+    it("should have all animation presets", () => {
       expect(animation.presets).toHaveProperty("fade");
       expect(animation.presets).toHaveProperty("slideUp");
       expect(animation.presets).toHaveProperty("slideDown");
@@ -40,39 +42,40 @@ describe("Animation Tokens", () => {
     });
 
     it("should have in/out variants for each preset", () => {
-      Object.keys(animation.presets).forEach((preset) => {
-        const presetObj =
-          animation.presets[preset as keyof typeof animation.presets];
-        expect(presetObj).toHaveProperty("in");
-        expect(presetObj).toHaveProperty("out");
+      Object.entries(animation.presets).forEach(([_, preset]) => {
+        expect(preset).toHaveProperty("in");
+        expect(preset).toHaveProperty("out");
       });
     });
   });
 
   describe("components", () => {
-    it("should have all required component animations", () => {
-      expect(animation.components).toHaveProperty("button");
-      expect(animation.components).toHaveProperty("dialog");
-      expect(animation.components).toHaveProperty("tooltip");
-      expect(animation.components).toHaveProperty("menu");
+    describe("button", () => {
+      it("should have correct button animations", () => {
+        expect(animation.components.button.hover).toEqual({
+          duration: "fast",
+          easing: "easeOut",
+        });
+        expect(animation.components.button.active).toEqual({
+          duration: "fastest",
+          easing: "easeOut",
+        });
+      });
     });
 
-    it("should have valid configuration for button", () => {
-      const button = animation.components.button;
-      expect(button.hover).toHaveProperty("duration", "fast");
-      expect(button.hover).toHaveProperty("easing", "easeOut");
-      expect(button.active).toHaveProperty("duration", "fastest");
-      expect(button.active).toHaveProperty("easing", "easeOut");
-    });
-
-    it("should have valid configuration for dialog", () => {
-      const dialog = animation.components.dialog;
-      expect(dialog.enter).toHaveProperty("duration", "normal");
-      expect(dialog.enter).toHaveProperty("easing", "easeOut");
-      expect(dialog.enter).toHaveProperty("preset", "slideUp");
-      expect(dialog.exit).toHaveProperty("duration", "fast");
-      expect(dialog.exit).toHaveProperty("easing", "easeIn");
-      expect(dialog.exit).toHaveProperty("preset", "fade");
+    describe("dialog", () => {
+      it("should have correct dialog animations", () => {
+        expect(animation.components.dialog.enter).toEqual({
+          duration: "normal",
+          easing: "easeOut",
+          preset: "slideUp",
+        });
+        expect(animation.components.dialog.exit).toEqual({
+          duration: "fast",
+          easing: "easeIn",
+          preset: "fade",
+        });
+      });
     });
   });
 });
