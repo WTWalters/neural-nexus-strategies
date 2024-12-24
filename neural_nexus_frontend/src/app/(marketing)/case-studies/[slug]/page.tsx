@@ -14,19 +14,25 @@ interface CaseStudyPageProps {
 function formatResultValue(value: any, level = 0): React.ReactNode {
   if (typeof value === "object" && value !== null) {
     return (
-      <div className={`space-y-2 ${level > 0 ? "ml-4" : ""}`}>
+      <dl className={`space-y-2 ${level > 0 ? "ml-4" : ""}`}>
         {Object.entries(value).map(([subKey, subValue]) => (
           <div key={subKey} className="text-gray-800">
             <dt className="text-sm font-medium text-gray-600 capitalize">
               {subKey.split("_").join(" ")}
             </dt>
-            <dd className="mt-1">{formatResultValue(subValue, level + 1)}</dd>
+            <dd className="mt-1">
+              {typeof subValue === "object" ? (
+                <dl>{formatResultValue(subValue, level + 1)}</dl>
+              ) : (
+                <span className="text-gray-900">{subValue}</span>
+              )}
+            </dd>
           </div>
         ))}
-      </div>
+      </dl>
     );
   }
-  return <span className="text-gray-900">{value}</span>;
+  return value;
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
