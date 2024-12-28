@@ -18,6 +18,11 @@ const config: Config = {
           light: "#0067CD", // Lighter variation
           lighter: "#0087FF", // Even lighter for hover states
         },
+        // Foreground section
+        foreground: {
+          DEFAULT: "#FFFFFF", // White text for dark backgrounds
+          muted: "#334155", // Dark text for light backgrounds
+        },
         // Accent Colors (Yellow-Green)
         accent: {
           DEFAULT: "#9ACD32", // Yellow-Green base
