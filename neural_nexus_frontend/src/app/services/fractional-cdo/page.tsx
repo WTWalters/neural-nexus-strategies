@@ -18,11 +18,8 @@ export default function FractionalCDOPage() {
               executive. Get strategic guidance, implementation expertise, and
               ongoing support.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <BookDiscoveryButton size="lg" />
-              <Button variant="outline" size="lg" asChild>
-                <Link href="#pricing">View Pricing</Link>
-              </Button>
+            <div className="inline-flex flex-col sm:flex-row gap-4 justify-center w-full">
+              <BookDiscoveryButton size="lg" variant="default" />
             </div>
           </div>
         </div>
@@ -138,11 +135,7 @@ export default function FractionalCDOPage() {
             Schedule a discovery call to discuss how our Fractional CDO services
             can help your organization leverage data for strategic advantage.
           </p>
-          <BookDiscoveryButton
-            size="lg"
-            variant="secondary"
-            className="bg-white text-primary-600 hover:bg-gray-50"
-          />
+          <BookDiscoveryButton size="lg" variant="default" className="w-full" />
         </div>
       </section>
     </div>
