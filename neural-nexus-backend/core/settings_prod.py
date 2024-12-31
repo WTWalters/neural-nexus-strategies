@@ -1,3 +1,4 @@
+# Updates for railway
 from .settings import *  # Import base settings
 
 # Override development settings with production values
