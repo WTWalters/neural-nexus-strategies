@@ -24,7 +24,7 @@ function formatResultValue(value: any, level = 0): React.ReactNode {
               {typeof subValue === "object" ? (
                 <dl>{formatResultValue(subValue, level + 1)}</dl>
               ) : (
-                <span className="text-gray-900">{subValue}</span>
+                <span className="text-gray-900">{String(subValue)}</span>
               )}
             </dd>
           </div>
@@ -32,7 +32,7 @@ function formatResultValue(value: any, level = 0): React.ReactNode {
       </dl>
     );
   }
-  return value;
+  return String(value);
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
