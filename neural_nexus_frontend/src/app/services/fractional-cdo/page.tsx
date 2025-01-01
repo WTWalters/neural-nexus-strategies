@@ -85,9 +85,11 @@ export default function FractionalCDOPage() {
               <div
                 key={index}
                 className={`
-                rounded-lg p-8
-                ${plan.featured ? "border-2 border-primary-600 shadow-lg" : "border border-gray-200"}
-              `}
+                  rounded-lg p-8
+                  flex flex-col
+                  h-full
+                  ${plan.featured ? "border-2 border-primary-600 shadow-lg" : "border border-gray-200"}
+                `}
               >
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -101,7 +103,7 @@ export default function FractionalCDOPage() {
                   </div>
                   <p className="text-gray-600">{plan.description}</p>
                 </div>
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 mb-8 flex-grow">
                   {plan.features.map((feature, featureIndex) => (
                     <li
                       key={featureIndex}
@@ -112,13 +114,13 @@ export default function FractionalCDOPage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  className="w-full"
-                  variant={plan.featured ? "default" : "outline"}
-                  asChild
-                >
-                  <Link href="/book-call">Get Started</Link>
-                </Button>
+                <div className="mt-auto">
+                  <BookDiscoveryButton
+                    size="lg"
+                    variant="default"
+                    className="w-full"
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -135,7 +137,11 @@ export default function FractionalCDOPage() {
             Schedule a discovery call to discuss how our Fractional CDO services
             can help your organization leverage data for strategic advantage.
           </p>
-          <BookDiscoveryButton size="lg" variant="default" className="w-full" />
+          <BookDiscoveryButton
+            size="lg"
+            variant="white"
+            className="text-primary-600 hover:bg-primary-50"
+          />
         </div>
       </section>
     </div>

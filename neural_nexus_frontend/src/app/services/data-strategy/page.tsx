@@ -1,6 +1,7 @@
 // src/app/services/data-strategy/page.tsx
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
 
 export default function DataStrategyPage() {
   return (
@@ -99,9 +100,11 @@ export default function DataStrategyPage() {
               <div
                 key={index}
                 className={`
-                rounded-lg p-8
-                ${pkg.featured ? "border-2 border-innovation-600 shadow-lg" : "border border-gray-200"}
-              `}
+                  rounded-lg p-8
+                  flex flex-col
+                  h-full
+                  ${pkg.featured ? "border-2 border-innovation-600 shadow-lg" : "border border-gray-200"}
+                `}
               >
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -113,7 +116,7 @@ export default function DataStrategyPage() {
                   <p className="text-sm text-gray-600 mb-4">{pkg.duration}</p>
                   <p className="text-gray-600">{pkg.description}</p>
                 </div>
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 mb-8 flex-grow">
                   {pkg.features.map((feature, featureIndex) => (
                     <li
                       key={featureIndex}
@@ -124,11 +127,13 @@ export default function DataStrategyPage() {
                     </li>
                   ))}
                 </ul>
-                <BookDiscoveryButton
-                  size="lg"
-                  variant={pkg.featured ? "default" : "outline"}
-                  className="w-full"
-                />
+                <div className="mt-auto">
+                  <BookDiscoveryButton
+                    size="lg"
+                    variant="default"
+                    className="w-full"
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -147,8 +152,8 @@ export default function DataStrategyPage() {
           </p>
           <BookDiscoveryButton
             size="lg"
-            variant="white"
-            className="text-innovation-600 hover:bg-innovation-50"
+            variant="default"
+            className="bg-white text-innovation-600 hover:bg-innovation-50"
           />
         </div>
       </section>

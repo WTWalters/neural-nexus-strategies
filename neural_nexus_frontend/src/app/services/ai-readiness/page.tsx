@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AIROICalculator from "@/components/calculators/AIROICalculator";
+import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
 
 export default function AIReadinessPage() {
   return (
@@ -119,9 +120,11 @@ export default function AIReadinessPage() {
               <div
                 key={index}
                 className={`
-                rounded-lg p-8
-                ${program.featured ? "border-2 border-success-600 shadow-lg" : "border border-gray-200"}
-              `}
+                  rounded-lg p-8
+                  flex flex-col
+                  h-full
+                  ${program.featured ? "border-2 border-success-600 shadow-lg" : "border border-gray-200"}
+                `}
               >
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -135,7 +138,7 @@ export default function AIReadinessPage() {
                   </p>
                   <p className="text-gray-600">{program.description}</p>
                 </div>
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 mb-8 flex-grow">
                   {program.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start">
                       <CheckIcon className="w-5 h-5 text-success-600 mr-2 mt-0.5" />
@@ -143,13 +146,13 @@ export default function AIReadinessPage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  className="w-full"
-                  variant={program.featured ? "default" : "outline"}
-                  asChild
-                >
-                  <Link href="/book-call">Get Started</Link>
-                </Button>
+                <div className="mt-auto">
+                  <BookDiscoveryButton
+                    size="lg"
+                    variant="default"
+                    className="w-full"
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -180,13 +183,11 @@ export default function AIReadinessPage() {
             Get a comprehensive assessment of your organization's AI readiness
             and a clear roadmap for successful implementation.
           </p>
-          <Button
+          <BookDiscoveryButton
             size="lg"
-            className="bg-white text-success-600 hover:bg-success-50"
-            asChild
-          >
-            <Link href="/book-call">Schedule Assessment</Link>
-          </Button>
+            variant="white"
+            className="text-success-600 hover:bg-success-50"
+          />
         </div>
       </section>
     </div>

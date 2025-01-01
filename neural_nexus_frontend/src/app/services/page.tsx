@@ -4,6 +4,9 @@
 
 import { useEffect, useState } from "react";
 import { ServiceBreadcrumb } from "@/components/marketing/services/service-breadcrumb";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Layout from "@/components/layout/Layout";
 
 interface Feature {
   id: number;
@@ -109,7 +112,7 @@ export default function ServicesPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="text-xl">Loading services...</div>
       </div>
     );
@@ -117,7 +120,7 @@ export default function ServicesPage() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="text-red-500">
           <p>Error loading services:</p>
           <p>{error}</p>
@@ -127,19 +130,23 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="container mx-auto px-4 py-12">
-        {/* Add breadcrumb */}
+        {/* Breadcrumb with updated styling */}
         <ServiceBreadcrumb
           items={[{ label: "All Services" }]}
           className="mb-8"
         />
 
-        <h1 className="text-4xl font-bold text-center mb-4">Our Services</h1>
-        <p className="text-gray-600 text-center mb-12">
-          Transform your organization with our comprehensive data and AI
-          solutions
-        </p>
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Our Services
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600">
+            Transform your organization with our comprehensive data and AI
+            solutions
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service) => (
@@ -180,7 +187,7 @@ export default function ServicesPage() {
                     {service.features.map((feature) => (
                       <li key={feature.id} className="flex items-start">
                         <svg
-                          className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                          className="h-5 w-5 text-primary mr-2 mt-0.5"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -229,6 +236,6 @@ export default function ServicesPage() {
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }
