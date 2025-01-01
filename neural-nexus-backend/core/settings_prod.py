@@ -8,7 +8,7 @@ from .settings import *  # Import base settings
 DEBUG = False
 
 # Allowed hosts should include Railway domain and your custom domain
-ALLOWED_HOSTS = [".railway.app", "neuralnexusstrategies.ai"]
+ALLOWED_HOSTS = [".railway.app", "neuralnexusstrategies.ai", "*"]
 
 # Database configuration for Railway
 import dj_database_url
@@ -40,7 +40,11 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Security settings for production
-SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = False
+CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
+
+SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 31536000  # 1 year
