@@ -19,24 +19,30 @@ Note:
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.http import HttpResponse
+from django.urls import include, path
 from drf_spectacular.views import (
     SpectacularAPIView,
-    SpectacularSwaggerView,
     SpectacularRedocView,
+    SpectacularSwaggerView,
 )
-from django.conf import settings
-from django.conf.urls.static import static
+
+
+def health_check(request):
+    """Basic health check view"""
+    return HttpResponse("OK")
+
 
 urlpatterns = [
     # Django admin interface
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     # API endpoints for different app modules
-    path('api/', include('services.urls')),
-    path('api/content/', include('content.urls')),  # Add this line
-    path('api/leads/', include('leads.urls')),  # Add this line
+    path("api/", include("services.urls")),
+    path("api/content/", include("content.urls")),  # Add this line
+    path("api/leads/", include("leads.urls")),  # Add this line
     # API documentation endpoints
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    ]
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("health/", health_check, name="health_check"),
+]

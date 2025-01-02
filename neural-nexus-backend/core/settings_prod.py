@@ -58,10 +58,30 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": "DEBUG",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     },
 }
+
+# Make sure DJANGO_SETTINGS_MODULE is correctly set
+import os
+
+print(f"Settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
+print(f"Database URL: {os.environ.get('DATABASE_URL', 'Not set')}")
