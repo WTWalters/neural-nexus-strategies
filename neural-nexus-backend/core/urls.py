@@ -19,7 +19,7 @@ Note:
 """
 
 from django.contrib import admin
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.urls import include, path
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -30,7 +30,10 @@ from drf_spectacular.views import (
 
 def health_check(request):
     """Basic health check endpoint"""
-    return JsonResponse({"status": "ok"})
+    try:
+        return HttpResponse("OK", content_type="text/plain", status=200)
+    except Exception as e:
+        return HttpResponse(str(e), content_type="text/plain", status=500)
 
 
 urlpatterns = [
