@@ -1,4 +1,14 @@
 # neural-nexus-backend/core/settings_prod.py
+
+import logging
+import sys
+
+# Configure logging to stdout
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+logging.getLogger().addHandler(handler)
+
+
 # Updates for railway
 from .settings import *  # Import base settings
 

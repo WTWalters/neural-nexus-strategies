@@ -18,8 +18,9 @@ Note:
     All API endpoints are prefixed with '/api/' for clear separation from admin routes
 """
 
+from django.contrib import admin  # Add this import at the top
 from django.contrib.auth import authenticate
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.views import (
@@ -33,15 +34,28 @@ def health_check(request):
     """
     Basic health check endpoint
     """
-    from django.db import connection
-
     try:
+        # Check database
+        from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
             cursor.fetchone()
-        return HttpResponse("OK", status=200)
+
+        # Check auth system
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        user_count = User.objects.count()
+
+        return JsonResponse({
+            "status": "healthy",
+            "database": "connected",
+            "users_count": user_count
+        })
     except Exception as e:
-        return HttpResponse(f"Database Error: {str(e)}", status=500)
+        return JsonResponse({
+            "status": "unhealthy",
+            "error": str(e)
+        }, status=500)
 
 
 @csrf_exempt
