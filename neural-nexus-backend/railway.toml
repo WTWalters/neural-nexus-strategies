@@ -2,7 +2,11 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "/opt/venv/bin/gunicorn --workers=2 --threads=4 --timeout=0 --bind=0.0.0.0:8080 core.wsgi:application"
+startCommand = """
+python manage.py migrate --noinput && \
+python manage.py collectstatic --noinput && \
+/opt/venv/bin/gunicorn -c gunicorn.conf.py core.wsgi:application
+"""
 healthcheckPath = "/health/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"

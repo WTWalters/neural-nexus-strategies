@@ -30,43 +30,20 @@ from drf_spectacular.views import (
 
 def health_check(request):
     """Basic health check endpoint"""
-    from django.db import connections
-
-    try:
-        # Test database connection
-        db_conn = connections['default']
-        c = db_conn.cursor()
-        c.execute('SELECT 1;')
-        row = c.fetchone()
-        if row is None:
-            raise Exception("DB check failed")
-
-        return JsonResponse({
-            "status": "healthy",
-            "database": "connected",
-            "timestamp": datetime.datetime.now().isoformat()
-        })
-    except Exception as e:
-        return JsonResponse({
-            "status": "unhealthy",
-            "error": str(e)
-        }, status=500)
+    return JsonResponse({"status": "ok"})
 
 
 urlpatterns = [
     # Django admin interface
     path("admin/", admin.site.urls),
-
     # API endpoints for different app modules
     path("api/", include("services.urls")),
     path("api/content/", include("content.urls")),
     path("api/leads/", include("leads.urls")),
-
     # API documentation endpoints
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-
     # Health check
     path("health/", health_check, name="health_check"),
 ]
