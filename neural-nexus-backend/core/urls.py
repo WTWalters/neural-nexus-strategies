@@ -30,13 +30,27 @@ from drf_spectacular.views import (
 
 def health_check(request):
     """Basic health check endpoint"""
+    from django.db import connections
+
     try:
-        from django.db import connection
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")
-        return JsonResponse({"status": "healthy"})
-    except Exception:
-        return JsonResponse({"status": "unhealthy"}, status=500)
+        # Test database connection
+        db_conn = connections['default']
+        c = db_conn.cursor()
+        c.execute('SELECT 1;')
+        row = c.fetchone()
+        if row is None:
+            raise Exception("DB check failed")
+
+        return JsonResponse({
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.datetime.now().isoformat()
+        })
+    except Exception as e:
+        return JsonResponse({
+            "status": "unhealthy",
+            "error": str(e)
+        }, status=500)
 
 
 urlpatterns = [
