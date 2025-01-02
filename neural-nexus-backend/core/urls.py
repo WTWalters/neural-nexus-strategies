@@ -29,8 +29,18 @@ from drf_spectacular.views import (
 
 
 def health_check(request):
-    """Basic health check view"""
-    return HttpResponse("OK")
+    """
+    Basic health check endpoint
+    """
+    from django.db import connection
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+        return HttpResponse("OK", status=200)
+    except Exception as e:
+        return HttpResponse(f"Database Error: {str(e)}", status=500)
 
 
 urlpatterns = [
