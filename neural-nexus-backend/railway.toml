@@ -2,11 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = """
-python manage.py migrate --noinput && \
-python manage.py collectstatic --noinput && \
-gunicorn core.wsgi:application --bind 0.0.0.0:8080
-"""
+startCommand = "gunicorn core.wsgi:application --bind 0.0.0.0:8080"
 healthcheckPath = "/health/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
@@ -16,3 +12,9 @@ internal_port = 8080
 
 [env]
 PYTHONUNBUFFERED = "1"
+
+[phases.setup]
+cmds = [
+  "python manage.py migrate --noinput",
+  "python manage.py collectstatic --noinput",
+]
