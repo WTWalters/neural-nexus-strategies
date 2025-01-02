@@ -2,14 +2,16 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = """
-python manage.py migrate --noinput && \
-python manage.py collectstatic --noinput && \
-/opt/venv/bin/gunicorn -c gunicorn.conf.py core.wsgi:application
-"""
+startCommand = "/opt/venv/bin/gunicorn -c gunicorn.conf.py core.wsgi:application"
 healthcheckPath = "/health/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 
 [service]
 internal_port = 8080
+
+[phases.build]
+cmds = [
+  "python manage.py migrate --noinput",
+  "python manage.py collectstatic --noinput",
+]
