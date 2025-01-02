@@ -55,24 +55,30 @@ SECURE_HSTS_PRELOAD = True
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
     "formatters": {
         "verbose": {
             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "DEBUG",
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
         "django": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "django.security": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "django.contrib.auth": {
             "handlers": ["console"],
             "level": "DEBUG",
             "propagate": True,
@@ -85,3 +91,21 @@ import os
 
 print(f"Settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
 print(f"Database URL: {os.environ.get('DATABASE_URL', 'Not set')}")
+
+# Add to settings_prod.py
+CSRF_TRUSTED_ORIGINS = ["https://nns-backend-production.up.railway.app", "https://*.railway.app"]
+
+# Explicitly set authentication backends
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+# Ensure session settings are correct
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Add for debugging
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
