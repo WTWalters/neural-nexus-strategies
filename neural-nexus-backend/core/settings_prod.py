@@ -8,18 +8,13 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "nns-backend-production.up.railway.app",
     "neuralnexusstrategies.ai",
-    ".railway.app"
+    ".railway.app",
 ]
 
 # Database Configuration
 import dj_database_url
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv("DATABASE_URL"),
-        conn_max_age=600
-    )
-}
+DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"), conn_max_age=600)}
 
 # Static Files
 STATIC_URL = "/static/"
@@ -44,6 +39,8 @@ SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+USE_X_FORWARDED_HOST = True
+APPEND_SLASH = True
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
@@ -53,10 +50,7 @@ CSRF_COOKIE_HTTPONLY = True
 # CORS Settings
 CORS_ALLOWED_ORIGINS = ["https://neuralnexusstrategies.ai"]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = [
-    "https://nns-backend-production.up.railway.app",
-    "https://*.railway.app"
-]
+CSRF_TRUSTED_ORIGINS = ["https://nns-backend-production.up.railway.app", "https://*.railway.app"]
 
 # Logging Configuration
 LOGGING = {
