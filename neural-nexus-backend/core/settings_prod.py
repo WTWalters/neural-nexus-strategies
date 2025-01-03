@@ -23,6 +23,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Security Middleware
 MIDDLEWARE = [
+    "core.settings_prod.HealthCheckMiddlewareDisabler",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -37,12 +38,13 @@ MIDDLEWARE = [
 # Production Security Settings
 SECURE_SSL_REDIRECT = True
 SECURE_SSL_HOST = None
-SECURE_REDIRECT_EXEMPT = [r"^health/$"]
+# Updated regex to catch both /health and /health/
+SECURE_REDIRECT_EXEMPT = [r"^health/?$"]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 USE_X_FORWARDED_HOST = True
-APPEND_SLASH = True
+APPEND_SLASH = False  # Changed to False to prevent automatic redirects
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True

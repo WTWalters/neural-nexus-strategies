@@ -1,12 +1,12 @@
 # gunicorn.conf.py
 bind = "0.0.0.0:8080"
 workers = 2
-worker_class = "gthread"
-threads = 4
-timeout = 120
+worker_class = "sync"  # Changed from gthread to sync
+timeout = 30  # Reduced timeout
+keepalive = 2
+capture_output = True
+enable_stdio_inheritance = True
 loglevel = "debug"
-capture_output = True  # Add this line
-enable_stdio_inheritance = True  # Add this line
 errorlog = "-"
 accesslog = "-"
 

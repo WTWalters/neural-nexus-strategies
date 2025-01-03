@@ -3,8 +3,8 @@ builder = "nixpacks"
 
 [deploy]
 startCommand = "DJANGO_SETTINGS_MODULE=core.settings_prod python manage.py migrate --noinput && python manage.py collectstatic --noinput && /opt/venv/bin/gunicorn -c gunicorn.conf.py core.wsgi:application"
-healthcheckPath = "/health"                                                                                                                                                                                   # Remove trailing slash
-healthcheckTimeout = 100
+healthcheckPath = "/health"
+healthcheckTimeout = 30
 restartPolicyType = "on_failure"
 port = 8080
 

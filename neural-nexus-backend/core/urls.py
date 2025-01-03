@@ -87,6 +87,7 @@ def health_check(request):
 
 
 urlpatterns = [
+    path("health", include("core.health_urls")),
     # Django admin interface
     path("admin/", admin.site.urls),
     # API endpoints for different app modules
