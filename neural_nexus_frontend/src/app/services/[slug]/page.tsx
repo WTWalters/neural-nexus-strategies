@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, CheckCircle2, Calendar, Clock } from "lucide-react";
 import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface Feature {
   id: number;
