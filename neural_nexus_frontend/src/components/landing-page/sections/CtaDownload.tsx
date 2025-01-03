@@ -2,6 +2,7 @@
 //
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 interface CtaDownloadProps {
   content: {
@@ -87,12 +88,14 @@ export function CtaDownload({ content }: CtaDownloadProps) {
 
             {feedback.type && (
               <Alert
-                variant={feedback.type}
-                className={
-                  feedback.type === "success"
-                    ? "bg-green-50 mb-6"
-                    : "bg-red-50 mb-6"
-                }
+                variant={feedback.type === "error" ? "destructive" : "default"}
+                className={cn(
+                  "mb-6",
+                  feedback.type === "success" &&
+                    "border-green-500 text-green-700 bg-green-50",
+                  feedback.type === "info" &&
+                    "border-blue-500 text-blue-700 bg-blue-50",
+                )}
               >
                 <AlertDescription>{feedback.message}</AlertDescription>
               </Alert>

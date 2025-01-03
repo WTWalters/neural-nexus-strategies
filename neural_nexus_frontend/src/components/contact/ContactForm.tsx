@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { tracking } from "@/lib/tracking";
 import { DeviceInfo, UserIdentity } from "@/lib/tracking/types";
+import { cn } from "@/lib/utils";
 
 // Add API endpoint configuration
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -212,8 +213,13 @@ export default function ContactForm() {
     >
       {feedback.type && (
         <Alert
-          variant={feedback.type}
-          className={feedback.type === "success" ? "bg-green-50" : "bg-red-50"}
+          variant={feedback.type === "error" ? "destructive" : "default"}
+          className={cn(
+            feedback.type === "success" &&
+              "border-green-500 text-green-700 bg-green-50",
+            feedback.type === "info" &&
+              "border-blue-500 text-blue-700 bg-blue-50",
+          )}
         >
           <AlertDescription>{feedback.message}</AlertDescription>
         </Alert>
