@@ -1,20 +1,14 @@
-[
-build
-]
+[build]
 builder = "nixpacks"
 buildCommand = "npm run build"
 
-[
-deploy
-]
+[deploy]
 startCommand = "npm start"
 healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
 numReplicas = 1
 
-[
-deploy.env
-]
+[deploy.env]
 PORT = "3000"
 NODE_ENV = "production"
