@@ -58,6 +58,10 @@ export default function ServiceDetailPage() {
           throw new Error("API URL is not configured");
         }
 
+        if (!params?.slug) {
+          throw new Error("Service slug is required");
+        }
+
         const fullUrl = `${apiUrl}/api/services/${params.slug}/`;
         console.log("Debug - Fetching from:", fullUrl);
 
