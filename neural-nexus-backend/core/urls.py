@@ -41,7 +41,9 @@ def health_check(request):
     except Exception as e:
         return HttpResponse(str(e), content_type="text/plain", status=500)
 
+
 logger = logging.getLogger(__name__)
+
 
 def health_check(request):
     """Enhanced health check endpoint with error tracking"""
@@ -53,26 +55,22 @@ def health_check(request):
         response_data = ["Health check running"]
 
         # 2. Environment check
-        settings_module = os.getenv('DJANGO_SETTINGS_MODULE', 'Not Set')
+        settings_module = os.getenv("DJANGO_SETTINGS_MODULE", "Not Set")
         response_data.append(f"Settings Module: {settings_module}")
 
         # 3. Database check
         try:
-            with connections['default'].cursor() as cursor:
+            with connections["default"].cursor() as cursor:
                 cursor.execute("SELECT 1")
                 cursor.fetchone()
                 response_data.append("Database: Connected")
         except Exception as db_err:
             print(f"Database Error: {str(db_err)}", file=sys.stderr)
             response_data.append(f"Database Error: {str(db_err)}")
-            return HttpResponse(
-                "\n".join(response_data),
-                content_type="text/plain",
-                status=500
-            )
+            return HttpResponse("\n".join(response_data), content_type="text/plain", status=500)
 
         # 4. Static files check
-        static_root = getattr(settings, 'STATIC_ROOT', 'Not Set')
+        static_root = getattr(settings, "STATIC_ROOT", "Not Set")
         response_data.append(f"Static Root: {static_root}")
 
         # 5. Add request info
@@ -80,20 +78,12 @@ def health_check(request):
 
         # Success response
         print("Health check successful", file=sys.stderr)
-        return HttpResponse(
-            "\n".join(response_data),
-            content_type="text/plain",
-            status=200
-        )
+        return HttpResponse("\n".join(response_data), content_type="text/plain", status=200)
 
     except Exception as e:
         error_msg = f"Health Check Critical Error: {str(e)}"
         print(error_msg, file=sys.stderr)
-        return HttpResponse(
-            error_msg,
-            content_type="text/plain",
-            status=500
-        )
+        return HttpResponse(error_msg, content_type="text/plain", status=500)
 
 
 urlpatterns = [
@@ -108,5 +98,6 @@ urlpatterns = [
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     # Health check
+    path("health", health_check, name="health_check_no_slash"),
     path("health/", health_check, name="health_check"),
 ]
