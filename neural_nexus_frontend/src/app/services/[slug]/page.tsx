@@ -50,7 +50,7 @@ export default function ServiceDetailPage() {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         console.log("Debug - Environment:", {
           apiUrl,
-          slug: params.slug,
+          slug: params?.slug,
           isDevelopment: process.env.NODE_ENV === "development",
         });
 
