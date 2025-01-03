@@ -23,7 +23,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Security Middleware
 MIDDLEWARE = [
-    "core.settings_prod.HealthCheckMiddlewareDisabler",
+    "core.middleware.HealthCheckMiddlewareDisabler",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
