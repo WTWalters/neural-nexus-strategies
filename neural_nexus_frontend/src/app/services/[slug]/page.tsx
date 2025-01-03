@@ -83,10 +83,11 @@ export default function ServiceDetailPage() {
       }
     };
 
-    if (params.slug) {
+    if (params?.slug) {
+      // Add optional chaining here
       fetchServiceDetail();
     }
-  }, [params.slug]);
+  }, [params?.slug]); // And here in the dependency array
 
   if (loading) {
     return (
