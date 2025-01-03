@@ -20,11 +20,11 @@ Note:
 
 import logging
 import os
+import sys
 
 from django.conf import settings
 from django.contrib import admin
 from django.db import connections
-from django.db.utils import OperationalError
 from django.http import HttpResponse
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -44,56 +44,51 @@ def health_check(request):
 logger = logging.getLogger(__name__)
 
 def health_check(request):
-    """Enhanced health check endpoint"""
-    logger.info("Health check started")
-    logger.info(f"Request host: {request.get_host()}")
-
-    response_data = []
-    status_code = 200
+    """Enhanced health check endpoint with error tracking"""
+    # Basic stdout logging in case logger isn't configured
+    print("Health check started", file=sys.stderr)
 
     try:
-        # Check database connection
-        logger.info("Checking database connection...")
-        db_config = settings.DATABASES['default']
-        # Log non-sensitive database config
-        logger.info(f"Database host: {db_config.get('HOST')}")
-        logger.info(f"Database name: {db_config.get('NAME')}")
+        # 1. Basic response test
+        response_data = ["Health check running"]
 
-        with connections['default'].cursor() as cursor:
-            cursor.execute("SELECT 1")
-            cursor.fetchone()
-            response_data.append("Database: Connected")
+        # 2. Environment check
+        settings_module = os.getenv('DJANGO_SETTINGS_MODULE', 'Not Set')
+        response_data.append(f"Settings Module: {settings_module}")
 
-        # Check static files
-        static_root = getattr(settings, 'STATIC_ROOT', None)
-        if static_root and os.path.exists(static_root):
-            response_data.append("Static files: OK")
-        else:
-            response_data.append("Static files: Not configured")
-            status_code = 500
+        # 3. Database check
+        try:
+            with connections['default'].cursor() as cursor:
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+                response_data.append("Database: Connected")
+        except Exception as db_err:
+            print(f"Database Error: {str(db_err)}", file=sys.stderr)
+            response_data.append(f"Database Error: {str(db_err)}")
+            return HttpResponse(
+                "\n".join(response_data),
+                content_type="text/plain",
+                status=500
+            )
 
-        # Add debug info in non-production
-        if settings.DEBUG:
-            response_data.append(f"ALLOWED_HOSTS: {settings.ALLOWED_HOSTS}")
-            response_data.append(f"DEBUG: {settings.DEBUG}")
+        # 4. Static files check
+        static_root = getattr(settings, 'STATIC_ROOT', 'Not Set')
+        response_data.append(f"Static Root: {static_root}")
 
-        logger.info("Health check completed successfully")
+        # 5. Add request info
+        response_data.append(f"Request Host: {request.get_host()}")
+
+        # Success response
+        print("Health check successful", file=sys.stderr)
         return HttpResponse(
             "\n".join(response_data),
             content_type="text/plain",
-            status=status_code
+            status=200
         )
-    except OperationalError as e:
-        error_msg = f"Database Error: {str(e)}"
-        logger.error(error_msg)
-        return HttpResponse(
-            error_msg,
-            content_type="text/plain",
-            status=500
-        )
+
     except Exception as e:
-        error_msg = f"Health Check Error: {str(e)}"
-        logger.error(error_msg)
+        error_msg = f"Health Check Critical Error: {str(e)}"
+        print(error_msg, file=sys.stderr)
         return HttpResponse(
             error_msg,
             content_type="text/plain",

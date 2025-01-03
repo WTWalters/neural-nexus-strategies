@@ -1,11 +1,14 @@
 # gunicorn.conf.py
 bind = "0.0.0.0:8080"
 workers = 2
-worker_class = "gthread"  # Explicitly set to gthread
+worker_class = "gthread"
 threads = 4
 timeout = 120
 loglevel = "debug"
-keepalive = 5
+capture_output = True  # Add this line
+enable_stdio_inheritance = True  # Add this line
+errorlog = "-"
+accesslog = "-"
 
 
 def post_fork(server, worker):
