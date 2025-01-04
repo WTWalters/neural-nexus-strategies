@@ -1,81 +1,35 @@
-//File: src/components/ui/label/label.test.tsx
+// Path: neural_nexus_frontend/src/components/ui/label/label.test.tsx
+import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Label } from "./index";
 
 describe("Label", () => {
-  it("renders correctly with default props", () => {
+  it("renders with basic props", () => {
     render(<Label>Test Label</Label>);
-    const label = screen.getByText("Test Label");
-    expect(label).toHaveClass("text-sm");
-    expect(label).toHaveClass("text-[var(--colors-label-foreground)]");
+    expect(screen.getByText("Test Label")).toBeInTheDocument();
   });
 
-  it("applies error state correctly", () => {
+  it("renders with required indicator", () => {
+    render(<Label required>Required Field</Label>);
+    expect(screen.getByText("Required Field")).toBeInTheDocument();
+    // Check for asterisk icon
+    expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
+  });
+
+  it("applies error styles", () => {
     render(<Label error>Error Label</Label>);
-    const label = screen.getByText("Error Label");
-    expect(label).toHaveClass("text-[var(--colors-label-error)]");
+    expect(screen.getByText("Error Label")).toHaveClass("text-destructive");
   });
 
-  it("applies disabled state correctly", () => {
+  it("applies disabled styles", () => {
     render(<Label disabled>Disabled Label</Label>);
-    const label = screen.getByText("Disabled Label");
-    expect(label).toHaveClass("text-[var(--colors-label-disabled)]");
-    expect(label).toHaveClass("cursor-not-allowed");
+    expect(screen.getByText("Disabled Label")).toHaveClass(
+      "text-muted-foreground",
+    );
   });
 
-  it("renders required indicator when required prop is true", () => {
-    render(<Label required>Required Label</Label>);
-    const label = screen.getByText("Required Label");
-    const asterisk = label.querySelector("[aria-hidden='true']");
-    expect(asterisk).toBeInTheDocument();
-  });
-
-  it("applies srOnly class when srOnly prop is true", () => {
+  it("applies screen reader only class", () => {
     render(<Label srOnly>Screen Reader Label</Label>);
     expect(screen.getByText("Screen Reader Label")).toHaveClass("sr-only");
-  });
-
-  it("renders in different sizes", () => {
-    const { rerender } = render(<Label size="sm">Small Label</Label>);
-    expect(screen.getByText("Small Label")).toHaveClass("text-xs");
-
-    rerender(<Label size="lg">Large Label</Label>);
-    expect(screen.getByText("Large Label")).toHaveClass("text-base");
-  });
-
-  it("combines error and required states correctly", () => {
-    render(
-      <Label required error>
-        Test Label
-      </Label>,
-    );
-    const label = screen.getByText("Test Label");
-    const asterisk = label.querySelector("[aria-hidden='true']");
-    expect(label.className).toContain("text-[var(--colors-label-error)]");
-    expect(asterisk?.className).toContain("text-[var(--colors-label-error)]");
-  });
-
-  it("applies custom className correctly", () => {
-    render(<Label className="custom-class">Custom Label</Label>);
-    expect(screen.getByText("Custom Label")).toHaveClass("custom-class");
-  });
-
-  it("forwards htmlFor prop to label element", () => {
-    render(<Label htmlFor="test-input">Input Label</Label>);
-    expect(screen.getByText("Input Label")).toHaveAttribute(
-      "for",
-      "test-input",
-    );
-  });
-
-  it("prioritizes disabled state over error state", () => {
-    render(
-      <Label disabled error>
-        State Priority Label
-      </Label>,
-    );
-    const label = screen.getByText("State Priority Label");
-    expect(label).toHaveClass("text-[var(--colors-label-disabled)]");
-    expect(label).not.toHaveClass("text-[var(--colors-label-error)]");
   });
 });

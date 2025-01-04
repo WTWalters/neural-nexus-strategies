@@ -1,5 +1,4 @@
-// Path: neural_nexus_frontend/src/components/ui/label/index.tsx
-// Path: neural_nexus_frontend/src/components/ui/label/index.tsx
+// Path: src/components/ui/label/index.tsx
 "use client";
 
 import * as React from "react";
@@ -7,8 +6,6 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { Asterisk } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LabelProps } from "./types";
-
-type LabelState = "error" | "disabled" | "default";
 
 const Label = React.forwardRef;
 React.ElementRef<typeof LabelPrimitive.Root>,
@@ -26,34 +23,26 @@ React.ElementRef<typeof LabelPrimitive.Root>,
       },
       ref,
     ) => {
-      // Base styles
-      const baseStyles = "inline-flex items-center gap-1";
-
-      // Size variants
-      const sizeClasses = {
+      const sizeVariants = {
         sm: "text-xs",
         default: "text-sm",
         lg: "text-base",
       } as const;
 
-      // State styles
       const stateStyles = {
-        error: "text-[var(--colors-label-error)]",
-        disabled: "text-[var(--colors-label-disabled)] cursor-not-allowed",
-        default: "text-[var(--colors-label-foreground)]",
+        error: "text-destructive",
+        disabled: "text-muted-foreground cursor-not-allowed",
+        default: "text-foreground",
       } as const;
 
-      // Determine state style with proper typing
-      let currentState: LabelState = "default";
-      if (error) currentState = "error";
-      if (disabled) currentState = "disabled";
+      const currentState = error ? "error" : disabled ? "disabled" : "default";
 
       return (
         <LabelPrimitive.Root
           ref={ref}
           className={cn(
-            baseStyles,
-            sizeClasses[size],
+            "inline-flex items-center gap-1",
+            sizeVariants[size],
             stateStyles[currentState],
             "font-medium",
             "peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
@@ -67,9 +56,7 @@ React.ElementRef<typeof LabelPrimitive.Root>,
             <span
               className={cn(
                 "text-[0.75em]",
-                error
-                  ? "text-[var(--colors-label-error)]"
-                  : "text-[var(--colors-label-required)]",
+                error ? "text-destructive" : "text-destructive",
               )}
               aria-hidden="true"
             >
@@ -80,6 +67,6 @@ React.ElementRef<typeof LabelPrimitive.Root>,
       );
     });
 
-Label.displayName = "Label";
+Label.displayName = LabelPrimitive.Root.displayName;
 
 export { Label };

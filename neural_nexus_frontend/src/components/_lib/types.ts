@@ -1,4 +1,5 @@
-import { ComponentPropsWithoutRef, ReactNode } from "react";
+// Path: src/components/_lib/types.ts
+import { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
 /**
  * Base props that all components can extend
@@ -12,12 +13,11 @@ export interface BaseProps {
 /**
  * HTML element props without ref
  */
-export type BaseElementProps<T extends HTMLElement> =
+export type BaseElementProps<T extends ElementType> =
   ComponentPropsWithoutRef<T>;
 
 /**
  * Common variant props used across components
- * Extended to include all variants while maintaining backward compatibility
  */
 export interface VariantProps {
   variant?:
