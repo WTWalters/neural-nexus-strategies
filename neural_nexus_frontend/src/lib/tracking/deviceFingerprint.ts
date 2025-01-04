@@ -1,6 +1,13 @@
 // src/lib/tracking/deviceFingerprint.ts
 import { DeviceInfo } from "./types";
 
+declare global {
+  interface Window {
+    gtag: (command: string, ...args: any[]) => void;
+    dataLayer: any[]; // Add dataLayer type
+  }
+}
+
 export class DeviceFingerprint {
   private static instance: DeviceFingerprint;
   private fp: Promise<any>;
@@ -40,7 +47,7 @@ export class DeviceFingerprint {
       }
 
       return {
-        deviceId: this.cachedDeviceId,
+        deviceId: this.cachedDeviceId ?? "unknown", // Add null check with fallback
         userAgent:
           typeof window !== "undefined" ? window.navigator.userAgent : "",
         screenResolution:

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CaseStudy } from "@/lib/api/case-studies";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { trackEvent } from "@/lib/tracking";
+import { trackCaseStudyEvent } from "./case-study-analytics";
 
 interface CaseStudyCardProps {
   caseStudy: CaseStudy;
@@ -16,6 +16,8 @@ export function CaseStudyCard({
   caseStudy,
   featured = false,
 }: CaseStudyCardProps) {
+  const [hasImageError, setHasImageError] = useState(false);
+
   const handleClick = () => {
     trackCaseStudyEvent({
       action: "click",

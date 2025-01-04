@@ -185,8 +185,8 @@ export default function AIReadinessPage() {
           </p>
           <BookDiscoveryButton
             size="lg"
-            variant="white"
-            className="text-success-600 hover:bg-success-50"
+            variant="outline"
+            className="bg-background text-success-600 hover:bg-background/90"
           />
         </div>
       </section>

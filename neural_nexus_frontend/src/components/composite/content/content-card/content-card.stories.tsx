@@ -117,6 +117,15 @@ export const AsLink: Story = {
 };
 
 export const GridLayout: Story = {
+  args: {
+    // Provide default args that will be available to the render function
+    title: "Grid Example",
+    description: "Example of cards in a grid layout",
+    image: {
+      src: "/api/placeholder/400/300",
+      alt: "Grid Example",
+    },
+  },
   render: () => (
     <div className="grid grid-cols-3 gap-6 w-[1200px]">
       {[1, 2, 3].map((i) => (

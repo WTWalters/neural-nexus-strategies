@@ -114,6 +114,11 @@ export const WithCustomClasses: Story = {
 };
 
 export const InForm: Story = {
+  args: {
+    // Add required props from FormField
+    label: "Form Example",
+    children: <Input placeholder="Example input" />,
+  },
   render: () => (
     <form className="w-[400px] space-y-6 rounded-lg border p-4 shadow-sm">
       <FormField label="Name" required>

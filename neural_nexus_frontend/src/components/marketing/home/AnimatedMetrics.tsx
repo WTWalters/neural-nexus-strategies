@@ -32,8 +32,8 @@ const metrics = [
 export default function AnimatedMetrics() {
   const ref = useRef(null);
   const isInView = useInView(ref, {
-    triggerOnce: true,
-    threshold: 0.1,
+    once: true, // Changed from triggerOnce to once
+    amount: 0.1, // Changed from threshold to amount
   });
 
   return (

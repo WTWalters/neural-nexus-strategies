@@ -1,10 +1,19 @@
+// Path: neural_nexus_frontend/src/components/marketing/home/GeometricPatterns.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-// Predefined points to avoid hydration mismatch
-const INITIAL_POINTS = [
+// Add interface for the point structure
+interface Point {
+  x: number;
+  y: number;
+  size: number;
+  timing: number;
+}
+
+// Update the points array type
+const INITIAL_POINTS: Point[] = [
   { x: 20, y: 20, size: 1.5, timing: 3 },
   { x: 40, y: 30, size: 1.2, timing: 2.5 },
   { x: 60, y: 20, size: 1.8, timing: 3.5 },
@@ -22,8 +31,8 @@ export default function GeometricPatterns() {
     setIsClient(true);
   }, []);
 
-  // SVG path generator for connections
-  const createPath = (startPoint, endPoint) => {
+  // Add types to createPath parameters
+  const createPath = (startPoint: Point, endPoint: Point) => {
     const distance = Math.sqrt(
       Math.pow(endPoint.x - startPoint.x, 2) +
         Math.pow(endPoint.y - startPoint.y, 2),

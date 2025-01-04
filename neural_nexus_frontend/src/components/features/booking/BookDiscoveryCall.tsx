@@ -1,23 +1,21 @@
-// src/components/features/booking/BookDiscoveryButton.tsx
+// src/components/features/booking/BookDiscoveryCall.tsx
 "use client";
 
 import { useEffect } from "react";
 import { Button, ButtonProps } from "@/components/ui/button";
 
-interface BookDiscoveryButtonProps extends Omit<ButtonProps, 'onClick'> {
+interface BookDiscoveryButtonProps extends Omit<ButtonProps, "onClick"> {
   calendlyUrl?: string;
+  text?: string;
 }
 
 export function BookDiscoveryButton({
-  calendlyUrl = "https://calendly.com/neuralnexus/discovery",
-  children = "Book Discovery Call",
-  ...props
-}: BookDiscoveryButtonProps) {
   text = "Book Discovery Call",
   calendlyUrl = "https://calendly.com/neuralnexus/discovery",
   variant = "default",
   size = "lg",
   className,
+  ...props
 }: BookDiscoveryButtonProps) {
   useEffect(() => {
     const loadCalendly = async () => {
@@ -33,8 +31,8 @@ export function BookDiscoveryButton({
   }, []);
 
   const openCalendly = () => {
-    if (window.Calendly) {
-      window.Calendly.initPopupWidget({ url: calendlyUrl });
+    if ((window as any).Calendly) {
+      (window as any).Calendly.initPopupWidget({ url: calendlyUrl });
     }
   };
 
@@ -44,6 +42,7 @@ export function BookDiscoveryButton({
       variant={variant}
       size={size}
       className={className}
+      {...props}
     >
       {text}
     </Button>

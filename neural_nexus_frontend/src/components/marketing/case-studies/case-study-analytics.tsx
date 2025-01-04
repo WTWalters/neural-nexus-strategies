@@ -10,17 +10,19 @@ export function CaseStudyAnalytics() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Use the existing trackBlogEvent function
-    trackBlogEvent({
-      category: "page_view",
-      action: "view_case_studies",
-      label: pathname,
-      metadata: {
-        path: pathname,
-        search: searchParams.toString(),
-        title: "Case Studies",
-      },
-    });
+    if (pathname) {
+      // Add null check
+      trackBlogEvent({
+        category: "page_view",
+        action: "view_case_studies",
+        label: pathname, // Now we know pathname is string
+        metadata: {
+          path: pathname,
+          search: searchParams?.toString() ?? "",
+          title: "Case Studies",
+        },
+      });
+    }
   }, [pathname, searchParams]);
 
   return null;

@@ -1,7 +1,8 @@
 // src/components/marketing/case-studies/case-study-pagination.tsx
+import React, { Fragment } from 'react';  // Add this import
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PaginationProps {
   currentPage: number;
@@ -47,19 +48,20 @@ export function CaseStudyPagination({
               p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1,
           )
           .map((p, index, array) => (
-            <React.Fragment key={p}>
-              {index > 0 && array[index - 1] !== p - 1 && (
-                <span className="px-2 text-gray-500">...</span>
-              )}
-              <Link href={`/case-studies?${createQueryString(p)}`}>
-                <Button
-                  variant={currentPage === p ? "default" : "outline"}
-                  aria-current={currentPage === p ? "page" : undefined}
-                >
-                  {p}
-                </Button>
-              </Link>
-            </React.Fragment>
+              <Fragment key={p}>
+                  {index > 0 && array[index - 1] !== p - 1 && (
+                      <span className="px-2 text-gray-500">...</span>
+                  )}
+                  <Link href={`/case-studies?${createQueryString(p)}`}>
+                      <Button
+                          variant={currentPage === p ? "default" : "outline"}
+                          aria-current={currentPage === p ? "page" : undefined}
+                      >
+                          {p}
+                      </Button>
+                  </Link>
+              </Fragment>
+          ))
           ))}
       </div>
 

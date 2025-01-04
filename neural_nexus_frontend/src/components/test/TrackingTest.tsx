@@ -10,13 +10,12 @@ export default function TrackingTest() {
   const [events, setEvents] = useState<any[]>([]);
 
   useEffect(() => {
-    // Initialize tracking and get device info
     async function initTest() {
       await tracking.initialize();
-      const info = await tracking.deviceFingerprint.getDeviceInfo();
+      // Changed this line to use new public method
+      const info = await tracking.getDeviceInfo();
       setDeviceInfo(info);
 
-      // Test event
       tracking.trackEvent("test_event", {
         testData: "Testing tracking system",
       });

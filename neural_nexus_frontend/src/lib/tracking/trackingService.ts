@@ -22,6 +22,10 @@ export class TrackingService {
   private config: TrackingConfig;
   private consent: ConsentSettings;
 
+  public async getDeviceInfo(): Promise<DeviceInfo> {
+    return this.deviceFingerprint.getDeviceInfo();
+  }
+
   private constructor(config: TrackingConfig) {
     if (typeof window === "undefined") {
       console.warn("TrackingService initialized in server environment");

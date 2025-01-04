@@ -1,8 +1,9 @@
 // File: src/components/ui/input/types.ts
+// Path: neural_nexus_frontend/src/components/ui/input/types.ts
 import { BaseProps } from "@/components/_lib/types";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement>,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
     BaseProps {
   /**
    * Error state or message

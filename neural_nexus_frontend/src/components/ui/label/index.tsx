@@ -1,4 +1,4 @@
-//File: src/components/ui/label/index.tsx
+// Path: neural_nexus_frontend/src/components/ui/label/index.tsx
 "use client";
 
 import * as React from "react";
@@ -7,7 +7,9 @@ import { Asterisk } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LabelProps } from "./types";
 
-const Label = React.forwardRef<
+type LabelState = "error" | "disabled" | "default";
+
+const Label = React.forwardRef
   React.ElementRef<typeof LabelPrimitive.Root>,
   LabelProps
 >(
@@ -32,17 +34,17 @@ const Label = React.forwardRef<
       sm: "text-xs",
       default: "text-sm",
       lg: "text-base",
-    };
+    } as const;
 
     // State styles
     const stateStyles = {
       error: "text-[var(--colors-label-error)]",
       disabled: "text-[var(--colors-label-disabled)] cursor-not-allowed",
       default: "text-[var(--colors-label-foreground)]",
-    };
+    } as const;
 
-    // Determine state style
-    let currentState = "default";
+    // Determine state style with proper typing
+    let currentState: LabelState = "default";
     if (error) currentState = "error";
     if (disabled) currentState = "disabled";
 

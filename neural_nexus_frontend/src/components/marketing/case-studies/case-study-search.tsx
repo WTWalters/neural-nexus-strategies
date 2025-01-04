@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Search as SearchIcon } from "lucide-react";
+import { trackCaseStudyEvent } from "./case-study-analytics";
 
 // Add this industries array
 const industries = [
@@ -35,22 +36,22 @@ export function CaseStudySearch() {
         },
       });
 
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchTerm.trim()) {
-        params.set("search", searchTerm.trim());
-      } else {
-        params.delete("search");
-      }
-      if (industry) {
-        params.set("industry", industry);
-      } else {
-        params.delete("industry");
-      }
-      params.delete("page");
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
 
-      router.push(`/case-studies?${params.toString()}`);
-    });
-  };
+            if (searchTerm.trim()) {
+              params.set("search", searchTerm.trim());
+            } else {
+              params.delete("search");
+            }
+            if (industry) {
+              params.set("industry", industry);
+            } else {
+              params.delete("industry");
+            }
+            params.delete("page");
+
+            router.push(`/case-studies?${params.toString()}`);
+          });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,7 +61,7 @@ export function CaseStudySearch() {
             name="search"
             type="search"
             placeholder="Search case studies..."
-            defaultValue={searchParams.get("search") ?? ""}
+            defaultValue={searchParams?.get("search") ?? ""}
             className="pl-10"
             aria-label="Search case studies"
           />
@@ -73,7 +74,7 @@ export function CaseStudySearch() {
         </div>
         <select
           name="industry"
-          defaultValue={searchParams.get("industry") ?? ""}
+          defaultValue={searchParams?.get("industry") ?? ""}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           aria-label="Filter by industry"
         >

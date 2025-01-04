@@ -86,6 +86,11 @@ export const TitleOnly: Story = {
 };
 
 export const WithDivider: Story = {
+  args: {
+    title: "Account Settings",
+    subtitle: "Manage your account preferences and settings",
+    divider: true,
+  },
   render: () => (
     <div className="space-y-8 w-[800px]">
       <SectionHeader

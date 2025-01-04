@@ -1,3 +1,4 @@
+// Path: neural_nexus_frontend/src/components/providers/TrackingProvider.tsx
 "use client";
 
 import { useEffect, useCallback } from "react";
@@ -15,8 +16,8 @@ export default function TrackingProvider({
   // Track page views
   const handlePageView = useCallback(() => {
     tracking.trackEvent("page_view", {
-      page: pathname,
-      query: Object.fromEntries(searchParams.entries()),
+      page: pathname ?? "",
+      query: searchParams ? Object.fromEntries(searchParams.entries()) : {},
       title: document.title,
     });
   }, [pathname, searchParams]);

@@ -5,6 +5,8 @@
  * This guide shows how to map our new semantic tokens to components
  */
 
+import { cn } from "@/lib/utils";
+
 // BUTTON COMPONENT EXAMPLE
 // Before:
 const buttonBefore = {

@@ -50,11 +50,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           ...children.props,
         })}
       </FormControl>
-      {description && (
-        <FormDescription id={`${id}-description`}>
-          {description}
-        </FormDescription>
-      )}
+      {description && <FormDescription>{description}</FormDescription>}
       {helperText && !error && (
         <p className="text-sm text-muted-foreground mt-1">{helperText}</p>
       )}

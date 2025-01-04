@@ -139,8 +139,8 @@ export default function FractionalCDOPage() {
           </p>
           <BookDiscoveryButton
             size="lg"
-            variant="white"
-            className="text-primary-600 hover:bg-primary-50"
+            variant="outline"
+            className="bg-background text-primary-600 hover:bg-background/90"
           />
         </div>
       </section>
