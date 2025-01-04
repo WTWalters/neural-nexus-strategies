@@ -1,11 +1,18 @@
 // src/styles/__tests__/tokens.test.ts
 import { colors, typography, spacing, animation } from "../tokens";
 
+// Add type definitions
+type ColorScale = keyof typeof colors.base;
+type ColorShade = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+type TypographySize = keyof typeof typography.scale;
+
 describe("Design Tokens", () => {
   describe("Colors", () => {
     it("has complete base color scales", () => {
-      const scales = ["navy", "blue", "red", "green"];
-      const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+      const scales: ColorScale[] = ["navy", "blue", "red", "green"];
+      const shades: ColorShade[] = [
+        50, 100, 200, 300, 400, 500, 600, 700, 800, 900,
+      ];
 
       scales.forEach((scale) => {
         shades.forEach((shade) => {
@@ -30,7 +37,7 @@ describe("Design Tokens", () => {
 
   describe("Typography", () => {
     it("has complete scale values", () => {
-      const expectedSizes = [
+      const expectedSizes: TypographySize[] = [
         "xs",
         "sm",
         "base",

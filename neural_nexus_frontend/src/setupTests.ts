@@ -4,8 +4,8 @@ import "jest-styled-components";
 
 // Mock CSS custom properties
 Object.defineProperty(window, "getComputedStyle", {
-  value: (elem) => ({
-    getPropertyValue: (prop) => {
+  value: (elem: Element) => ({
+    getPropertyValue: (prop: string) => {
       return prop === "--font-heading" ? "heading-font" : "body-font";
     },
   }),
@@ -13,12 +13,12 @@ Object.defineProperty(window, "getComputedStyle", {
 
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // Deprecated
-    removeListener: jest.fn(), // Deprecated
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),

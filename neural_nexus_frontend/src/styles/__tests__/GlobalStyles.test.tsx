@@ -10,7 +10,7 @@ const MockThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => (
   <StyledThemeProvider theme={lightTheme}>
     <>
-      <GlobalStyles />
+      <GlobalStyles theme={lightTheme} /> {/* Add theme prop here */}
       {children}
     </>
   </StyledThemeProvider>

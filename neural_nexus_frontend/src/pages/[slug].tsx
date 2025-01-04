@@ -66,7 +66,8 @@ const ComingSoon = () => (
 const MainContent = ({
   content,
 }: {
-  content: PageProps["pageData"]["content"];
+  // Remove the null possibility since we only call this component with non-null content
+  content: NonNullable<PageProps["pageData"]>["content"];
 }) => (
   <>
     <Head>
@@ -89,6 +90,7 @@ const MainContent = ({
   </>
 );
 
+// The null check in the main component ensures we only pass non-null content
 export default function Page({ pageData }: PageProps) {
   if (!pageData?.content) {
     return <ComingSoon />;
