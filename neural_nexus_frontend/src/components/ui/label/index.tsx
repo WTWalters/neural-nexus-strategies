@@ -1,4 +1,5 @@
 // Path: neural_nexus_frontend/src/components/ui/label/index.tsx
+// Path: neural_nexus_frontend/src/components/ui/label/index.tsx
 "use client";
 
 import * as React from "react";

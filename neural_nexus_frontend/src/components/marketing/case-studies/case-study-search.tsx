@@ -1,4 +1,5 @@
 // src/components/marketing/case-studies/case-study-search.tsx
+// Path: neural_nexus_frontend/src/components/marketing/case-studies/case-study-search.tsx
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -7,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Search as SearchIcon } from "lucide-react";
 import { trackCaseStudyEvent } from "./case-study-analytics";
 
-// Add this industries array
 const industries = [
   { value: "Healthcare", label: "Healthcare" },
   { value: "Manufacturing", label: "Manufacturing" },
@@ -38,20 +38,21 @@ export function CaseStudySearch() {
 
       const params = new URLSearchParams(searchParams?.toString() ?? "");
 
-            if (searchTerm.trim()) {
-              params.set("search", searchTerm.trim());
-            } else {
-              params.delete("search");
-            }
-            if (industry) {
-              params.set("industry", industry);
-            } else {
-              params.delete("industry");
-            }
-            params.delete("page");
+      if (searchTerm.trim()) {
+        params.set("search", searchTerm.trim());
+      } else {
+        params.delete("search");
+      }
+      if (industry) {
+        params.set("industry", industry);
+      } else {
+        params.delete("industry");
+      }
+      params.delete("page");
 
-            router.push(`/case-studies?${params.toString()}`);
-          });
+      router.push(`/case-studies?${params.toString()}`);
+    });
+  }; // Added missing closing brace here
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
