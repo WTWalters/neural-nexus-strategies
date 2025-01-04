@@ -1,5 +1,5 @@
 // src/mocks/handlers.ts
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw"; // Changed from separate imports
 
 export const handlers = [
   // Add your API mocks here
