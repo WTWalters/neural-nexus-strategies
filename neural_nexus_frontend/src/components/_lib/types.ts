@@ -1,10 +1,6 @@
 // Path: src/components/_lib/types.ts
 import { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
-/**
- * Base props that all components can extend
- * Maintains compatibility with existing components
- */
 export interface BaseProps {
   className?: string;
   children?: ReactNode;
@@ -13,7 +9,7 @@ export interface BaseProps {
 /**
  * HTML element props without ref
  */
-export type BaseElementProps<T extends ElementType> =
+export type BaseElementProps<T extends keyof JSX.IntrinsicElements> =
   ComponentPropsWithoutRef<T>;
 
 /**
@@ -75,7 +71,7 @@ export interface BaseCardProps extends BaseProps {
  * Extends existing ButtonProps while adding new features
  */
 export interface BaseButtonProps
-  extends BaseElementProps<HTMLButtonElement>,
+  extends BaseElementProps<"button">,
     VariantProps {
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -119,7 +115,7 @@ export interface BaseSectionProps extends BaseLayoutProps {
  * Base props for input components
  */
 export interface BaseInputProps
-  extends BaseElementProps<HTMLInputElement>,
+  extends BaseElementProps<"input">,
     BaseFieldProps {
   type?: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
   placeholder?: string;

@@ -10,8 +10,8 @@ import type { LabelProps } from "./types";
 const Label = React.forwardRef;
 React.ElementRef<typeof LabelPrimitive.Root>,
   LabelProps >
-    ((
-      {
+    ((props, ref) => {
+      const {
         className,
         children,
         srOnly,
@@ -19,10 +19,9 @@ React.ElementRef<typeof LabelPrimitive.Root>,
         error,
         disabled,
         size = "default",
-        ...props
-      },
-      ref,
-    ) => {
+        ...rest
+      } = props;
+
       const sizeVariants = {
         sm: "text-xs",
         default: "text-sm",
@@ -42,14 +41,14 @@ React.ElementRef<typeof LabelPrimitive.Root>,
           ref={ref}
           className={cn(
             "inline-flex items-center gap-1",
-            sizeVariants[size],
+            sizeVariants[size as keyof typeof sizeVariants],
             stateStyles[currentState],
             "font-medium",
             "peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
             srOnly && "sr-only",
             className,
           )}
-          {...props}
+          {...rest}
         >
           {children}
           {required && (
@@ -67,6 +66,6 @@ React.ElementRef<typeof LabelPrimitive.Root>,
       );
     });
 
-Label.displayName = LabelPrimitive.Root.displayName;
+Label.displayName = "Label";
 
 export { Label };
