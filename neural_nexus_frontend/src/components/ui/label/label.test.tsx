@@ -1,4 +1,4 @@
-// Path: neural_nexus_frontend/src/components/ui/label/label.test.tsx
+// Path: src/components/ui/label/label.test.tsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Label } from "./index";
@@ -11,25 +11,27 @@ describe("Label", () => {
 
   it("renders with required indicator", () => {
     render(<Label required>Required Field</Label>);
-    expect(screen.getByText("Required Field")).toBeInTheDocument();
-    // Check for asterisk icon
-    expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument();
+    const label = screen.getByText("Required Field");
+    expect(label).toBeInTheDocument();
+    // Check for asterisk
+    expect(label.nextElementSibling).toHaveAttribute("aria-hidden", "true");
   });
 
   it("applies error styles", () => {
     render(<Label error>Error Label</Label>);
-    expect(screen.getByText("Error Label")).toHaveClass("text-destructive");
+    const label = screen.getByText("Error Label");
+    expect(label.parentElement).toHaveClass("text-destructive");
   });
 
   it("applies disabled styles", () => {
     render(<Label disabled>Disabled Label</Label>);
-    expect(screen.getByText("Disabled Label")).toHaveClass(
-      "text-muted-foreground",
-    );
+    const label = screen.getByText("Disabled Label");
+    expect(label.parentElement).toHaveClass("text-muted-foreground");
   });
 
   it("applies screen reader only class", () => {
     render(<Label srOnly>Screen Reader Label</Label>);
-    expect(screen.getByText("Screen Reader Label")).toHaveClass("sr-only");
+    const label = screen.getByText("Screen Reader Label");
+    expect(label.parentElement).toHaveClass("sr-only");
   });
 });

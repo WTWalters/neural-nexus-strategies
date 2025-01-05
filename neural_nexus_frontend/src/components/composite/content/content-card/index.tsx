@@ -1,3 +1,4 @@
+// Path: src/components/composite/content/content-card/index.tsx
 "use client";
 
 import Link from "next/link";
@@ -32,9 +33,6 @@ export const ContentCard = ({
   children,
   ...props
 }: ContentCardProps) => {
-  const CardWrapper = href ? Link : "div";
-  const imageAspectRatio = image?.aspectRatio || "video";
-
   const content = (
     <Card
       className={cn(
@@ -50,7 +48,8 @@ export const ContentCard = ({
         <div
           className={cn(
             "relative overflow-hidden",
-            aspectRatioClasses[imageAspectRatio],
+            // Access aspectRatio from the image prop
+            aspectRatioClasses[image.aspectRatio || "video"], // Added fallback to 'video'
           )}
         >
           <img
@@ -85,13 +84,13 @@ export const ContentCard = ({
 
   if (href) {
     return (
-      <CardWrapper href={href} onClick={onClick} className="block">
+      <Link href={href} onClick={onClick} className="block">
         {content}
-      </CardWrapper>
+      </Link>
     );
   }
 
-  return <CardWrapper onClick={onClick}>{content}</CardWrapper>;
+  return <div onClick={onClick}>{content}</div>;
 };
 
 export default ContentCard;

@@ -4,7 +4,7 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SelectProps } from "./types";
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
       className,
@@ -149,5 +149,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     );
   },
 );
+
+Select.displayName = "Select"; // Add this line for better dev tools integration
 
 export { Select, type SelectProps };
