@@ -22,7 +22,8 @@ export function CaseStudyCard({
     trackCaseStudyEvent({
       action: "click",
       label: caseStudy.title,
-      properties: {
+      metadata: {
+        // Changed from properties to metadata
         category: "case_study",
         id: caseStudy.id,
         industry: caseStudy.industry,

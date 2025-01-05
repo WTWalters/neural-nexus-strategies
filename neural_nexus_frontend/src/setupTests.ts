@@ -1,4 +1,5 @@
-// src/test/setup.ts
+// src/setupTests.ts
+import { TextEncoder, TextDecoder } from "node:util";
 import "@testing-library/jest-dom";
 import "jest-styled-components";
 
@@ -26,9 +27,14 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Must come before any imports
-import { TextEncoder, TextDecoder } from "node:util";
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+
+declare global {
+  var TextEncoder: typeof TextEncoder;
+  var TextDecoder: typeof TextDecoder;
+}
+
+global.TextEncoder = TextEncoder as typeof global.TextEncoder;
+global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 // Mock matchMedia
 Object.defineProperty(window, "matchMedia", {

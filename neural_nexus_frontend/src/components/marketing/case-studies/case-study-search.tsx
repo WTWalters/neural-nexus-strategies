@@ -30,7 +30,7 @@ export function CaseStudySearch() {
       trackCaseStudyEvent({
         action: "search",
         label: searchTerm,
-        properties: {
+        metadata: {
           category: "case_study",
           search_term: searchTerm,
           industry,

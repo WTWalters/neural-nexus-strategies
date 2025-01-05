@@ -5,6 +5,7 @@ import { colors, typography, spacing, animation } from "../tokens";
 type ColorScale = keyof typeof colors.base;
 type ColorShade = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 type TypographySize = keyof typeof typography.scale;
+type HeadingLevel = keyof typeof typography.heading;
 
 describe("Design Tokens", () => {
   describe("Colors", () => {
@@ -56,7 +57,7 @@ describe("Design Tokens", () => {
     });
 
     it("has semantic heading tokens", () => {
-      [1, 2, 3, 4].forEach((level) => {
+      ([1, 2, 3, 4] as const).forEach((level: HeadingLevel) => {
         const heading = typography.heading[level];
         expect(heading.size).toBeDefined();
         expect(heading.weight).toBeDefined();
@@ -87,13 +88,13 @@ describe("Design Tokens", () => {
 
   describe("Animation", () => {
     it("has duration tokens", () => {
-      Object.entries(animation.duration).forEach(([key, value]) => {
+      Object.entries(animation.durations).forEach(([key, value]) => {
         expect(value).toMatch(/^\d+ms$/);
       });
     });
 
     it("has easing tokens", () => {
-      Object.entries(animation.easing).forEach(([key, value]) => {
+      Object.entries(animation.easings).forEach(([key, value]) => {
         expect(value).toMatch(/^cubic-bezier/);
       });
     });

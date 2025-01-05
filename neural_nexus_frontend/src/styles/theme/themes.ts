@@ -1,8 +1,10 @@
+// Path: src/styles/theme/themes.ts
+
 import { colors, typography, spacing, animation } from "../tokens";
 
 export const lightTheme = {
   colors: {
-    ...colors.semantic,
+    ...colors.theme, // Use theme colors instead of semantic
     background: {
       primary: colors.base.navy[50],
       secondary: colors.base.blue[50],
@@ -20,7 +22,7 @@ export const lightTheme = {
 export const darkTheme = {
   ...lightTheme,
   colors: {
-    ...colors.semantic,
+    ...colors.theme, // Change here too
     background: {
       primary: colors.base.navy[900],
       secondary: colors.base.navy[800],

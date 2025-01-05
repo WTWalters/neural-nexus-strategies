@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ThemeProvider } from "@/components/theme-provider";
 
 describe("Form Component", () => {
-  const TestForm = ({ onSubmit }) => (
+  const TestForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => (
     <ThemeProvider>
       <form
         onSubmit={(e) => {

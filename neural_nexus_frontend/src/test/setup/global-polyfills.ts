@@ -1,13 +1,14 @@
 // src/test/setup/global-polyfills.ts
 import { TextEncoder, TextDecoder } from "util";
 
-// Polyfill TextEncoder/TextDecoder
-if (typeof global.TextEncoder === "undefined") {
-  global.TextEncoder = TextEncoder;
+declare global {
+  var TextEncoder: typeof TextEncoder;
+  var TextDecoder: typeof TextDecoder;
 }
-if (typeof global.TextDecoder === "undefined") {
-  global.TextDecoder = TextDecoder;
-}
+
+// Set TextEncoder/TextDecoder with type assertions
+global.TextEncoder = TextEncoder as typeof global.TextEncoder;
+global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 // Other Web API polyfills
 Object.defineProperty(global, "ResizeObserver", {

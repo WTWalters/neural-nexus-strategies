@@ -1,10 +1,10 @@
 import { createGlobalStyle } from "styled-components";
 import { Theme } from "../theme/themes";
 
-export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
+export const GlobalStyles = createGlobalStyle<{ theme?: Theme }>`
   :root {
     --font-heading: ${(props) => props.theme.typography.fonts.heading};
-    --font-body: ${(props) => props.theme.typography.fonts.body};
+    --font-body: ${(props) => props.theme.typography.fonts.sans};
   }
 
   html {
@@ -15,7 +15,7 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     margin: 0;
     padding: 0;
     font-family: var(--font-body);
-    line-height: ${(props) => props.theme.typography.lineHeights.base};
+    line-height: ${(props) => props.theme.typography.lineHeights.normal};
     color: ${(props) => props.theme.colors.text.primary};
     background-color: ${(props) => props.theme.colors.background.primary};
   }
