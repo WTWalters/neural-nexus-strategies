@@ -1,7 +1,12 @@
 // src/components/features/booking/BookDiscoveryButton.tsx
+// Path: src/components/features/booking/BookDiscoveryButton.tsx
 "use client";
-import Script from "next/script";
+import dynamic from "next/dynamic";
 import { Button, ButtonProps } from "@/components/ui/button";
+
+const Script = dynamic(() => import("next/script"), {
+  ssr: false,
+});
 
 export function BookDiscoveryButton(props: ButtonProps) {
   return (
