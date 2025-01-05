@@ -1,4 +1,7 @@
 // src/components/marketing/newsletter/NewsletterBanner.tsx
+
+"use client";
+
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
