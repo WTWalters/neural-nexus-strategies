@@ -1,6 +1,6 @@
 // src/lib/utils/image.ts
 
-import { ImageAsset } from "@/types/blogs";
+import { ImageAsset } from "@/types/blog";
 
 export class ImageValidationError extends Error {
   constructor(message: string) {

@@ -2,37 +2,46 @@
 
 import Link from "next/link";
 import { getBlogPosts, getCategories } from "@/lib/api/blog";
-import { Category } from "@/types/blogs";
-
-interface PaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
-}
+import {
+  Category,
+  BlogPost,
+  BlogListResponse,
+  CategoryListResponse,
+} from "@/types/blog";
 
 export async function BlogSidebar() {
   try {
     console.log("Fetching sidebar data...");
 
-    const [posts, categoriesResponse] = await Promise.all([
+    const [postsResponse, categoriesResponse] = await Promise.all([
       getBlogPosts({ page: 1, per_page: 3 }).catch((error) => {
         console.error("Error fetching recent posts:", error);
-        return [];
+        return {
+          data: [] as BlogPost[],
+          pagination: {
+            total: 0,
+            current_page: 1,
+            total_pages: 0,
+            per_page: 3,
+          },
+        } as BlogListResponse;
       }),
       getCategories().catch((error) => {
         console.error("Error fetching categories:", error);
         return {
-          count: 0,
-          next: null,
-          previous: null,
-          results: [] as Category[],
-        } satisfies PaginatedResponse<Category>;
+          data: [] as Category[],
+          pagination: {
+            total: 0,
+            current_page: 1,
+            total_pages: 0,
+            per_page: 10,
+          },
+        } as CategoryListResponse;
       }),
     ]);
 
-    // Extract categories from the paginated response
-    const categories = categoriesResponse.results || [];
+    const categories = categoriesResponse.data || [];
+    const posts = postsResponse.data || [];
 
     return (
       <aside className="space-y-8">
@@ -43,7 +52,7 @@ export async function BlogSidebar() {
           </h2>
           {categories.length > 0 ? (
             <ul className="space-y-2">
-              {categories.map((category) => (
+              {categories.map((category: Category) => (
                 <li key={`category-${category.id}`}>
                   <Link
                     href={`/blog?category=${category.slug}`}
@@ -66,7 +75,7 @@ export async function BlogSidebar() {
           </h2>
           {posts.length > 0 ? (
             <ul className="space-y-4">
-              {posts.map((post) => (
+              {posts.map((post: BlogPost) => (
                 <li key={`post-${post.id}`}>
                   <Link href={`/blog/${post.slug}`}>
                     <h3 className="text-gray-900 font-medium hover:text-primary-600">

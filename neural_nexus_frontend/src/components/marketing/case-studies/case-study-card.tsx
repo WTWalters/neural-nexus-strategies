@@ -21,9 +21,9 @@ export function CaseStudyCard({
   const handleClick = () => {
     trackCaseStudyEvent({
       action: "click",
-      category: "case_study",
       label: caseStudy.title,
-      metadata: {
+      properties: {
+        category: "case_study",
         id: caseStudy.id,
         industry: caseStudy.industry,
         featured,

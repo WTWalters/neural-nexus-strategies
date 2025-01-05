@@ -1,8 +1,6 @@
-// Path: neural_nexus_frontend/src/components/marketing/newsletter/NewsletterBanner.tsx
-"use client";
-
+// src/components/marketing/newsletter/NewsletterBanner.tsx
 import { useState } from "react";
-import { Alert, AlertDescription, AlertVariant } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +11,7 @@ type NewsletterFormData = {
 };
 
 type NewsletterStatus = "idle" | "submitting" | "success" | "error";
+type AlertType = "default" | "destructive" | "success"; // Added success variant
 
 export default function NewsletterBanner() {
   const [formData, setFormData] = useState<NewsletterFormData>({
@@ -23,7 +22,7 @@ export default function NewsletterBanner() {
 
   const [status, setStatus] = useState<NewsletterStatus>("idle");
   const [feedback, setFeedback] = useState<{
-    type: AlertVariant | null;
+    type: AlertType | null;
     message: string;
   }>({ type: null, message: "" });
 
@@ -82,7 +81,7 @@ export default function NewsletterBanner() {
 
           {feedback.type && (
             <Alert
-              variant={feedback.type}
+              variant={feedback.type === "success" ? "default" : "destructive"}
               className={cn(
                 feedback.type === "success"
                   ? "bg-success-50 border-success-200"

@@ -74,37 +74,69 @@ export async function getBlogPosts({
   tag?: string;
   per_page?: number;
 } = {}): Promise<BlogListResponse> {
-  const params = new URLSearchParams();
+  try {
+    const params = new URLSearchParams();
 
-  if (page > 1) params.append("page", page.toString());
-  if (category) params.append("category", category);
-  if (search) params.append("search", search);
-  if (tag) params.append("tag", tag);
-  params.append("per_page", per_page.toString());
+    if (page > 1) params.append("page", page.toString());
+    if (category) params.append("category", category);
+    if (search) params.append("search", search);
+    if (tag) params.append("tag", tag);
+    params.append("per_page", per_page.toString());
 
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/posts/${
-    params.toString() ? `?${params.toString()}` : ""
-  }`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/posts/${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
 
-  const response = await fetch(url, {
-    next: { revalidate: 60 },
-  });
+    console.log("Attempting to fetch blogs from URL:", url);
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch blog posts");
+    const response = await fetch(url, {
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch blog posts: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const posts = await response.json();
+    console.log("API Response:", posts);
+
+    // Handle the array response directly
+    if (Array.isArray(posts)) {
+      return {
+        data: posts.map(transformBlogPost),
+        pagination: {
+          total: posts.length,
+          current_page: page,
+          total_pages: Math.ceil(posts.length / per_page),
+          per_page,
+        },
+      };
+    }
+
+    // Fallback empty response
+    return {
+      data: [],
+      pagination: {
+        total: 0,
+        current_page: page,
+        total_pages: 0,
+        per_page,
+      },
+    };
+  } catch (error) {
+    console.error("Error in getBlogPosts:", error);
+    return {
+      data: [],
+      pagination: {
+        total: 0,
+        current_page: page,
+        total_pages: 0,
+        per_page,
+      },
+    };
   }
-
-  const apiResponse = (await response.json()) as ApiListResponse<ApiBlogPost>;
-
-  return {
-    data: apiResponse.results.map(transformBlogPost),
-    pagination: {
-      total: apiResponse.count,
-      current_page: page,
-      total_pages: Math.ceil(apiResponse.count / per_page),
-      per_page,
-    },
-  };
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {

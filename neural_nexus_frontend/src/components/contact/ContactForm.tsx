@@ -57,7 +57,7 @@ export default function ContactForm() {
   useEffect(() => {
     const initializeTracking = async () => {
       await tracking.initialize();
-      const deviceInfo = await tracking.deviceFingerprint.getDeviceInfo();
+      const deviceInfo = await tracking.getDeviceInfo();
 
       setTrackingData({
         deviceInfo,

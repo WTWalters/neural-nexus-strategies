@@ -47,9 +47,27 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {post.featured_image && (
               <div className="relative aspect-video w-full overflow-hidden rounded-lg mb-8">
                 <img
-                  src={post.featured_image}
-                  alt={post.title}
+                  src={
+                    typeof post.featured_image === "object"
+                      ? post.featured_image.url
+                      : post.featured_image
+                  }
+                  alt={
+                    typeof post.featured_image === "object"
+                      ? post.featured_image.altText || post.title
+                      : post.title
+                  }
                   className="object-cover w-full h-full"
+                  width={
+                    typeof post.featured_image === "object"
+                      ? post.featured_image.width
+                      : undefined
+                  }
+                  height={
+                    typeof post.featured_image === "object"
+                      ? post.featured_image.height
+                      : undefined
+                  }
                 />
               </div>
             )}
