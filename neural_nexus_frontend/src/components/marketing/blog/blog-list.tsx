@@ -1,4 +1,5 @@
 // src/components/marketing/blog/blog-list.tsx
+// Path: src/components/marketing/blog/blog-list.tsx
 
 import React, { Fragment } from "react";
 import { getBlogPosts } from "@/lib/api/blog";
@@ -6,6 +7,7 @@ import { BlogCard } from "./blog-card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { BlogPost, BlogListResponse } from "@/types/blog"; // Updated import
 
 interface BlogListProps {
   page: number;
@@ -16,20 +18,21 @@ interface BlogListProps {
 
 export async function BlogList({ page, category, tag, search }: BlogListProps) {
   try {
-    const posts = await getBlogPosts({
+    const response = await getBlogPosts({
       page,
       category,
       tag,
       search,
       per_page: 10,
     });
-    // Log the API call
-    console.log("API call response:", posts);
 
-    // Calculate total pages from posts length
-    const PER_PAGE = 10;
-    const totalItems = posts.length; // This should come from API total count
-    const totalPages = Math.ceil(totalItems / PER_PAGE);
+    const posts = Array.isArray(response) ? response : response.data;
+    const totalItems = Array.isArray(response)
+      ? response.length
+      : response.pagination.total;
+    const totalPages = Array.isArray(response)
+      ? Math.ceil(response.length / 10)
+      : Math.ceil(response.pagination.total / response.pagination.per_page);
 
     if (posts.length === 0) {
       return (

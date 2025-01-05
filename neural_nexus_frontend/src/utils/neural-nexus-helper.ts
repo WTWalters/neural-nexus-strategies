@@ -3,28 +3,43 @@
 import { Anthropic } from "@anthropic-ai/sdk";
 
 interface ComponentGuidance {
-    implementation: string;
-    stateManagement: string;
-    integrationPoints: string[];
+  implementation: string;
+  stateManagement: string;
+  integrationPoints: string[];
 }
 
+// Add type for Anthropic response content
+type AnthropicContent = {
+  type: "text";
+  text: string;
+}[];
+
+type AnthropicResponse = {
+  content: AnthropicContent;
+  // ... other response fields
+};
+
 export class NeuralNexusReactHelper {
-    private client: Anthropic;
+  private client: Anthropic;
 
-    constructor(apiKey: string) {
-        if (!apiKey) {
-            throw new Error("Anthropic API key is required");
-        }
-        this.client = new Anthropic({
-            apiKey,
-        });
+  constructor(apiKey: string) {
+    if (!apiKey) {
+      throw new Error("Anthropic API key is required");
     }
+    this.client = new Anthropic({
+      apiKey,
+    });
+  }
 
-    async getComponentGuidance(
-        componentName: string,
-        context?: string,
-    ): Promise<ComponentGuidance> {
-        const prompt = `Based on the Neural Nexus Strategies project documentation,
+  private extractContentText(content: AnthropicContent): string {
+    return content.map((block) => block.text).join("\n");
+  }
+
+  async getComponentGuidance(
+    componentName: string,
+    context?: string,
+  ): Promise<ComponentGuidance> {
+    const prompt = `Based on the Neural Nexus Strategies project documentation,
     provide specific implementation guidance for the ${componentName} React component.
 
     Additional Context: ${context || "None"}
@@ -36,37 +51,37 @@ export class NeuralNexusReactHelper {
     4. Important considerations for this component
     5. Best practices to follow`;
 
-        try {
-            const response = await this.client.messages.create({
-                model: "claude-3-opus-20240229",
-                max_tokens: 1000,
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt,
-                    },
-                ],
-            });
+    try {
+      const response = await this.client.messages.create({
+        model: "claude-3-opus-20240229",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
 
-            // Parse the response into structured guidance
-            return {
-                implementation: response.content,
-                stateManagement: this.extractStateManagement(response.content),
-                integrationPoints: this.extractIntegrationPoints(
-                    response.content,
-                ),
-            };
-        } catch (error) {
-            console.error("Error getting component guidance:", error);
-            throw error;
-        }
+      const contentText = this.extractContentText(response.content);
+
+      // Parse the response into structured guidance
+      return {
+        implementation: contentText,
+        stateManagement: this.extractStateManagement(contentText),
+        integrationPoints: this.extractIntegrationPoints(contentText),
+      };
+    } catch (error) {
+      console.error("Error getting component guidance:", error);
+      throw error;
     }
+  }
 
-    async checkImplementation(
-        code: string,
-        componentName: string,
-    ): Promise<string> {
-        const prompt = `Review this implementation of the ${componentName} React component
+  async checkImplementation(
+    code: string,
+    componentName: string,
+  ): Promise<string> {
+    const prompt = `Review this implementation of the ${componentName} React component
     against the Neural Nexus Strategies project requirements:
 
     ${code}
@@ -79,27 +94,27 @@ export class NeuralNexusReactHelper {
     5. Error handling
     6. Integration with backend APIs`;
 
-        try {
-            const response = await this.client.messages.create({
-                model: "claude-3-opus-20240229",
-                max_tokens: 1000,
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt,
-                    },
-                ],
-            });
+    try {
+      const response = await this.client.messages.create({
+        model: "claude-3-opus-20240229",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
 
-            return response.content;
-        } catch (error) {
-            console.error("Error checking implementation:", error);
-            throw error;
-        }
+      return this.extractContentText(response.content);
+    } catch (error) {
+      console.error("Error checking implementation:", error);
+      throw error;
     }
+  }
 
-    async getAPIGuidance(endpoint: string): Promise<string> {
-        const prompt = `Based on the Neural Nexus Strategies API documentation,
+  async getAPIGuidance(endpoint: string): Promise<string> {
+    const prompt = `Based on the Neural Nexus Strategies API documentation,
     provide guidance for implementing the ${endpoint} API integration.
     Include:
     1. Request/response structure
@@ -108,34 +123,32 @@ export class NeuralNexusReactHelper {
     4. Data transformation requirements
     5. Best practices for this endpoint`;
 
-        try {
-            const response = await this.client.messages.create({
-                model: "claude-3-opus-20240229",
-                max_tokens: 1000,
-                messages: [
-                    {
-                        role: "user",
-                        content: prompt,
-                    },
-                ],
-            });
+    try {
+      const response = await this.client.messages.create({
+        model: "claude-3-opus-20240229",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
 
-            return response.content;
-        } catch (error) {
-            console.error("Error getting API guidance:", error);
-            throw error;
-        }
+      return this.extractContentText(response.content);
+    } catch (error) {
+      console.error("Error getting API guidance:", error);
+      throw error;
     }
+  }
 
-    private extractStateManagement(content: string): string {
-        // In a real implementation, you would parse the content to extract state management guidance
-        return content;
-    }
+  private extractStateManagement(content: string): string {
+    return content;
+  }
 
-    private extractIntegrationPoints(content: string): string[] {
-        // In a real implementation, you would parse the content to extract integration points
-        return [];
-    }
+  private extractIntegrationPoints(content: string): string[] {
+    return [];
+  }
 }
 
 // Example usage:

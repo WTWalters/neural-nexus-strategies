@@ -1,10 +1,11 @@
 // src/components/marketing/blog/blog-card.tsx
+// Path: src/components/marketing/blog/blog-card.tsx
 
 "use client";
 
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
-import { BlogPost } from "@/types/blogs";
+import { BlogPost } from "@/types/blog"; // Updated import path
 import { cn } from "@/lib/utils";
 import { BlogImage } from "./blog-image";
 import { trackBlogEvent } from "@/lib/analytics";
@@ -39,11 +40,14 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
       label: post.title,
       metadata: {
         postId: post.id,
-        category: post.category.name,
+        category: post.category?.name || "Uncategorized",
         featured,
       },
     });
   };
+
+  const publicationDate = post.published_at || post.created_at;
+  const formattedDate = formatDate(publicationDate);
 
   return (
     <article
@@ -73,12 +77,10 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         {/* Meta Information */}
         <div className="flex items-center text-sm text-gray-600 mb-3">
           <span className="text-primary-600 font-medium">
-            {post.category.name}
+            {post.category?.name || "Uncategorized"}
           </span>
           <span className="mx-2">•</span>
-          <time dateTime={post.published_at || post.created_at}>
-            {formatDate(post.published_at || post.created_at)}
-          </time>
+          <time dateTime={publicationDate}>{formattedDate}</time>
           {post.estimated_read_time > 0 && (
             <>
               <span className="mx-2">•</span>

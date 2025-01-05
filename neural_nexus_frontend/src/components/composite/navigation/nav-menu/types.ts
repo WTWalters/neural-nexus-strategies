@@ -1,4 +1,5 @@
 // src/components/composite/navigation/nav-menu/types.ts
+import { MouseEventHandler } from "react";
 import { NavigationMenuProps as RadixNavigationMenuProps } from "@radix-ui/react-navigation-menu";
 
 export interface NavMenuItem {
@@ -8,7 +9,7 @@ export interface NavMenuItem {
   description?: string;
   isExternal?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
 }
 
 export interface NavMenuProps

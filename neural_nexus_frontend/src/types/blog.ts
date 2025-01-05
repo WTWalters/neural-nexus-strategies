@@ -1,4 +1,5 @@
 // src/types/blog.ts
+// Path: src/types/blog.ts
 
 export interface ImageAsset {
   url: string;
@@ -21,7 +22,7 @@ export interface BlogPost {
     slug: string;
     description: string;
   };
-  featured_image?: ImageAsset; // Updated from string to ImageAsset
+  featured_image?: ImageAsset;
   author: number;
   published_at: string | null;
   created_at: string;
@@ -33,7 +34,7 @@ export interface BlogPost {
   view_count: number;
 }
 
-interface PaginationInfo {
+export interface PaginationInfo {
   total: number;
   current_page: number;
   total_pages: number;
@@ -45,4 +46,14 @@ export interface Category {
   name: string;
   slug: string;
   description: string;
+}
+
+export interface BlogListResponse {
+  data: BlogPost[];
+  pagination: PaginationInfo;
+}
+
+export interface CategoryListResponse {
+  data: Category[];
+  pagination: PaginationInfo;
 }
