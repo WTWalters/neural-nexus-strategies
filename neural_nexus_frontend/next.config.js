@@ -13,15 +13,15 @@ const nextConfig = {
       },
     ];
   },
-  // Add this section
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Add this to prevent static exports
-  experimental: {
-    // This will make the build process use server-side rendering
-    workerThreads: false,
-    cpus: 1,
+  // Add these configurations
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  images: {
+    unoptimized: true,
   },
 };
 

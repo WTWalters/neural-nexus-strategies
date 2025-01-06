@@ -1,12 +1,15 @@
 // src/app/test/page.tsx
-"use client";
+// Path: src/app/test/page.tsx
+import dynamic from "next/dynamic";
 
-import GeometricPatterns from "@/components/marketing/home/GeometricPatterns";
+const GeometricPatterns = dynamic(
+  () => import("@/components/marketing/home/GeometricPatterns"),
+  { ssr: false },
+);
 
 export default function TestPage() {
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-white to-gray-50">
-      {/* Debug border to see container boundaries */}
       <div className="relative border-2 border-dashed border-red-500 min-h-screen">
         <GeometricPatterns />
         <div className="relative z-10 p-8">
