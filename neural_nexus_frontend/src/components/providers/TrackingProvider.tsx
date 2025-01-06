@@ -4,16 +4,12 @@
 import { useEffect, useCallback } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { tracking } from "@/lib/tracking";
+import { Suspense } from "react";
 
-export default function TrackingProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function TrackingWrapper() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Track page views
   const handlePageView = useCallback(() => {
     tracking.trackEvent("page_view", {
       page: pathname ?? "",
@@ -22,15 +18,28 @@ export default function TrackingProvider({
     });
   }, [pathname, searchParams]);
 
-  // Initialize tracking
   useEffect(() => {
     tracking.initialize().catch(console.error);
   }, []);
 
-  // Track page views on navigation
   useEffect(() => {
     handlePageView();
   }, [handlePageView]);
 
-  return <>{children}</>;
+  return null;
+}
+
+export default function TrackingProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <Suspense>
+        <TrackingWrapper />
+      </Suspense>
+      {children}
+    </>
+  );
 }
