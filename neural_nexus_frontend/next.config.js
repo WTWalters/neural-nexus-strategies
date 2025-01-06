@@ -8,7 +8,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`, // Error was here - had an extra '/'
+        destination: `https://nns-backend-production.up.railway.app/api/:path*`, // Direct URL instead of template literal
       },
     ];
   },
