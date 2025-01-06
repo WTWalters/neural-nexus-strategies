@@ -1,4 +1,5 @@
-// src/components/marketing/services/service-breadcrumb.tsx
+// Path: neural_nexus_frontend/src/components/marketing/services/service-breadcrumb.tsx
+"use client";
 
 import * as React from "react";
 import Link from "next/link";

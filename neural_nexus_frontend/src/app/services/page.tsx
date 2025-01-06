@@ -2,7 +2,6 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
-// Dynamically import the client component
 const ServicesContent = dynamic(
   () => import("@/components/services/ServicesContent"),
   {

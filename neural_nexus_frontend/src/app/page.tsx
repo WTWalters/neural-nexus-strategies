@@ -1,21 +1,60 @@
-// src/app/page.tsx
+// Path: neural_nexus_frontend/src/app/page.tsx
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamic imports for client components
+const NewsletterBanner = dynamic(
+  () => import("@/components/marketing/newsletter/NewsletterBanner"),
+  {
+    ssr: false,
+  },
+);
+
+const FeaturedInsight = dynamic(
+  () => import("@/components/marketing/home/featured-insight"),
+  {
+    ssr: false,
+  },
+);
+
+const EnhancedFeaturesSection = dynamic(
+  () => import("@/components/marketing/home/enhanced-features-section"),
+  {
+    ssr: false,
+  },
+);
+
+const AnimatedMetrics = dynamic(
+  () => import("@/components/marketing/home/AnimatedMetrics"),
+  {
+    ssr: false,
+  },
+);
+
+const GeometricPatterns = dynamic(
+  () => import("@/components/marketing/home/GeometricPatterns"),
+  {
+    ssr: false,
+  },
+);
+
+// Import static components
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import FeaturedInsight from "@/components/marketing/home/featured-insight";
-import EnhancedFeaturesSection from "@/components/marketing/home/enhanced-features-section";
-import NewsletterBanner from "@/components/marketing/newsletter/NewsletterBanner";
-import Layout from "@/components/layout/Layout";
 import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
-import AnimatedMetrics from "@/components/marketing/home/AnimatedMetrics";
-import GeometricPatterns from "@/components/marketing/home/GeometricPatterns";
+
+export const fetchCache = "force-dynamic";
 
 export default function Home() {
   return (
     <main className="min-h-screen relative bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       {/* Container for patterns with specific z-index */}
       <div className="absolute inset-0 overflow-hidden z-0">
-        <GeometricPatterns />
+        <Suspense
+          fallback={<div className="animate-pulse h-full bg-primary-50" />}
+        >
+          <GeometricPatterns />
+        </Suspense>
       </div>
 
       {/* Content container with higher z-index */}
@@ -33,7 +72,13 @@ export default function Home() {
               enterprises. Get expert guidance without the full-time executive
               cost.
             </p>
-            <AnimatedMetrics />
+            <Suspense
+              fallback={
+                <div className="animate-pulse h-24 bg-gray-100 rounded-lg mb-8" />
+              }
+            >
+              <AnimatedMetrics />
+            </Suspense>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <BookDiscoveryButton size="lg" variant="default" />
               <Button variant="default" size="lg" asChild>
@@ -42,9 +87,17 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <NewsletterBanner />
-        <FeaturedInsight />
-        <EnhancedFeaturesSection />
+        <Suspense
+          fallback={<div className="animate-pulse h-32 bg-primary-50" />}
+        >
+          <NewsletterBanner />
+        </Suspense>
+        <Suspense fallback={<div className="animate-pulse h-48 bg-gray-100" />}>
+          <FeaturedInsight />
+        </Suspense>
+        <Suspense fallback={<div className="animate-pulse h-96 bg-gray-50" />}>
+          <EnhancedFeaturesSection />
+        </Suspense>
       </div>
     </main>
   );

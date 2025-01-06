@@ -1,10 +1,23 @@
 // Path: neural_nexus_frontend/src/components/services/ServicesContent.tsx
 "use client";
 
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { ServiceBreadcrumb } from "@/components/marketing/services/service-breadcrumb";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+// Dynamic import for the breadcrumb
+const ServiceBreadcrumb = dynamic(
+  () =>
+    import("@/components/marketing/services/service-breadcrumb").then(
+      (mod) => mod.ServiceBreadcrumb,
+    ),
+  {
+    ssr: false,
+    loading: () => <div className="h-8 bg-gray-100 rounded animate-pulse" />,
+  },
+);
 
 interface Feature {
   id: number;
@@ -130,10 +143,14 @@ export default function ServicesContent() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
       <div className="container mx-auto px-4 py-12">
-        <ServiceBreadcrumb
-          items={[{ label: "All Services" }]}
-          className="mb-8"
-        />
+        <Suspense
+          fallback={<div className="h-8 bg-gray-100 rounded animate-pulse" />}
+        >
+          <ServiceBreadcrumb
+            items={[{ label: "All Services" }]}
+            className="mb-8"
+          />
+        </Suspense>
 
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
