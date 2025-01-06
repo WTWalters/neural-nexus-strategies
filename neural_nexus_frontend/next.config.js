@@ -6,12 +6,12 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
   async rewrites() {
-    return [
-      {
+    async rewrites() {
+      return [{
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
-      },
-    ];
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`, // Remove /api from here
+      }];
+    }
   },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
