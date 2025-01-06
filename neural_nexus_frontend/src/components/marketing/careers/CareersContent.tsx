@@ -5,6 +5,28 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Send, Briefcase, Heart, Users, Sparkles, Gem } from "lucide-react";
 
+interface ScrollLinkProps {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+const ScrollLink = ({ href, children, className }: ScrollLinkProps) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <a href={href} onClick={handleClick} className={className}>
+      {children}
+    </a>
+  );
+};
+
 const benefits = [
   {
     icon: <Heart className="h-6 w-6" />,
@@ -74,12 +96,13 @@ export default function CareersContent() {
               leverage data and AI. We're looking for passionate individuals who
               want to make a real impact.
             </p>
+            {/* Replace the existing Button with this updated version */}
             <Button
               size="lg"
               className="bg-primary hover:bg-primary/90"
               asChild
             >
-              <a href="#positions">View Open Positions</a>
+              <ScrollLink href="#positions">View Open Positions</ScrollLink>
             </Button>
           </div>
         </div>

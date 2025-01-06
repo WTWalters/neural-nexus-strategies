@@ -1,8 +1,8 @@
 // Path: neural_nexus_frontend/src/app/(marketing)/careers/page.tsx
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 
-const CareersContent = dynamic(
+const CareersContent = dynamicImport(
   () => import("@/components/marketing/careers/CareersContent"),
   {
     ssr: false,
@@ -15,6 +15,8 @@ const CareersContent = dynamic(
   },
 );
 
+export const revalidate = 3600; // Revalidate every hour
+export const dynamic = "force-dynamic";
 export const fetchCache = "force-dynamic";
 
 export default function CareersPage() {

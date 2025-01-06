@@ -1,12 +1,15 @@
 // Path: neural_nexus_frontend/src/app/page.tsx
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Dynamic imports for client components
 const NewsletterBanner = dynamic(
   () => import("@/components/marketing/newsletter/NewsletterBanner"),
   {
     ssr: false,
+    loading: () => <div className="animate-pulse h-32 bg-primary-50" />,
   },
 );
 
@@ -14,6 +17,7 @@ const FeaturedInsight = dynamic(
   () => import("@/components/marketing/home/featured-insight"),
   {
     ssr: false,
+    loading: () => <div className="animate-pulse h-48 bg-gray-100" />,
   },
 );
 
@@ -21,6 +25,7 @@ const EnhancedFeaturesSection = dynamic(
   () => import("@/components/marketing/home/enhanced-features-section"),
   {
     ssr: false,
+    loading: () => <div className="animate-pulse h-96 bg-gray-50" />,
   },
 );
 
@@ -28,6 +33,9 @@ const AnimatedMetrics = dynamic(
   () => import("@/components/marketing/home/AnimatedMetrics"),
   {
     ssr: false,
+    loading: () => (
+      <div className="animate-pulse h-24 bg-gray-100 rounded-lg" />
+    ),
   },
 );
 
@@ -35,13 +43,22 @@ const GeometricPatterns = dynamic(
   () => import("@/components/marketing/home/GeometricPatterns"),
   {
     ssr: false,
+    loading: () => <div className="animate-pulse h-full bg-primary-50" />,
   },
 );
 
-// Import static components
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
+const BookDiscoveryButton = dynamic(
+  () =>
+    import("@/components/features/booking/BookDiscoveryButton").then(
+      (mod) => mod.BookDiscoveryButton,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="animate-pulse h-12 w-48 bg-primary-100 rounded-md" />
+    ),
+  },
+);
 
 export const fetchCache = "force-dynamic";
 
@@ -80,7 +97,13 @@ export default function Home() {
               <AnimatedMetrics />
             </Suspense>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <BookDiscoveryButton size="lg" variant="default" />
+              <Suspense
+                fallback={
+                  <div className="animate-pulse h-12 w-48 bg-primary-100 rounded-md" />
+                }
+              >
+                <BookDiscoveryButton size="lg" variant="default" />
+              </Suspense>
               <Button variant="default" size="lg" asChild>
                 <Link href="/services">Explore Services</Link>
               </Button>
