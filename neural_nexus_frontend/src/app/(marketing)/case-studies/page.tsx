@@ -1,10 +1,12 @@
-// src/app/(marketing)/case-studies/page.tsx
+// Path: neural_nexus_frontend/src/app/(marketing)/case-studies/page.tsx
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { CaseStudyErrorBoundary } from "@/components/marketing/case-studies/case-study-error-boundary";
-import { CaseStudyAnalytics } from "@/components/marketing/case-studies/case-study-analytics";
-import { getCaseStudies } from "@/lib/api/case-studies";
 import { CaseStudyList } from "@/components/marketing/case-studies/case-study-list";
 import { CaseStudySearch } from "@/components/marketing/case-studies/case-study-search";
-import { notFound } from "next/navigation";
+import { CaseStudyAnalytics } from "@/components/marketing/case-studies/case-study-analytics";
+
+export const fetchCache = "force-dynamic";
 
 interface CaseStudiesPageProps {
   searchParams: {
@@ -38,11 +40,17 @@ export default async function CaseStudiesPage({
             <CaseStudySearch />
           </div>
 
-          <CaseStudyList
-            page={parseInt(page)}
-            industry={industry}
-            search={search}
-          />
+          <Suspense
+            fallback={
+              <div className="animate-pulse h-96 bg-gray-100 rounded-lg" />
+            }
+          >
+            <CaseStudyList
+              page={parseInt(page)}
+              industry={industry}
+              search={search}
+            />
+          </Suspense>
         </div>
       </CaseStudyErrorBoundary>
     );

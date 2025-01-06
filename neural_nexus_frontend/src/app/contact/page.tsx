@@ -1,8 +1,19 @@
 // src/app/contact/page.tsx
-import ContactForm from "@/components/contact/ContactForm";
-import FAQ from "@/components/contact/FAQ";
+import dynamic from "next/dynamic";
 import ContactInfo from "@/components/contact/ContactInfo";
-import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton"; // Add this
+import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
+
+// Dynamically import client components with no SSR
+const ContactForm = dynamic(() => import("@/components/contact/ContactForm"), {
+  ssr: false,
+});
+
+const FAQ = dynamic(() => import("@/components/contact/FAQ"), {
+  ssr: false,
+});
+
+// Use a different name for the config export
+export const fetchCache = "force-dynamic";
 
 export default function ContactPage() {
   return (
@@ -17,7 +28,9 @@ export default function ContactPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <ContactInfo />
-        <ContactForm />
+        <div className="min-h-[200px]">
+          <ContactForm />
+        </div>
       </div>
 
       <div className="mt-16">

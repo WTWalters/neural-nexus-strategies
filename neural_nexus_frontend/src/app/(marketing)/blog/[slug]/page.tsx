@@ -1,11 +1,13 @@
-// src/app/(marketing)/blog/[slug]/page.tsx
-
+// Path: neural_nexus_frontend/src/app/(marketing)/blog/[slug]/page.tsx
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { BlogSidebar } from "@/components/marketing/blog/blog-sidebar";
 import { BlogBreadcrumb } from "@/components/marketing/blog/blog-breadcrumb";
-import { NewsletterContentEnd } from "@/components/marketing/newsletter/newsletter-content-end"; // Add this import
+import { BlogSidebar } from "@/components/marketing/blog/blog-sidebar";
+import { NewsletterContentEnd } from "@/components/marketing/newsletter/newsletter-content-end";
 import { getBlogPost } from "@/lib/api/blog";
 import { formatDate, formatContent } from "@/lib/utils";
+
+export const fetchCache = "force-dynamic";
 
 interface BlogPostPageProps {
   params: {
@@ -24,7 +26,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       notFound();
     }
 
-    // Define breadcrumb items based on the post data
     const breadcrumbItems = [
       {
         label: post.category.name,
@@ -37,7 +38,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
     return (
       <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb - now with explicit styling for visibility */}
         <div className="mb-8 bg-gray-50 p-4 rounded-lg shadow-sm">
           <BlogBreadcrumb items={breadcrumbItems} className="text-sm" />
         </div>
@@ -103,14 +103,25 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               }}
             />
 
-            {/* Add newsletter component after the content */}
             <div className="mt-16">
-              <NewsletterContentEnd />
+              <Suspense
+                fallback={
+                  <div className="animate-pulse h-48 bg-gray-100 rounded-lg" />
+                }
+              >
+                <NewsletterContentEnd />
+              </Suspense>
             </div>
           </article>
 
           <div className="md:w-1/3">
-            <BlogSidebar />
+            <Suspense
+              fallback={
+                <div className="animate-pulse h-96 bg-gray-100 rounded-lg" />
+              }
+            >
+              <BlogSidebar />
+            </Suspense>
           </div>
         </div>
       </div>
