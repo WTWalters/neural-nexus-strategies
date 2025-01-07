@@ -13,6 +13,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { env } from "@/config/env";
 
 type NewsletterStatus = "idle" | "submitting" | "success" | "error";
 
@@ -34,7 +35,7 @@ export function NewsletterContentEnd() {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/leads/newsletter/subscribe/",
+        `${env.NEXT_PUBLIC_API_URL}/api/leads/newsletter/subscribe/`, // Updated this line
         {
           method: "POST",
           headers: {
