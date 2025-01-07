@@ -10,39 +10,28 @@ interface Service {
 }
 
 export async function getServices(): Promise<Service[]> {
-  // Note: Using /api/services/ instead of /api/content/services/
   const baseUrl = new URL("/api/services/", env.NEXT_PUBLIC_API_URL);
   console.log("Fetching services from:", baseUrl.toString());
 
-  const response = await fetch(baseUrl.toString(), {
-    next: { revalidate: 60 },
-  });
-
-  if (!response.ok) {
-    console.error(
-      `Failed to fetch services: ${response.status} ${response.statusText}`,
-    );
-    throw new Error("Failed to fetch services");
-  }
-
-  return response.json();
-}
-
-export async function getServiceBySlug(slug: string): Promise<Service | null> {
   try {
-    // Note: Using /api/services/{slug}/ instead of /api/content/services/{slug}/
-    const baseUrl = new URL(`/api/services/${slug}/`, env.NEXT_PUBLIC_API_URL);
     const response = await fetch(baseUrl.toString(), {
       next: { revalidate: 60 },
+      headers: {
+        Accept: "application/json",
+      },
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch service: ${response.statusText}`);
+      console.error(
+        `Failed to fetch services: ${response.status} ${response.statusText}`,
+      );
+      throw new Error("Failed to fetch services");
     }
 
-    return response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error("Error fetching service:", error);
-    return null;
+    console.error("Error fetching services:", error);
+    throw error;
   }
 }
