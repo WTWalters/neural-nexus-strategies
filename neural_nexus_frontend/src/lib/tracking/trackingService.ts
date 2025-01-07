@@ -117,7 +117,8 @@ export class TrackingService {
 
   private async sendToBackend(event: TrackingEvent): Promise<void> {
     try {
-      await fetch(this.config.apiEndpoint, {
+      const baseUrl = new URL(this.config.apiEndpoint, env.NEXT_PUBLIC_API_URL);
+      await fetch(baseUrl.toString(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

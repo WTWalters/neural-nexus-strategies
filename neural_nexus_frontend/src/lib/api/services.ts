@@ -10,9 +10,12 @@ interface Service {
 }
 
 export async function getServices(): Promise<Service[]> {
-  const baseUrl = new URL("/api/content/services/", env.NEXT_PUBLIC_API_URL);
+  // Note: Using /api/services/ instead of /api/content/services/
+  const baseUrl = new URL("/api/services/", env.NEXT_PUBLIC_API_URL);
+  console.log("Fetching services from:", baseUrl.toString());
+
   const response = await fetch(baseUrl.toString(), {
-    next: { revalidate: 60 }, // Cache for 60 seconds
+    next: { revalidate: 60 },
   });
 
   if (!response.ok) {
@@ -27,10 +30,8 @@ export async function getServices(): Promise<Service[]> {
 
 export async function getServiceBySlug(slug: string): Promise<Service | null> {
   try {
-    const baseUrl = new URL(
-      `/api/content/services/${slug}/`,
-      env.NEXT_PUBLIC_API_URL,
-    );
+    // Note: Using /api/services/{slug}/ instead of /api/content/services/{slug}/
+    const baseUrl = new URL(`/api/services/${slug}/`, env.NEXT_PUBLIC_API_URL);
     const response = await fetch(baseUrl.toString(), {
       next: { revalidate: 60 },
     });

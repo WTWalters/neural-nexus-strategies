@@ -9,7 +9,7 @@ import { TrackingService } from "./trackingService";
 const defaultConfig = {
   sessionTimeout: 30,
   anonymousIdPrefix: "nns",
-  apiEndpoint: "/api/tracking",
+  apiEndpoint: "/api/content/tracking/", // Updated to match Django URL structure
   googleAnalyticsId: process.env.NEXT_PUBLIC_GA_ID,
 };
 
