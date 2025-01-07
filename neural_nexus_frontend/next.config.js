@@ -1,14 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  },
   rewrites: async () => {
     return [
       {
         source: "/api/:path*",
-        destination: `https://nns-backend-production.up.railway.app/api/:path*`, // Direct URL instead of template literal
+        destination: "https://nns-backend-production.up.railway.app/api/:path*",
       },
     ];
   },

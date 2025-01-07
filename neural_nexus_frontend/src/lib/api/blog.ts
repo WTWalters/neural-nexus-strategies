@@ -8,6 +8,7 @@ import type {
   CategoryListResponse,
   ImageAsset,
 } from "@/types/blog";
+import { env } from "@/config/env";
 
 // API Response types
 interface ApiBlogPost {
@@ -83,13 +84,17 @@ export async function getBlogPosts({
     if (tag) params.append("tag", tag);
     params.append("per_page", per_page.toString());
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/posts/${
-      params.toString() ? `?${params.toString()}` : ""
-    }`;
+    // Use URL constructor for proper URL formatting
+    const baseUrl = new URL("/api/content/posts/", env.NEXT_PUBLIC_API_URL);
 
-    console.log("Attempting to fetch blogs from URL:", url);
+    // Add search params if they exist
+    if (params.toString()) {
+      baseUrl.search = params.toString();
+    }
 
-    const response = await fetch(url, {
+    console.log("Attempting to fetch blogs from URL:", baseUrl.toString());
+
+    const response = await fetch(baseUrl.toString(), {
       next: { revalidate: 60 },
     });
 

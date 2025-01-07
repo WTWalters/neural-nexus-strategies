@@ -1,9 +1,8 @@
-# Virtual Environment
+# Path: .gitignore (root)
+
+# Python/Django
 venv/
 env/
-.env
-
-# Python
 *.py[cod]
 __pycache__/
 *.so
@@ -14,8 +13,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-/lib/                  # only ignore lib in root
-node_modules/**/lib/   # ignore lib folders in node_modules
+/lib/
 lib64/
 parts/
 sdist/
@@ -24,21 +22,53 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Django
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
 staticfiles/
 
+# Node/Next.js
+node_modules/
+.next/
+out/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+.npm
+
+# Environment Files
+.env*
+!.env.example
+!.env.development
+!.env.production
+
+# Debug & Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+.eslintcache
+
+# Build outputs
+/build/
+/dist/
+production-config.json
+*.tsbuildinfo
+next-env.d.ts
+
 # IDEs and Editors
 .idea/
 .vscode/
 *.swp
 *.swo
-*~
+*.sublime-project
+*.sublime-workspace
 
 # OS generated files
 .DS_Store
@@ -48,3 +78,25 @@ staticfiles/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# SSL & Security
+*.pem
+*.crt
+*.key
+local-ssl/
+
+# Temporary Files
+tmp/
+temp/
+.cache/
+
+# Misc
+*.bak
+*.backup
+.directory
+*storybook.log
+.vercel
+
+# Local Development
+local/
+/local-config/

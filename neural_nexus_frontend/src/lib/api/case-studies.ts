@@ -1,5 +1,7 @@
 // src/lib/api/case-studies.ts
 
+import { env } from "@/config/env";
+
 export interface CaseStudy {
   id: number;
   title: string;
@@ -36,47 +38,52 @@ export async function getCaseStudies({
   search?: string;
   per_page?: number;
 } = {}): Promise<CaseStudy[]> {
-  const params = new URLSearchParams();
+  try {
+    const params = new URLSearchParams();
 
-  console.log("getCaseStudies called with:", {
-    page,
-    industry,
-    search,
-    per_page,
-  });
+    if (page > 1) params.append("page", page.toString());
+    if (industry) params.append("industry", industry);
+    if (search) params.append("search", search);
+    params.append("per_page", per_page.toString());
 
-  if (page > 1) params.append("page", page.toString());
-  if (industry) params.append("industry", industry);
-  if (search) params.append("search", search);
-  params.append("per_page", per_page.toString());
+    console.log("Fetching case studies with params:", params.toString());
 
-  console.log("Fetching case studies with params:", params.toString());
+    const baseUrl = new URL(
+      "/api/content/case-studies/",
+      env.NEXT_PUBLIC_API_URL,
+    );
+    if (params.toString()) {
+      baseUrl.search = params.toString();
+    }
 
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/case-studies/${
-    params.toString() ? `?${params.toString()}` : ""
-  }`;
+    console.log("API URL:", baseUrl.toString());
 
-  console.log("API URL:", url);
+    const response = await fetch(baseUrl.toString(), {
+      next: { revalidate: 60 },
+    });
 
-  const response = await fetch(url, {
-    next: { revalidate: 60 },
-  });
+    if (!response.ok) {
+      throw new Error("Failed to fetch case studies");
+    }
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch case studies");
+    const data = await response.json();
+    console.log("Fetched case studies:", data);
+    return data.results || data;
+  } catch (error) {
+    console.error("Error fetching case studies:", error);
+    return [];
   }
-
-  const data = await response.json();
-  console.log("Fetched case studies:", data);
-  return data.results || data;
 }
 
 export async function getCaseStudy(slug: string) {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/case-studies/${slug}/`; // Added trailing slash
-    console.log("Fetching case study from:", url);
+    const baseUrl = new URL(
+      `/api/content/case-studies/${slug}/`,
+      env.NEXT_PUBLIC_API_URL,
+    );
+    console.log("Fetching case study from:", baseUrl.toString());
 
-    const response = await fetch(url, {
+    const response = await fetch(baseUrl.toString(), {
       next: { revalidate: 60 },
       headers: {
         Accept: "application/json",
@@ -86,7 +93,6 @@ export async function getCaseStudy(slug: string) {
     console.log("Response status:", response.status);
     console.log("Response status text:", response.statusText);
 
-    // Try to get the error message from the response
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Error response:", errorText);
