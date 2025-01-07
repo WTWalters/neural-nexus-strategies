@@ -146,8 +146,11 @@ export async function getBlogPosts({
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/posts/${slug}`;
-    const response = await fetch(url, {
+    const baseUrl = new URL(
+      `/api/content/posts/${slug}`,
+      env.NEXT_PUBLIC_API_URL,
+    );
+    const response = await fetch(baseUrl.toString(), {
       next: { revalidate: 60 },
     });
 
@@ -164,8 +167,8 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 }
 
 export async function getCategories(): Promise<CategoryListResponse> {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/content/categories/`;
-  const response = await fetch(url, {
+  const baseUrl = new URL("/api/content/categories/", env.NEXT_PUBLIC_API_URL);
+  const response = await fetch(baseUrl.toString(), {
     next: { revalidate: 60 },
   });
 
@@ -190,19 +193,17 @@ export async function trackBlogAnalytics(
   blogId: number,
   timeOnPage?: number,
 ): Promise<void> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/content/analytics/`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        blog_post: blogId,
-        time_on_page: timeOnPage || 0,
-      }),
+  const baseUrl = new URL("/api/content/analytics/", env.NEXT_PUBLIC_API_URL);
+  const response = await fetch(baseUrl.toString(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({
+      blog_post: blogId,
+      time_on_page: timeOnPage || 0,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to track blog analytics");
