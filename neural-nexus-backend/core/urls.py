@@ -88,17 +88,13 @@ def health_check(request):
 
 urlpatterns = [
     path("health", include("core.health_urls")),
-    # Django admin interface
     path("admin/", admin.site.urls),
-    # API endpoints for different app modules
-    path("api/", include("services.urls")),
+    path("api/services/", include("services.urls"), name="services-api"),  # Updated this
     path("api/content/", include("content.urls")),
     path("api/leads/", include("leads.urls")),
-    # API documentation endpoints
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-    # Health check
     path("health", health_check, name="health_check_no_slash"),
     path("health/", health_check, name="health_check"),
 ]

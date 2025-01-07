@@ -1,5 +1,6 @@
 import { DeviceFingerprint } from "./deviceFingerprint";
 import { SessionManager } from "./sessionManager";
+import { env } from "@/config/env";
 import {
   UserIdentity,
   TrackingEvent,
@@ -117,7 +118,10 @@ export class TrackingService {
 
   private async sendToBackend(event: TrackingEvent): Promise<void> {
     try {
-      const baseUrl = new URL(this.config.apiEndpoint, env.NEXT_PUBLIC_API_URL);
+      const baseUrl = new URL(
+        "/api/content/tracking/",
+        env.NEXT_PUBLIC_API_URL,
+      );
       await fetch(baseUrl.toString(), {
         method: "POST",
         headers: {
