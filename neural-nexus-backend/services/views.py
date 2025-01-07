@@ -31,21 +31,26 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ["name", "base_price", "created_at"]
     ordering = ["base_price"]
 
-    def list(self, request, *args, **kwargs):
-        print("DEBUG: Received request in ServiceViewSet list method")
-        try:
-            queryset = self.get_queryset()
-            print(f"DEBUG: Found {queryset.count()} active services")
-            response = super().list(request, *args, **kwargs)
-            response["Access-Control-Allow-Origin"] = (
-                "https://nns-frontend-production.up.railway.app"
-            )
-            response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-            response["Access-Control-Allow-Headers"] = "Content-Type"
-            return response
-        except Exception as e:
-            print(f"DEBUG: Error in list view: {str(e)}")
-            return Response({"error": str(e)}, status=500)
+
+def list(self, request, *args, **kwargs):
+    print("DEBUG: Received request in ServiceViewSet list method")
+    print(f"DEBUG: Request headers: {request.headers}")
+    try:
+        queryset = self.get_queryset()
+        print(f"DEBUG: Found {queryset.count()} active services")
+        response = super().list(request, *args, **kwargs)
+
+        # Add CORS headers
+        response["Access-Control-Allow-Origin"] = "https://nns-frontend-production.up.railway.app"
+        response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response["Access-Control-Allow-Credentials"] = "true"
+
+        print("DEBUG: Response headers:", dict(response.headers))
+        return response
+    except Exception as e:
+        print(f"DEBUG: Error in list view: {str(e)}")
+        return Response({"error": str(e)}, status=500)
 
     @action(detail=False, methods=["get"])
     def metadata(self, request):
