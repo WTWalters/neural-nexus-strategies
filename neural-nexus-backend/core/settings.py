@@ -129,7 +129,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://nns-frontend-production.up.railway.app"]
 CORS_ALLOW_CREDENTIALS = True
 
 # Email Configuration
