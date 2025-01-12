@@ -1,3 +1,4 @@
+// Path: neural_nexus_frontend/src/app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -9,7 +10,12 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Neural Nexus Strategies",
-  description: "Data Strategy and AI Consulting Services",
+  description: "Data and AI Consulting Services",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

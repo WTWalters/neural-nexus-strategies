@@ -1,4 +1,4 @@
-// src/components/layout/Header.tsx
+// Path: neural_nexus_frontend/src/components/layout/Header.tsx
 "use client";
 import Link from "next/link";
 import { tracking } from "@/lib/tracking";
@@ -25,6 +25,7 @@ export default function Header() {
             {[
               { href: "/", text: "Home" },
               { href: "/services", text: "Services" },
+              { href: "/services/fractional-cdo", text: "Fractional CDO" },
               { href: "/blog", text: "Blog" },
               { href: "/about", text: "About" },
               { href: "/contact", text: "Contact" },
