@@ -137,11 +137,25 @@ export class TrackingService {
   private sendToGA(event: TrackingEvent): void {
     if (!window.gtag) return;
 
-    window.gtag("event", event.eventName, {
-      ...event.properties,
-      user_id: this.identity.id,
-      session_id: this.identity.sessionId,
-    });
+    // For page_view events, use a different format
+    if (event.eventName === "page_view") {
+      window.gtag("event", "page_view", {
+        page_title: event.properties.title,
+        page_location: window.location.href,
+        page_path: event.path,
+        user_id: this.identity.id,
+        session_id: this.identity.sessionId,
+      });
+    } else {
+      // For other events, keep the current format but add some GA4 specific parameters
+      window.gtag("event", event.eventName, {
+        ...event.properties,
+        user_id: this.identity.id,
+        session_id: this.identity.sessionId,
+        engagement_time_msec: 10,
+        session_engaged: true,
+      });
+    }
   }
 
   private initializeGA(): void {
@@ -156,7 +170,9 @@ export class TrackingService {
     };
     window.gtag("js", new Date());
     window.gtag("config", this.config.googleAnalyticsId!, {
-      send_page_view: false,
+      send_page_view: true, // Changed to true for automatic page views
+      cookie_domain: "neuralnexusstrategies.ai",
+      anonymize_ip: true,
     });
   }
 
