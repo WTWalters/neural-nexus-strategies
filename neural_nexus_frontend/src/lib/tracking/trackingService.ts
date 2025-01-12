@@ -168,14 +168,18 @@ export class TrackingService {
     }
   }
 
+  // Update the sendToGA method to include more parameters:
   private sendToGA(event: TrackingEvent): void {
     if (!window.gtag) return;
 
     try {
+      // Enhanced common parameters
       const commonParams = {
         session_id: this.identity.sessionId,
         user_id: this.identity.id,
-        client_id: window.ga?.getAll?.()?.[0]?.get?.("clientId"),
+        client_id:
+          window.ga?.getAll?.()?.[0]?.get?.("clientId") ||
+          this.identity.anonymousId,
         page_location: window.location.href,
         page_referrer: document.referrer,
         page_title: document.title,
@@ -186,12 +190,25 @@ export class TrackingService {
         is_first_visit: !localStorage.getItem("_ga"),
         session_engaged: true,
         session_start: this.isNewSession(),
+        // Add these new parameters
+        page_encoding: document.characterSet,
+        user_agent: navigator.userAgent,
+        host: window.location.host,
+        path: window.location.pathname,
+        timestamp: new Date().toISOString(),
+        // Time zone information
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone_offset: new Date().getTimezoneOffset(),
       };
 
       if (event.eventName === "page_view") {
         window.gtag("event", "page_view", {
           ...commonParams,
           ...event.properties,
+          // Page-specific parameters
+          page_type: this.getPageType(window.location.pathname),
+          navigation_type: this.getNavigationType(),
+          performance_timing: this.getPerformanceTiming(),
         });
       } else {
         window.gtag("event", event.eventName, {
@@ -202,6 +219,53 @@ export class TrackingService {
     } catch (error) {
       console.warn("Failed to send event to Google Analytics:", error);
     }
+  }
+
+  // Add helper methods for enhanced tracking
+  private getPageType(pathname: string): string {
+    if (pathname === "/") return "home";
+    const segments = pathname.split("/").filter(Boolean);
+    return segments[0] || "unknown";
+  }
+
+  private getNavigationType(): string {
+    if (
+      typeof window === "undefined" ||
+      !window.performance ||
+      !window.performance.navigation
+    ) {
+      return "unknown";
+    }
+    const navigation = window.performance.navigation;
+    switch (navigation.type) {
+      case 0:
+        return "navigate";
+      case 1:
+        return "reload";
+      case 2:
+        return "back_forward";
+      default:
+        return "unknown";
+    }
+  }
+
+  private getPerformanceTiming(): Record<string, number> {
+    if (
+      typeof window === "undefined" ||
+      !window.performance ||
+      !window.performance.timing
+    ) {
+      return {};
+    }
+
+    const timing = window.performance.timing;
+    return {
+      dns_time: timing.domainLookupEnd - timing.domainLookupStart,
+      connection_time: timing.connectEnd - timing.connectStart,
+      ttfb: timing.responseStart - timing.requestStart,
+      dom_load_time: timing.domContentLoadedEventEnd - timing.navigationStart,
+      page_load_time: timing.loadEventEnd - timing.navigationStart,
+    };
   }
 
   private async initializeGA(): Promise<void> {
