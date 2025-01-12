@@ -147,18 +147,37 @@ export async function getBlogPosts({
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const baseUrl = new URL(
-      `/api/content/posts/${slug}`,
+      `/api/content/posts/${slug}/`,
       env.NEXT_PUBLIC_API_URL,
     );
+    console.log("Fetching blog post from:", baseUrl.toString());
+
     const response = await fetch(baseUrl.toString(), {
-      next: { revalidate: 60 },
+      cache: "no-store",
+      headers: {
+        Accept: "application/json", // Added explicit Accept header
+      },
     });
 
+    console.log("Response status:", response.status);
+    console.log("Response status text:", response.statusText);
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch post: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
+      throw new Error(
+        `Failed to fetch post: ${response.status} ${response.statusText}`,
+      );
     }
 
-    const apiPost = (await response.json()) as ApiBlogPost;
+    const apiPost = await response.json();
+    console.log("Received post data:", apiPost);
+
+    if (!apiPost) {
+      console.error("No data returned from API");
+      return null;
+    }
+
     return transformBlogPost(apiPost);
   } catch (error) {
     console.error("Error fetching blog post:", error);
