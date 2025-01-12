@@ -1,3 +1,5 @@
+// Path: neural_nexus_frontend/src/lib/tracking/trackingService.ts
+
 import { DeviceFingerprint } from "./deviceFingerprint";
 import { SessionManager } from "./sessionManager";
 import { env } from "@/config/env";
@@ -12,6 +14,12 @@ import {
 declare global {
   interface Window {
     gtag: (command: string, ...args: any[]) => void;
+    dataLayer: any[];
+    ga?: {
+      getAll?: () => Array<{
+        get: (key: string) => string;
+      }>;
+    };
   }
 }
 
@@ -22,6 +30,7 @@ export class TrackingService {
   private deviceInfo: DeviceInfo | null = null;
   private config: TrackingConfig;
   private consent: ConsentSettings;
+  private initialized: boolean = false;
 
   public async getDeviceInfo(): Promise<DeviceInfo> {
     return this.deviceFingerprint.getDeviceInfo();
@@ -49,22 +58,31 @@ export class TrackingService {
   }
 
   public async initialize(): Promise<void> {
-    // Initialize device info
-    this.deviceInfo = await this.deviceFingerprint.getDeviceInfo();
+    try {
+      if (this.initialized) return;
 
-    // Initialize session
-    const session = SessionManager.initSession();
+      // Initialize device info
+      this.deviceInfo = await this.deviceFingerprint.getDeviceInfo();
 
-    // Update identity with session and device info
-    this.identity = {
-      ...this.identity,
-      deviceId: this.deviceInfo.deviceId,
-      sessionId: session.sessionId,
-    };
+      // Initialize session
+      const session = SessionManager.initSession();
 
-    // Initialize Google Analytics if configured
-    if (this.config.googleAnalyticsId && this.consent.analytics) {
-      this.initializeGA();
+      // Update identity with session and device info
+      this.identity = {
+        ...this.identity,
+        deviceId: this.deviceInfo.deviceId,
+        sessionId: session.sessionId,
+      };
+
+      // Initialize Google Analytics if configured
+      if (this.config.googleAnalyticsId && this.consent.analytics) {
+        await this.initializeGA();
+      }
+
+      this.initialized = true;
+    } catch (error) {
+      console.warn("Failed to initialize tracking:", error);
+      // Continue execution even if tracking fails
     }
   }
 
@@ -74,21 +92,25 @@ export class TrackingService {
   ): Promise<void> {
     if (!this.consent.analytics) return;
 
-    const event: TrackingEvent = {
-      eventName,
-      timestamp: Date.now(),
-      identity: this.identity,
-      properties,
-      source: window.location.hostname,
-      path: window.location.pathname,
-    };
+    try {
+      const event: TrackingEvent = {
+        eventName,
+        timestamp: Date.now(),
+        identity: this.identity,
+        properties,
+        source: window.location.hostname,
+        path: window.location.pathname,
+      };
 
-    // Send to our backend
-    await this.sendToBackend(event);
+      // Send to our backend first as fallback
+      await this.sendToBackend(event);
 
-    // Send to Google Analytics
-    if (this.config.googleAnalyticsId) {
-      this.sendToGA(event);
+      // Attempt to send to Google Analytics
+      if (this.config.googleAnalyticsId) {
+        this.sendToGA(event);
+      }
+    } catch (error) {
+      console.warn("Failed to track event:", error);
     }
   }
 
@@ -96,24 +118,32 @@ export class TrackingService {
     email: string,
     properties: Record<string, any> = {},
   ): void {
-    this.identity = {
-      ...this.identity,
-      type: "known",
-      email,
-      primaryEmail: email,
-    };
+    try {
+      this.identity = {
+        ...this.identity,
+        type: "known",
+        email,
+        primaryEmail: email,
+      };
 
-    this.saveIdentity();
-    this.trackEvent("user_identified", properties);
+      this.saveIdentity();
+      this.trackEvent("user_identified", properties);
+    } catch (error) {
+      console.warn("Failed to identify user:", error);
+    }
   }
 
   public updateConsent(settings: Partial<ConsentSettings>): void {
-    this.consent = {
-      ...this.consent,
-      ...settings,
-      updatedAt: Date.now(),
-    };
-    localStorage.setItem("nns_consent", JSON.stringify(this.consent));
+    try {
+      this.consent = {
+        ...this.consent,
+        ...settings,
+        updatedAt: Date.now(),
+      };
+      localStorage.setItem("nns_consent", JSON.stringify(this.consent));
+    } catch (error) {
+      console.warn("Failed to update consent:", error);
+    }
   }
 
   private async sendToBackend(event: TrackingEvent): Promise<void> {
@@ -122,58 +152,101 @@ export class TrackingService {
         "/api/content/tracking/",
         env.NEXT_PUBLIC_API_URL,
       );
-      await fetch(baseUrl.toString(), {
+      const response = await fetch(baseUrl.toString(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(event),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
-      console.error("Failed to send event to backend:", error);
+      console.warn("Failed to send event to backend:", error);
     }
   }
 
   private sendToGA(event: TrackingEvent): void {
     if (!window.gtag) return;
 
-    // For page_view events, use a different format
-    if (event.eventName === "page_view") {
-      window.gtag("event", "page_view", {
-        page_title: event.properties.title,
+    try {
+      const commonParams = {
+        session_id: this.identity.sessionId,
+        user_id: this.identity.id,
+        client_id: window.ga?.getAll?.()?.[0]?.get?.("clientId"),
         page_location: window.location.href,
-        page_path: event.path,
-        user_id: this.identity.id,
-        session_id: this.identity.sessionId,
-      });
-    } else {
-      // For other events, keep the current format but add some GA4 specific parameters
-      window.gtag("event", event.eventName, {
-        ...event.properties,
-        user_id: this.identity.id,
-        session_id: this.identity.sessionId,
+        page_referrer: document.referrer,
+        page_title: document.title,
+        screen_resolution: `${window.screen.width}x${window.screen.height}`,
+        viewport_size: `${window.innerWidth}x${window.innerHeight}`,
         engagement_time_msec: 10,
+        language: navigator.language,
+        is_first_visit: !localStorage.getItem("_ga"),
         session_engaged: true,
-      });
+        session_start: this.isNewSession(),
+      };
+
+      if (event.eventName === "page_view") {
+        window.gtag("event", "page_view", {
+          ...commonParams,
+          ...event.properties,
+        });
+      } else {
+        window.gtag("event", event.eventName, {
+          ...commonParams,
+          ...event.properties,
+        });
+      }
+    } catch (error) {
+      console.warn("Failed to send event to Google Analytics:", error);
     }
   }
 
-  private initializeGA(): void {
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${this.config.googleAnalyticsId}`;
-    document.head.appendChild(script);
+  private async initializeGA(): Promise<void> {
+    try {
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${this.config.googleAnalyticsId}`;
 
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () {
-      window.dataLayer.push(arguments);
-    };
-    window.gtag("js", new Date());
-    window.gtag("config", this.config.googleAnalyticsId!, {
-      send_page_view: true, // Changed to true for automatic page views
-      cookie_domain: "neuralnexusstrategies.ai",
-      anonymize_ip: true,
-    });
+      // Add proper error handling for script loading
+      await new Promise<void>((resolve, reject) => {
+        script.onload = () => resolve();
+        script.onerror = (e) => reject(e);
+        document.head.appendChild(script);
+      });
+
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function (...args) {
+        window.dataLayer.push(args);
+      };
+
+      window.gtag("js", new Date());
+      window.gtag("config", this.config.googleAnalyticsId!, {
+        send_page_view: true,
+        cookie_domain: "neuralnexusstrategies.ai",
+        anonymize_ip: true,
+        transport_url: window.location.origin,
+        first_party_collection: true,
+      });
+    } catch (error) {
+      console.warn("Failed to initialize Google Analytics:", error);
+      // Continue execution even if GA fails
+    }
+  }
+
+  private isNewSession(): boolean {
+    const lastHit = localStorage.getItem("_ga_last_hit");
+    const now = Date.now();
+    if (!lastHit) {
+      localStorage.setItem("_ga_last_hit", now.toString());
+      return true;
+    }
+    const timeSinceLastHit = now - parseInt(lastHit);
+    const isNew = timeSinceLastHit > 30 * 60 * 1000; // 30 minutes
+    localStorage.setItem("_ga_last_hit", now.toString());
+    return isNew;
   }
 
   private loadIdentity(): UserIdentity {
@@ -185,9 +258,13 @@ export class TrackingService {
       };
     }
 
-    const stored = localStorage.getItem("nns_identity");
-    if (stored) {
-      return JSON.parse(stored);
+    try {
+      const stored = localStorage.getItem("nns_identity");
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (error) {
+      console.warn("Failed to load identity from storage:", error);
     }
 
     return {
@@ -206,9 +283,13 @@ export class TrackingService {
       };
     }
 
-    const stored = localStorage.getItem("nns_consent");
-    if (stored) {
-      return JSON.parse(stored);
+    try {
+      const stored = localStorage.getItem("nns_consent");
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (error) {
+      console.warn("Failed to load consent from storage:", error);
     }
 
     return {
@@ -219,7 +300,11 @@ export class TrackingService {
   }
 
   private saveIdentity(): void {
-    localStorage.setItem("nns_identity", JSON.stringify(this.identity));
+    try {
+      localStorage.setItem("nns_identity", JSON.stringify(this.identity));
+    } catch (error) {
+      console.warn("Failed to save identity:", error);
+    }
   }
 
   private generateAnonymousId(): string {
