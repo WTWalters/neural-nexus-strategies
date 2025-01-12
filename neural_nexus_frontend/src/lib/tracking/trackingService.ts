@@ -33,7 +33,10 @@ export class TrackingService {
   private initialized: boolean = false;
 
   public async getDeviceInfo(): Promise<DeviceInfo> {
-    return this.deviceFingerprint.getDeviceInfo();
+    if (!this.deviceInfo) {
+      this.deviceInfo = await this.deviceFingerprint.getDeviceInfo();
+    }
+    return this.deviceInfo;
   }
 
   private constructor(config: TrackingConfig) {

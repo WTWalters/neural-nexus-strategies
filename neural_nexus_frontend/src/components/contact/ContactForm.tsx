@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { tracking } from "@/lib/tracking";
+import { tracking, DeviceFingerprint } from "@/lib/tracking";
 import { DeviceInfo, UserIdentity } from "@/lib/tracking/types";
 import { cn } from "@/lib/utils";
 
@@ -56,14 +56,19 @@ export default function ContactForm() {
   // Initialize tracking data when component mounts
   useEffect(() => {
     const initializeTracking = async () => {
-      await tracking.initialize();
-      const deviceInfo = await tracking.getDeviceInfo();
+      try {
+        await tracking.initialize();
+        const deviceFP = DeviceFingerprint.getInstance();
+        const deviceInfo = await deviceFP.getDeviceInfo();
 
-      setTrackingData({
-        deviceInfo,
-        identity: null, // We'll get this from the tracking events
-        sessionId: null, // We'll get this from the tracking events
-      });
+        setTrackingData({
+          deviceInfo,
+          identity: null,
+          sessionId: null,
+        });
+      } catch (error) {
+        console.error("Failed to initialize tracking:", error);
+      }
     };
 
     initializeTracking();
