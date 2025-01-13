@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
+import { Linkedin } from "lucide-react";
 
 // Animation variants
 const fadeIn = {
@@ -161,9 +163,18 @@ export default function AboutContent() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className="w-48 h-48 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full mb-6 flex items-center justify-center"
+                className="w-48 h-48 rounded-full mb-6 overflow-hidden relative"
               >
-                <span className="text-6xl">WW</span>
+                <CldImage
+                  width={384} // Doubled from 192 to get higher resolution
+                  height={384} // Doubled from 192 to get higher resolution
+                  src="Full_Res-33_Master_lpbddp"
+                  alt="Whit Walters"
+                  className="w-full h-full object-cover"
+                  priority
+                  format="webp" // Specify format
+                  quality={100} // Maximum quality
+                />
               </motion.div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
                 Whit Walters
@@ -176,6 +187,15 @@ export default function AboutContent() {
                 transformation, Whit leads Neural Nexus Strategies' mission to
                 help organizations leverage data for strategic advantage.
               </p>
+              <a
+                href="https://www.linkedin.com/in/whitwalters/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors"
+              >
+                <Linkedin size={20} />
+                <span>Connect on LinkedIn</span>
+              </a>
             </motion.div>
 
             {/* Jay Swartz */}
@@ -186,9 +206,16 @@ export default function AboutContent() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className="w-48 h-48 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full mb-6 flex items-center justify-center"
+                className="w-48 h-48 rounded-full mb-6 overflow-hidden relative"
               >
-                <span className="text-6xl">JS</span>
+                <CldImage
+                  width={192}
+                  height={192}
+                  src="JaySwartz2017_bqznnf"
+                  alt="Jay Swartz"
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </motion.div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
                 Jay Swartz
@@ -201,11 +228,19 @@ export default function AboutContent() {
                 technical expertise and practical experience in implementing AI
                 solutions across industries.
               </p>
+              <a
+                href="https://www.linkedin.com/in/jaywswartz/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors"
+              >
+                <Linkedin size={20} />
+                <span>Connect on LinkedIn</span>
+              </a>
             </motion.div>
           </div>
         </div>
       </motion.section>
-
       {/* Values Section with stagger effect */}
       <motion.section
         initial="hidden"

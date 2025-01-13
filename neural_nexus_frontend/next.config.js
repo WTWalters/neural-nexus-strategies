@@ -1,8 +1,11 @@
 // Path: neural_nexus_frontend/next.config.js
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  images: {
+    domains: ["res.cloudinary.com"],
+    unoptimized: true,
+  },
   rewrites: async () => {
     return [
       {
@@ -15,7 +18,6 @@ const nextConfig = {
   },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  images: { unoptimized: true },
 };
 
 module.exports = nextConfig;
