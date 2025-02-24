@@ -1,5 +1,7 @@
-// Path: neural_nexus_frontend/src/components/about/AboutContent.tsx
+// Path: src/components/about/AboutContent.tsx
 "use client";
+
+import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -7,7 +9,6 @@ import { CldImage } from "next-cloudinary";
 import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
 import { Linkedin } from "lucide-react";
 
-// Animation variants
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -37,50 +38,156 @@ const scaleIn = {
   },
 };
 
-// Values data
 const values = [
   {
     icon: "🎯",
-    title: "Excellence",
+    title: "Data-Driven Excellence",
     description:
-      "We strive for excellence in every engagement, delivering measurable value and tangible results to our clients.",
+      "We believe in making decisions backed by robust data and analytics",
   },
   {
     icon: "🤝",
-    title: "Partnership",
-    description:
-      "We work as true partners with our clients, ensuring long-term success through deep collaboration and shared goals.",
+    title: "Collaborative Innovation",
+    description: "Working together to create transformative solutions",
   },
   {
     icon: "💡",
-    title: "Innovation",
-    description:
-      "We stay at the forefront of data and AI technologies to bring cutting-edge solutions to our clients.",
+    title: "Strategic Vision",
+    description: "Looking ahead to shape the future of AI and data",
+  },
+];
+
+type LeadershipProfileProps = {
+  name: string;
+  title: string;
+  bio: string;
+  imageUrl: string;
+  linkedInUrl: string;
+  ctaText: string;
+  ctaLink: string;
+  isImageLeft: boolean;
+  extraLink?: { text: string; url: string };
+};
+
+function LeadershipProfile({
+  name,
+  title,
+  bio,
+  imageUrl,
+  linkedInUrl,
+  ctaText,
+  ctaLink,
+  isImageLeft,
+  extraLink,
+}: LeadershipProfileProps) {
+  const profileContent = (
+    <>
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 300 }}
+        className="aspect-square rounded-lg overflow-hidden relative mb-6"
+      >
+        <CldImage
+          width={400}
+          height={400}
+          src={imageUrl}
+          alt={name}
+          className="w-full h-full object-cover"
+          priority
+          format="webp"
+          quality={100}
+        />
+      </motion.div>
+      <h3 className="text-2xl font-bold text-gray-900 mb-2">{name}</h3>
+      <p className="text-primary-600 font-medium mb-4">{title}</p>
+      <div className="space-y-3">
+        <a
+          href={linkedInUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors"
+        >
+          <Linkedin size={20} />
+          <span>Connect on LinkedIn</span>
+        </a>
+        {extraLink && (
+          <a
+            href={extraLink.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-primary-600 hover:text-primary-700 transition-colors"
+          >
+            {extraLink.text}
+          </a>
+        )}
+      </div>
+    </>
+  );
+
+  const bioContent = (
+    <div className="prose prose-lg">
+      <p className="text-gray-600 leading-relaxed">{bio}</p>
+      <div className="mt-6">
+        <Link href={ctaLink}>
+          <Button variant="outline" className="mt-4">
+            {ctaText}
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
+
+  return (
+    <motion.div
+      variants={fadeIn}
+      className="grid md:grid-cols-12 gap-8 items-start"
+    >
+      {isImageLeft ? (
+        <>
+          <div className="md:col-span-4">{profileContent}</div>
+          <div className="md:col-span-8">{bioContent}</div>
+        </>
+      ) : (
+        <>
+          <div className="md:col-span-8">{bioContent}</div>
+          <div className="md:col-span-4">{profileContent}</div>
+        </>
+      )}
+    </motion.div>
+  );
+}
+
+const leadershipData = [
+  {
+    name: "Whit Walters",
+    title: "CEO, Co-Founder & Chief Data Officer",
+    bio: "Whit Walters leads Neural Nexus Strategies, empowering organizations to win in the age of AI. He translates complex data challenges into strategic opportunities, building the robust data foundations essential for successful AI adoption. A recognized leader in cloud computing and data strategy, Whit's insights have been shared at industry events like Google Next. He brings extensive experience in organizational transformation and a deep understanding of the challenges businesses face. He helps companies develop data-driven strategies and provides executive-level guidance on data governance, architecture, and team building.",
+    imageUrl: "Full_Res-33_Master_lpbddp",
+    linkedInUrl: "https://www.linkedin.com/in/whitwalters/",
+    ctaText: "Learn more about our Fractional CDO services",
+    ctaLink: "/services/fractional-cdo",
+    isImageLeft: true,
   },
   {
-    icon: "🔒",
-    title: "Trust",
-    description:
-      "We build lasting relationships based on transparency, integrity, and consistent delivery of value.",
-  },
-  {
-    icon: "📊",
-    title: "Data-Driven",
-    description:
-      "We practice what we preach, making decisions based on data and measurable outcomes.",
-  },
-  {
-    icon: "🚀",
-    title: "Impact",
-    description:
-      "We focus on transformative solutions that create lasting positive change for our clients.",
+    name: "Jay Swartz",
+    title: "Chief Data Scientist & Co-Founder",
+    bio: "Jay Swartz is a pioneer in applied AI and machine learning, driving innovation at Neural Nexus Strategies. He brings deep technical expertise and a practical approach to implementing AI solutions, helping businesses unlock the power of artificial intelligence. His expertise spans natural language processing, predictive modeling, and computer vision, enabling him to develop cutting-edge AI solutions across diverse industries. Jay has extensive experience helping businesses successfully implement AI and machine learning solutions, from initial strategy to deployment and ongoing optimization. A prolific inventor with multiple AI patents, Jay is also passionate about exploring the future of AI and AGI on AGIish.com.",
+    imageUrl: "JaySwartz2017_bqznnf",
+    linkedInUrl: "https://www.linkedin.com/in/jaywswartz/",
+    ctaText: "Learn more about our AI services",
+    ctaLink: "/services",
+    isImageLeft: false,
+    extraLink: {
+      text: "Visit Jay's AGIish.com",
+      url: "https://agiish.com/",
+    },
   },
 ];
 
 export default function AboutContent() {
   return (
     <div className="flex flex-col">
-      {/* Hero Section with fade in animation */}
+      {/* Hero Section */}
       <motion.section
         initial="hidden"
         animate="visible"
@@ -104,144 +211,72 @@ export default function AboutContent() {
         </div>
       </motion.section>
 
-      {/* Mission Section with stagger effect */}
+      {/* Mission & Vision Section */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={staggerContainer}
-        className="py-16"
+        className="py-24 bg-white"
       >
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="grid gap-8">
-              <motion.div variants={fadeIn}>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Our Mission
-                </h2>
+          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16">
+            {/* Mission */}
+            <motion.div variants={fadeIn}>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                Our Mission
+              </h2>
+              <div className="prose prose-lg">
                 <p className="text-gray-600">
-                  We empower organizations to leverage data and AI for strategic
-                  advantage, ensuring they not only survive but thrive in an
-                  increasingly data-driven world.
+                  To empower organizations with the expertise and strategy
+                  needed to harness the transformative power of AI and data,
+                  ensuring they thrive in an increasingly data-driven world.
                 </p>
-              </motion.div>
-              <motion.div variants={fadeIn}>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Our Vision
-                </h2>
+              </div>
+            </motion.div>
+
+            {/* Vision */}
+            <motion.div variants={fadeIn}>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                Our Vision
+              </h2>
+              <div className="prose prose-lg">
                 <p className="text-gray-600">
-                  To be the trusted partner for organizations seeking to
-                  transform their operations through data leadership.
+                  To be the trusted partner that bridges the gap between
+                  technological innovation and business success, creating a
+                  future where every organization can confidently leverage AI
+                  and data to achieve their goals.
                 </p>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.section>
 
-      {/* Leadership Team Section with scale animation */}
+      {/* Leadership Team Section */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={staggerContainer}
-        className="py-16 bg-gray-50"
+        className="py-24 bg-gray-50"
       >
         <div className="container mx-auto px-4">
           <motion.h2
             variants={fadeIn}
-            className="text-3xl font-bold text-center text-gray-900 mb-12"
+            className="text-3xl font-bold text-gray-900 mb-16 max-w-5xl mx-auto"
           >
             Our Leadership Team
           </motion.h2>
-          <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            {/* Whit Walters */}
-            <motion.div
-              variants={scaleIn}
-              className="flex flex-col items-center text-center"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="w-48 h-48 rounded-full mb-6 overflow-hidden relative"
-              >
-                <CldImage
-                  width={384} // Doubled from 192 to get higher resolution
-                  height={384} // Doubled from 192 to get higher resolution
-                  src="Full_Res-33_Master_lpbddp"
-                  alt="Whit Walters"
-                  className="w-full h-full object-cover"
-                  priority
-                  format="webp" // Specify format
-                  quality={100} // Maximum quality
-                />
-              </motion.div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Whit Walters
-              </h3>
-              <p className="text-primary-600 font-medium mb-4">
-                CEO, Co-Founder & Chief Data Officer
-              </p>
-              <p className="text-gray-600 mb-4">
-                With extensive experience in data strategy and organizational
-                transformation, Whit leads Neural Nexus Strategies' mission to
-                help organizations leverage data for strategic advantage.
-              </p>
-              <a
-                href="https://www.linkedin.com/in/whitwalters/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors"
-              >
-                <Linkedin size={20} />
-                <span>Connect on LinkedIn</span>
-              </a>
-            </motion.div>
-
-            {/* Jay Swartz */}
-            <motion.div
-              variants={scaleIn}
-              className="flex flex-col items-center text-center"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="w-48 h-48 rounded-full mb-6 overflow-hidden relative"
-              >
-                <CldImage
-                  width={192}
-                  height={192}
-                  src="JaySwartz2017_bqznnf"
-                  alt="Jay Swartz"
-                  className="w-full h-full object-cover"
-                  priority
-                />
-              </motion.div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Jay Swartz
-              </h3>
-              <p className="text-primary-600 font-medium mb-4">
-                Chief Data Scientist & Co-Founder
-              </p>
-              <p className="text-gray-600 mb-4">
-                A pioneer in applied AI and machine learning, Jay brings deep
-                technical expertise and practical experience in implementing AI
-                solutions across industries.
-              </p>
-              <a
-                href="https://www.linkedin.com/in/jaywswartz/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors"
-              >
-                <Linkedin size={20} />
-                <span>Connect on LinkedIn</span>
-              </a>
-            </motion.div>
+          <div className="max-w-5xl mx-auto space-y-24">
+            {leadershipData.map((profile) => (
+              <LeadershipProfile key={profile.name} {...profile} />
+            ))}
           </div>
         </div>
       </motion.section>
-      {/* Values Section with stagger effect */}
+
+      {/* Values Section */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -277,7 +312,7 @@ export default function AboutContent() {
         </div>
       </motion.section>
 
-      {/* CTA Section with fade in */}
+      {/* CTA Section */}
       <motion.section
         initial="hidden"
         whileInView="visible"

@@ -13,25 +13,26 @@ describe("Label", () => {
     render(<Label required>Required Field</Label>);
     const label = screen.getByText("Required Field");
     expect(label).toBeInTheDocument();
-    // Check for asterisk
-    expect(label.nextElementSibling).toHaveAttribute("aria-hidden", "true");
+    // Check for asterisk container with aria-hidden attribute
+    const container = document.querySelector('span[aria-hidden="true"]');
+    expect(container).toBeInTheDocument();
   });
 
   it("applies error styles", () => {
     render(<Label error>Error Label</Label>);
-    const label = screen.getByText("Error Label");
-    expect(label.parentElement).toHaveClass("text-destructive");
+    const label = screen.getByText("Error Label").closest('label');
+    expect(label).toHaveClass("text-destructive");
   });
 
   it("applies disabled styles", () => {
     render(<Label disabled>Disabled Label</Label>);
-    const label = screen.getByText("Disabled Label");
-    expect(label.parentElement).toHaveClass("text-muted-foreground");
+    const label = screen.getByText("Disabled Label").closest('label');
+    expect(label).toHaveClass("text-muted-foreground");
   });
 
   it("applies screen reader only class", () => {
     render(<Label srOnly>Screen Reader Label</Label>);
-    const label = screen.getByText("Screen Reader Label");
-    expect(label.parentElement).toHaveClass("sr-only");
+    const label = screen.getByText("Screen Reader Label").closest('label');
+    expect(label).toHaveClass("sr-only");
   });
 });

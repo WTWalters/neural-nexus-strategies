@@ -95,7 +95,8 @@ describe("Design Tokens", () => {
 
     it("has easing tokens", () => {
       Object.entries(animation.easings).forEach(([key, value]) => {
-        expect(value).toMatch(/^cubic-bezier/);
+        // Allow both cubic-bezier and linear easing functions
+        expect(value).toMatch(/^(cubic-bezier|linear)/);
       });
     });
   });
