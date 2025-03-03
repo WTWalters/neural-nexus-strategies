@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/landing-page/LandingPage.tsx
 import { Hero } from "./sections/Hero";
 import { ValueProps } from "./sections/ValueProps";
