@@ -42,7 +42,6 @@ interface Service {
   slug: string;
   package_type: "ESSENTIALS" | "PROFESSIONAL" | "ENTERPRISE";
   description: string;
-  base_price: string;
   duration: string;
   is_active: boolean;
   features: Feature[];
@@ -74,12 +73,8 @@ export default function ServicesContent() {
     }
   };
 
-  const formatPrice = (price: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-    }).format(parseFloat(price));
+  const formatDuration = (duration: string) => {
+    return duration.replace(/(\d+)\s*(week|weeks)/gi, "~$1 $2");
   };
 
   useEffect(() => {
@@ -183,11 +178,8 @@ export default function ServicesContent() {
                 </div>
 
                 <div className="mb-4">
-                  <div className="text-3xl font-bold text-gray-900">
-                    {formatPrice(service.base_price)}
-                  </div>
                   <div className="text-gray-500">
-                    Duration: {service.duration}
+                    Duration: {formatDuration(service.duration)}
                   </div>
                 </div>
 
@@ -228,7 +220,7 @@ export default function ServicesContent() {
                       <li key={deliverable.id} className="text-gray-600">
                         <div className="font-medium">{deliverable.name}</div>
                         <div className="text-sm text-gray-500">
-                          Timeline: {deliverable.timeline}
+                          Timeline: {formatDuration(deliverable.timeline)}
                         </div>
                       </li>
                     ))}

@@ -1,10 +1,9 @@
 // src/app/services/[slug]/page.tsx
-
 "use client";
 
+import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { ChevronLeft, CheckCircle2, Calendar, Clock } from "lucide-react";
 import { BookDiscoveryButton } from "@/components/features/booking/BookDiscoveryButton";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -32,11 +31,23 @@ interface Service {
   slug: string;
   package_type: "ESSENTIALS" | "PROFESSIONAL" | "ENTERPRISE";
   description: string;
-  base_price: string;
   duration: string;
   is_active: boolean;
   features: Feature[];
   deliverables: Deliverable[];
+}
+
+function getPackageTypeStyles(type: string) {
+  switch (type) {
+    case "ESSENTIALS":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "PROFESSIONAL":
+      return "bg-purple-100 text-purple-800 border-purple-200";
+    case "ENTERPRISE":
+      return "bg-green-100 text-green-800 border-green-200";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
+  }
 }
 
 export default function ServiceDetailPage() {
@@ -49,35 +60,16 @@ export default function ServiceDetailPage() {
     const fetchServiceDetail = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        console.log("Debug - Environment:", {
-          apiUrl,
-          slug: params?.slug,
-          isDevelopment: process.env.NODE_ENV === "development",
-        });
+        if (!apiUrl) throw new Error("API URL is not configured");
+        if (!params?.slug) throw new Error("Service slug is required");
 
-        if (!apiUrl) {
-          throw new Error("API URL is not configured");
-        }
-
-        if (!params?.slug) {
-          throw new Error("Service slug is required");
-        }
-
-        const fullUrl = `${apiUrl}/api/services/${params.slug}/`;
-        console.log("Debug - Fetching from:", fullUrl);
-
-        const response = await fetch(fullUrl);
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
+        const response = await fetch(`${apiUrl}/api/services/${params.slug}/`);
+        if (!response.ok)
           throw new Error(`Service not found (Status: ${response.status})`);
-        }
 
         const data = await response.json();
-        console.log("Received data:", data);
         setService(data);
       } catch (err) {
-        console.error("Debug - Fetch error:", err);
         setError(err instanceof Error ? err.message : "Failed to load service");
       } finally {
         setLoading(false);
@@ -85,60 +77,14 @@ export default function ServiceDetailPage() {
     };
 
     if (params?.slug) {
-      // Add optional chaining here
       fetchServiceDetail();
     }
-  }, [params?.slug]); // And here in the dependency array
+  }, [params?.slug]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border border-red-200 p-4 rounded-md">
-          <h2 className="text-red-800 font-semibold">Error</h2>
-          <p className="text-red-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!service) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
-          <h2 className="text-yellow-800 font-semibold">Not Found</h2>
-          <p className="text-yellow-600">
-            Service not found. Please check the URL and try again.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const getPackageTypeStyles = (type: string) => {
-    switch (type) {
-      case "ESSENTIALS":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "PROFESSIONAL":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case "ENTERPRISE":
-        return "bg-green-100 text-green-800 border-green-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -160,7 +106,6 @@ export default function ServiceDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
         <div className="mb-8">
           <a
             href="/services"
@@ -171,7 +116,6 @@ export default function ServiceDetailPage() {
           </a>
         </div>
 
-        {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
             <div>
@@ -188,8 +132,8 @@ export default function ServiceDetailPage() {
               <p className="text-lg text-gray-600">{service.description}</p>
             </div>
             <div className="lg:text-right">
-              <div className="text-4xl font-bold text-gray-900 mb-2">
-                ${parseInt(service.base_price).toLocaleString()}
+              <div className="text-2xl font-semibold text-gray-900 mb-2">
+                Contact for Pricing
               </div>
               <div className="flex items-center text-gray-600">
                 <Clock className="w-4 h-4 mr-2" />
@@ -199,9 +143,7 @@ export default function ServiceDetailPage() {
           </div>
         </div>
 
-        {/* Features and Deliverables */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Features */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Key Features
@@ -223,7 +165,6 @@ export default function ServiceDetailPage() {
             </ul>
           </div>
 
-          {/* Deliverables */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Deliverables
@@ -247,7 +188,6 @@ export default function ServiceDetailPage() {
           </div>
         </div>
 
-        {/* CTA Section */}
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Ready to Transform Your Organization?

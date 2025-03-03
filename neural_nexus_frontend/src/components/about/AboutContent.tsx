@@ -96,6 +96,9 @@ function LeadershipProfile({
           priority
           format="webp"
           quality={100}
+          crop="fill"
+          gravity="face"
+          objectFit="cover"
         />
       </motion.div>
       <h3 className="text-2xl font-bold text-gray-900 mb-2">{name}</h3>
@@ -172,7 +175,7 @@ const leadershipData = [
     name: "Jay Swartz",
     title: "Chief Data Scientist & Co-Founder",
     bio: "Jay Swartz is a pioneer in applied AI and machine learning, driving innovation at Neural Nexus Strategies. He brings deep technical expertise and a practical approach to implementing AI solutions, helping businesses unlock the power of artificial intelligence. His expertise spans natural language processing, predictive modeling, and computer vision, enabling him to develop cutting-edge AI solutions across diverse industries. Jay has extensive experience helping businesses successfully implement AI and machine learning solutions, from initial strategy to deployment and ongoing optimization. A prolific inventor with multiple AI patents, Jay is also passionate about exploring the future of AI and AGI on AGIish.com.",
-    imageUrl: "JaySwartz2017_bqznnf",
+    imageUrl: "JaySwartz03_q4yq3v",
     linkedInUrl: "https://www.linkedin.com/in/jaywswartz/",
     ctaText: "Learn more about our AI services",
     ctaLink: "/services",
