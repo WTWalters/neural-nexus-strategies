@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/landing-page/sections/Hero.tsx
 interface HeroProps {
   content: {
