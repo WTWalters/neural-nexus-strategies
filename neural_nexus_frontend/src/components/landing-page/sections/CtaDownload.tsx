@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/landing-page/sections/CtaDownload.tsx
 //
 import { useState } from "react";
