@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/landing-page/sections/ValueProps.tsx
 //
 import { LineChart, ClipboardList, Shield } from "lucide-react";
