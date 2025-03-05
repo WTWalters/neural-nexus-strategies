@@ -1,7 +1,8 @@
 // Path: neural_nexus_frontend/src/components/ui/logo.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface LogoProps {
   width?: number;
@@ -16,6 +17,16 @@ export function Logo({
   showAnimation = true,
   className = "",
 }: LogoProps) {
+  const pathname = usePathname();
+  const [key, setKey] = useState<number>(0);
+  
+  // Reset animation when path changes
+  useEffect(() => {
+    if (showAnimation) {
+      setKey(prev => prev + 1);
+    }
+  }, [pathname, showAnimation]);
+
   // Load animation CSS if animation is enabled
   useEffect(() => {
     if (showAnimation) {
@@ -40,6 +51,7 @@ export function Logo({
 
   return (
     <svg 
+      key={key} // Key changes force React to remount the component
       width={width} 
       height={height} 
       viewBox="0 0 100 100" 
