@@ -12,9 +12,9 @@ export const metadata: Metadata = {
   title: "Neural Nexus Strategies",
   description: "Data and AI Consulting Services",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 
