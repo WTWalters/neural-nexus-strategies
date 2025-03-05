@@ -1,6 +1,7 @@
 // Path: neural_nexus_frontend/src/components/layout/Footer.tsx
 "use client";
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 
 export default function Footer() {
   return (
@@ -78,10 +79,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p>
-            &copy; {new Date().getFullYear()} Neural Nexus Strategies. All
-            rights reserved.
-          </p>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Logo width={30} height={30} showAnimation={false} />
+            <p>
+              &copy; {new Date().getFullYear()} Neural Nexus Strategies. All
+              rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
