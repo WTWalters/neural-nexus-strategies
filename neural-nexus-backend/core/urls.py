@@ -8,14 +8,12 @@ API endpoints, and API documentation views.
 URLs structure:
     /admin/ - Django admin interface
     /api/ - Base API endpoint for services
-    /api/content/ - Content management endpoints
+    /api/content/ - Content management endpoints including quiz
+    /api/services/ - Service and category endpoints
     /api/leads/ - Lead management endpoints
     /api/schema/ - OpenAPI schema
     /api/docs/ - Swagger UI documentation
     /api/redoc/ - ReDoc documentation interface
-
-Note:
-    All API endpoints are prefixed with '/api/' for clear separation from admin routes
 """
 
 import logging
@@ -33,21 +31,11 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-
-def health_check(request):
-    """Basic health check endpoint"""
-    try:
-        return HttpResponse("OK", content_type="text/plain", status=200)
-    except Exception as e:
-        return HttpResponse(str(e), content_type="text/plain", status=500)
-
-
 logger = logging.getLogger(__name__)
 
 
 def health_check(request):
     """Enhanced health check endpoint with error tracking"""
-    # Basic stdout logging in case logger isn't configured
     print("Health check started", file=sys.stderr)
 
     try:
@@ -76,7 +64,6 @@ def health_check(request):
         # 5. Add request info
         response_data.append(f"Request Host: {request.get_host()}")
 
-        # Success response
         print("Health check successful", file=sys.stderr)
         return HttpResponse("\n".join(response_data), content_type="text/plain", status=200)
 
@@ -87,14 +74,24 @@ def health_check(request):
 
 
 urlpatterns = [
-    path("health", include("core.health_urls")),
+    # Admin interface
     path("admin/", admin.site.urls),
-    path("api/services/", include("services.urls"), name="services-api"),  # Updated this
-    path("api/content/", include("content.urls")),
-    path("api/leads/", include("leads.urls")),
+    # API endpoints
+    path(
+        "api/",
+        include(
+            [
+                path("", include("services.urls")),  # This should create /api/services/ and /api/categories/
+                path("content/", include("content.urls")),
+                path("leads/", include("leads.urls")),
+            ]
+        ),
+    ),
+    # API Documentation
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    # Health checks
     path("health", health_check, name="health_check_no_slash"),
     path("health/", health_check, name="health_check"),
 ]

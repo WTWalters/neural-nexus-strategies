@@ -5,8 +5,10 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from .views import (
     ABTestViewSet,
-    CampaignViewSet,  # Add TrackingView import
+    CampaignViewSet,
+    GetResults,
     LandingPageViewSet,
+    SubmitQuiz,  # Add these imports
     TrackingView,
 )
 
@@ -25,4 +27,6 @@ router.register(r"case-studies", views.CaseStudyViewSet, basename="casestudy")
 # Add the tracking view to urlpatterns
 urlpatterns = router.urls + [
     path("tracking/", TrackingView.as_view(), name="tracking"),
+    path("submit-quiz/", SubmitQuiz.as_view(), name="submit-quiz"),
+    path("results/<int:quiz_id>/", GetResults.as_view(), name="get-results"),
 ]

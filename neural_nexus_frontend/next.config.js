@@ -1,4 +1,3 @@
-// Path: neural_nexus_frontend/next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
@@ -6,13 +5,23 @@ const nextConfig = {
     domains: ["res.cloudinary.com"],
     unoptimized: true,
   },
+  redirects: async () => {
+    return [
+      {
+        source: "/services/accelerator/quiz",
+        destination: "/services/accelerator/assessment",
+        permanent: false,
+      },
+    ];
+  },
   rewrites: async () => {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://nns-backend-production.up.railway.app";
     return [
       {
         source: "/api/:path*",
-        destination:
-          process.env.NEXT_PUBLIC_API_URL + "/:path*" ||
-          "https://nns-backend-production.up.railway.app/api/:path*",
+        destination: `${apiUrl}/api/:path*`,
       },
     ];
   },

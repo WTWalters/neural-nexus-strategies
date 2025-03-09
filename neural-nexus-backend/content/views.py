@@ -19,12 +19,14 @@ from rest_framework.views import APIView
 
 from .models import (
     ABTest,
+    AcceleratorQuiz,  # Add this
     BlogAnalytics,
     BlogPost,
     Campaign,
-    CaseStudy,  # Added CaseStudyCategory
+    CaseStudy,
     CaseStudyCategory,
     Category,
+    DimensionScore,  # Add this
     LandingPage,
     LeadMagnet,
     Resource,
@@ -35,6 +37,7 @@ from .models import (
 )
 from .serializers import (
     ABTestSerializer,
+    AcceleratorQuizSerializer,
     BlogAnalyticsSerializer,
     BlogPostSerializer,
     CampaignSerializer,
@@ -446,6 +449,7 @@ class CaseStudyViewSet(viewsets.ReadOnlyModelViewSet):
 
 logger = logging.getLogger(__name__)
 
+
 class TrackingView(APIView):
     """
     API View for handling analytics tracking events.
@@ -456,7 +460,7 @@ class TrackingView(APIView):
         """
         Validate the tracking event data structure.
         """
-        required_fields = ['eventName', 'timestamp', 'identity']
+        required_fields = ["eventName", "timestamp", "identity"]
         return all(field in data for field in required_fields)
 
     def post(self, request):
@@ -467,8 +471,7 @@ class TrackingView(APIView):
             # Validate the tracking data structure
             if not self.validate_tracking_data(tracking_data):
                 return Response(
-                    {"error": "Invalid tracking data structure"},
-                    status=status.HTTP_400_BAD_REQUEST
+                    {"error": "Invalid tracking data structure"}, status=status.HTTP_400_BAD_REQUEST
                 )
 
             # Log the tracking event with structured data
@@ -480,27 +483,121 @@ class TrackingView(APIView):
                     "identity": tracking_data.get("identity"),
                     "source": tracking_data.get("source"),
                     "path": tracking_data.get("path"),
-                    "properties": tracking_data.get("properties", {})
-                }
+                    "properties": tracking_data.get("properties", {}),
+                },
             )
 
             # Here you could also store the tracking data in your database
             # or send it to an external analytics service
 
-            return Response({
-                "status": "success",
-                "message": "Tracking event recorded successfully"
-            }, status=status.HTTP_200_OK)
+            return Response(
+                {"status": "success", "message": "Tracking event recorded successfully"},
+                status=status.HTTP_200_OK,
+            )
 
         except ValidationError as e:
             logger.error(f"Validation error in tracking data: {str(e)}")
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             logger.error(f"Error processing tracking event: {str(e)}")
             return Response(
-                {"error": "Internal server error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class SubmitQuiz(APIView):
+    """
+    API View for submitting AI Data Accelerator quiz responses.
+    Handles quiz submission, scoring calculation, and optional lead generation.
+    """
+
+    permission_classes = []  # Public access
+
+    def post(self, request):
+        """
+        Process quiz submission and calculate scores.
+
+        Args:
+            request: HTTP request containing quiz data
+                data format: {
+                    "email": "optional@email.com",
+                    "answers": {
+                        "dimension_name": [score1, score2, score3],
+                        ...
+                    }
+                }
+
+        Returns:
+            Response with quiz results and HTTP 201 status
+        """
+        try:
+            data = request.data
+            email = data.get("email", "")
+            answers = data["answers"]
+
+            # Link to NewsletterSubscription if email provided
+            subscriber = None
+            if email:
+                subscriber, _ = NewsletterSubscription.objects.get_or_create(
+                    email=email, defaults={"first_name": "", "source": "ACCELERATOR_QUIZ"}
+                )
+
+            # Create quiz instance
+            quiz = AcceleratorQuiz.objects.create(email=email, subscriber=subscriber)
+
+            # Define dimension weights for scoring
+            dimensions = {
+                "Data Trust Engine": 0.20,
+                "Data Rulebook": 0.15,
+                "AI Power Grid": 0.15,
+                "Data Flow Superhighway": 0.15,
+                "AI Fuel Factory": 0.15,
+                "AI Mindset Shift": 0.10,
+                "AI Deployment Machine": 0.10,
+            }
+
+            # Calculate scores for each dimension and overall total
+            total_score = 0
+            for dim, weight in dimensions.items():
+                dim_answers = answers.get(dim, [])
+                avg_score = sum(dim_answers) / len(dim_answers) if dim_answers else 0
+                DimensionScore.objects.create(
+                    quiz=quiz, dimension=dim, score=avg_score, answers=dim_answers
+                )
+                total_score += avg_score * weight
+
+            # Update total score and return results
+            quiz.total_score = total_score
+            quiz.save()
+
+            serializer = AcceleratorQuizSerializer(quiz)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetResults(APIView):
+    """
+    API View for retrieving quiz results by ID.
+    """
+
+    permission_classes = []
+
+    def get(self, request, quiz_id):
+        """
+        Retrieve quiz results by ID.
+
+        Args:
+            request: HTTP request
+            quiz_id: ID of the quiz to retrieve
+
+        Returns:
+            Response with quiz results or 404 if not found
+        """
+        try:
+            quiz = AcceleratorQuiz.objects.get(id=quiz_id)
+            serializer = AcceleratorQuizSerializer(quiz)
+            return Response(serializer.data)
+        except AcceleratorQuiz.DoesNotExist:
+            return Response({"error": "Quiz not found"}, status=status.HTTP_404_NOT_FOUND)

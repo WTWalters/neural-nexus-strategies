@@ -2,12 +2,19 @@
 
 from django.db.models import Max, Min
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
+from rest_framework import filters, serializers, viewsets, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Service, ServiceCategory
-from .serializers import ServiceCategorySerializer, ServiceSerializer
+from .models import Service, ServiceCategory, ServiceFeature, ServiceDeliverable
+from .serializers import ServiceCategorySerializer, ServiceSerializer, ServiceFeatureSerializer, ServiceDeliverableSerializer
+
+
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    """Standard pagination class for API endpoints"""
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -30,28 +37,39 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ["name", "description", "features__name", "features__description"]
     ordering_fields = ["name", "base_price", "created_at"]
     ordering = ["base_price"]
+    pagination_class = StandardResultsSetPagination
 
 
-def list(self, request, *args, **kwargs):
-    print("DEBUG: Received request in ServiceViewSet list method")
-    print(f"DEBUG: Request headers: {request.headers}")
-    try:
-        queryset = self.get_queryset()
-        print(f"DEBUG: Found {queryset.count()} active services")
-        response = super().list(request, *args, **kwargs)
+    def list(self, request, *args, **kwargs):
+        print("DEBUG: Received request in ServiceViewSet list method")
+        print(f"DEBUG: Request headers: {request.headers}")
+        try:
+            queryset = self.get_queryset()
+            print(f"DEBUG: Found {queryset.count()} active services")
+            response = super().list(request, *args, **kwargs)
 
-        # Add CORS headers
-        response["Access-Control-Allow-Origin"] = "https://nns-frontend-production.up.railway.app"
-        response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-        response["Access-Control-Allow-Credentials"] = "true"
+            # Add CORS headers
+            response["Access-Control-Allow-Origin"] = "https://nns-frontend-production.up.railway.app"
+            response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            response["Access-Control-Allow-Credentials"] = "true"
 
-        print("DEBUG: Response headers:", dict(response.headers))
-        return response
-    except Exception as e:
-        print(f"DEBUG: Error in list view: {str(e)}")
-        return Response({"error": str(e)}, status=500)
+            print("DEBUG: Response headers:", dict(response.headers))
+            return response
+        except Exception as e:
+            print(f"DEBUG: Error in list view: {str(e)}")
+            return Response({"error": str(e)}, status=500)
 
+    @action(detail=False, methods=["get"])
+    def package_types(self, request):
+        """Returns all available package types"""
+        try:
+            types = Service.objects.values_list("package_type", flat=True).distinct()
+            return Response({"package_types": list(types)})
+        except Exception as e:
+            print(f"DEBUG: Error in package_types view: {str(e)}")
+            return Response({"error": str(e)}, status=500)
+            
     @action(detail=False, methods=["get"])
     def metadata(self, request):
         """Provides metadata about available services for frontend filtering/display"""
@@ -157,6 +175,7 @@ class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ["name", "description"]
     ordering_fields = ["name"]
     ordering = ["name"]
+    pagination_class = StandardResultsSetPagination
 
     def list(self, request, *args, **kwargs):
         print("DEBUG: Accessing ServiceCategoryViewSet list method")
@@ -185,3 +204,6 @@ class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
         except Exception as e:
             print(f"DEBUG: Error in category services view: {str(e)}")
             return Response({"error": str(e)}, status=500)
+
+
+# Serializers have been moved to serializers.py

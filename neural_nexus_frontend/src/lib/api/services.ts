@@ -10,7 +10,7 @@ interface Service {
 }
 
 export async function getServices(): Promise<Service[]> {
-  const baseUrl = new URL("/api/services/", env.NEXT_PUBLIC_API_URL);
+  const baseUrl = new URL("/api/services/services/", env.NEXT_PUBLIC_API_URL);
   console.log("Fetching services from:", baseUrl.toString());
 
   try {

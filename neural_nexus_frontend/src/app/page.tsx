@@ -1,4 +1,5 @@
 // Path: neural_nexus_frontend/src/app/page.tsx
+// src/app/page.tsx
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
@@ -86,7 +87,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Force dynamic rendering for fresh content
 export const fetchCache = "force-dynamic";
 
 const schemaData = {
@@ -129,7 +129,6 @@ export default function Home() {
         }}
       />
       <main className="min-h-screen relative bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-        {/* Container for patterns with specific z-index */}
         <div className="absolute inset-0 overflow-hidden z-0">
           <Suspense
             fallback={<div className="animate-pulse h-full bg-primary-50" />}
@@ -138,7 +137,6 @@ export default function Home() {
           </Suspense>
         </div>
 
-        {/* Content container with higher z-index */}
         <div className="relative z-10">
           <div className="container mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-24">
             <div className="max-w-4xl mx-auto text-center">
@@ -153,6 +151,7 @@ export default function Home() {
                 enterprises. Get expert guidance without the full-time executive
                 cost.
               </p>
+
               <Suspense
                 fallback={
                   <div className="animate-pulse h-24 bg-gray-100 rounded-lg mb-8" />
@@ -160,7 +159,8 @@ export default function Home() {
               >
                 <AnimatedMetrics />
               </Suspense>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Suspense
                   fallback={
                     <div className="animate-pulse h-12 w-48 bg-primary-100 rounded-md" />
@@ -168,22 +168,54 @@ export default function Home() {
                 >
                   <BookDiscoveryButton size="lg" variant="default" />
                 </Suspense>
+
                 <Button variant="default" size="lg" asChild>
                   <Link href="/services">Explore Services</Link>
                 </Button>
+
+                <Button
+                  variant="default"
+                  size="lg"
+                  asChild
+                  className="inline-flex items-center gap-2"
+                >
+                  <Link href="/services/accelerator/assessment">
+                    <span>Take AI Readiness Assessment</span>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </Link>
+                </Button>
               </div>
+
+              <p className="mt-4 text-sm text-gray-600">
+                Discover your organization's AI potential in just 5 minutes
+              </p>
             </div>
           </div>
+
           <Suspense
             fallback={<div className="animate-pulse h-32 bg-primary-50" />}
           >
             <NewsletterBanner />
           </Suspense>
+
           <Suspense
             fallback={<div className="animate-pulse h-48 bg-gray-100" />}
           >
             <FeaturedInsight />
           </Suspense>
+
           <Suspense
             fallback={<div className="animate-pulse h-96 bg-gray-50" />}
           >

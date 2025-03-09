@@ -87,7 +87,8 @@ export default function ServicesContent() {
           throw new Error("API URL is not configured");
         }
 
-        const response = await fetch(`${apiUrl}/api/services/`, {
+        // Use the local Next.js API route which handles the rewrites
+        const response = await fetch(`/api/services/services/`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -102,7 +103,10 @@ export default function ServicesContent() {
 
         const data = await response.json();
         console.log("Received data:", data);
-        setServices(data.results);
+        
+        // Check if we received a paginated response (with 'results') or direct array
+        const servicesList = data.results || data;
+        setServices(servicesList);
         setLoading(false);
       } catch (err) {
         console.error("Error details:", err);

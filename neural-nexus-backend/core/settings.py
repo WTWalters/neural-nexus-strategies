@@ -134,12 +134,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True  # Keep this false for security
+CORS_ALLOW_ALL_ORIGINS = False  # Set to False for security
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
-CORS_ALLOW_HEADERS = ["Content-Type"]
+CORS_ALLOW_HEADERS = ["Content-Type", "Authorization", "Accept"]
 CORS_EXPOSE_HEADERS = ["content-type", "content-length"]
 CORS_PREFLIGHT_MAX_AGE = 86400  # 24 hours
-CORS_ALLOW_CREDENTIALS = True
 
 # Email Configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
