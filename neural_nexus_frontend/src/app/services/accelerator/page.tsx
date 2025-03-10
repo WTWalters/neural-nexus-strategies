@@ -13,7 +13,7 @@ export default function AIAcceleratorPage() {
       <div className="container px-4 mx-auto">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto mb-16 text-center">
-          <div className="inline-block px-3 py-1 mb-4 text-sm font-semibold text-indigo-800 bg-indigo-100 rounded-full">
+          <div className="inline-block px-3 py-1 mb-4 text-sm font-semibold text-indigo-800 bg-indigo-50 rounded-full">
             Neural Nexus AI Velocity
           </div>
           <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
@@ -24,7 +24,7 @@ export default function AIAcceleratorPage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" asChild className="w-full sm:w-auto">
-              <Link href="/services/accelerator/assessment">
+              <Link href="/assessment/quick">
                 Start Your 5-Minute Assessment
               </Link>
             </Button>
@@ -178,7 +178,7 @@ export default function AIAcceleratorPage() {
 
           <div className="text-center">
             <Button size="lg" asChild>
-              <Link href="/services/accelerator/assessment">
+              <Link href="/assessment/quick">
                 Start Your AI Velocity Journey
               </Link>
             </Button>
@@ -293,8 +293,8 @@ export default function AIAcceleratorPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href="/services/accelerator/assessment">
-                    Take the Assessment
+                  <Link href="/assessment/quick">
+                  Take the Assessment
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-indigo-700" asChild>

@@ -84,6 +84,7 @@ urlpatterns = [
                 path("", include("services.urls")),  # This should create /api/services/ and /api/categories/
                 path("content/", include("content.urls")),
                 path("leads/", include("leads.urls")),
+                path("data-accelerator/", include("data_accelerator.urls")),
             ]
         ),
     ),

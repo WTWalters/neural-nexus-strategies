@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "services.apps.ServicesConfig",
     "content",
     "leads",
+    "data_accelerator.apps.DataAcceleratorConfig",
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,7 @@ SPECTACULAR_SETTINGS = {
         {"name": "content", "description": "Blog posts, resources, and newsletter management"},
         {"name": "services", "description": "Service offerings and categories"},
         {"name": "leads", "description": "ROI calculator and lead management"},
+        {"name": "data_accelerator", "description": "AI Data Accelerator framework"},
     ],
     "SCHEMA_PATH_PREFIX": "/api/",
     "SCHEMA_COERCE_PATH_PK_SUFFIX": True,

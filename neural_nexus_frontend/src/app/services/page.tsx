@@ -45,12 +45,12 @@ export default function ServicesPage() {
 
         <div className="text-center mt-16">
           <div className="max-w-2xl mx-auto p-6 bg-blue-50 rounded-lg shadow-sm border border-blue-100">
-            <h2 className="text-2xl font-bold text-blue-800 mb-4">AI Readiness Assessment</h2>
+            <h2 className="text-2xl font-bold text-blue-800 mb-4">AI Data Accelerator Assessment</h2>
             <p className="mb-6 text-blue-700">
-              Take our free 5-minute quiz to assess your organization's readiness for AI implementation
-              and get personalized recommendations.
+              Take our free 5-minute assessment to evaluate your organization's AI readiness across 7 critical dimensions
+              and receive a personalized AI acceleration roadmap.
             </p>
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition">Take the Free Quiz</button>
+            <a href="/assessment/quick" className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition inline-block">Start Your Assessment</a>
           </div>
         </div>
       </div>

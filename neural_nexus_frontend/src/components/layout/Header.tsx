@@ -15,10 +15,12 @@ export default function Header() {
       href: "/services",
       text: "Services",
       subItems: [
+        { href: "/services/data-strategy-workshop", text: "Data Strategy" },
         { href: "/services/fractional-cdo", text: "Fractional CDO" },
-        { href: "/services/accelerator/assessment", text: "AI Readiness Assessment" },
+        { href: "/services/accelerator", text: "AI Data Accelerator" },
       ],
     },
+    { href: "/services/accelerator#flywheel", text: "AI Velocity Flywheel" },
     { href: "/blog", text: "Blog" },
     { href: "/about", text: "About" },
     { href: "/contact", text: "Contact" },
@@ -27,7 +29,7 @@ export default function Header() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <header className="w-full bg-background border-b border-muted sticky top-0 z-50">
+    <header className="w-full bg-white border-b border-muted sticky top-0 z-50">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link

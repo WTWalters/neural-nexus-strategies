@@ -12,7 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 
-// Define the dimensions and their questions
+// Import AssessmentWizard component
+import AssessmentWizard from "@/components/assessment/AssessmentWizard";
+
+// Define the dimensions and their questions (fallback if API fails)
 const dimensions = [
   {
     id: "data_quality",
@@ -133,6 +136,16 @@ const dimensions = [
 ];
 
 export default function AIReadinessAssessment() {
+  // Use the AssessmentWizard component instead of manual implementation
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <AssessmentWizard assessmentType="QUICK" />
+    </div>
+  );
+}
+
+// Original implementation kept for reference
+function LegacyAIReadinessAssessment() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [email, setEmail] = useState("");

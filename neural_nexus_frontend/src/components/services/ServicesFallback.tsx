@@ -97,12 +97,7 @@ export default function ServicesFallback() {
 
   return (
     <div className="p-8">
-      <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-        <p className="font-bold">Success! Found {services.length} services.</p>
-        <p className="text-sm">Working endpoint: {successUrl}</p>
-      </div>
-      
-      <h2 className="text-2xl font-bold mb-6">Services</h2>
+      {/* Remove the success message or make it less obtrusive */}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
