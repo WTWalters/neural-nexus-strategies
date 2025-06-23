@@ -1,7 +1,5 @@
 // Path: src/app/(marketing)/[slug]/page.tsx
 import LandingPage from "@/components/landing-page/LandingPage";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
 
 interface PageData {
@@ -18,50 +16,38 @@ interface PageData {
 }
 
 const ComingSoon = () => (
-  <div className="min-h-screen flex flex-col">
-    <Header />
-    <main className="flex-grow">
-      <section className="bg-gradient-to-r from-primary-900 to-primary-800 text-white">
-        <div className="container mx-auto px-4 py-16 md:py-24">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Coming Soon
-              </h1>
-              <p className="text-xl mb-8 text-gray-200">
-                We're working on something amazing. This page is currently under
-                construction.
-              </p>
-              <a
-                href="/"
-                className="bg-white text-primary-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
-              >
-                Return to Homepage
-              </a>
-            </div>
-            <div>
-              <img
-                src="/api/placeholder/800/600"
-                alt="Coming Soon"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-          </div>
+  <section className="bg-gradient-to-r from-primary-900 to-primary-800 text-white">
+    <div className="container mx-auto px-4 py-16 md:py-24">
+      <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Coming Soon
+          </h1>
+          <p className="text-xl mb-8 text-gray-200">
+            We're working on something amazing. This page is currently under
+            construction.
+          </p>
+          <a
+            href="/"
+            className="bg-white text-primary-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
+          >
+            Return to Homepage
+          </a>
         </div>
-      </section>
-    </main>
-    <Footer />
-  </div>
+        <div>
+          <img
+            src="/api/placeholder/800/600"
+            alt="Coming Soon"
+            className="rounded-lg shadow-lg"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
 );
 
 const MainContent = ({ content }: { content: PageData["content"] }) => (
-  <div className="min-h-screen flex flex-col">
-    <Header />
-    <main className="flex-grow">
-      <LandingPage content={content} />
-    </main>
-    <Footer />
-  </div>
+  <LandingPage content={content} />
 );
 
 // Generate metadata for the page

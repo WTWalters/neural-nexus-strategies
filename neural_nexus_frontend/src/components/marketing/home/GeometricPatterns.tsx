@@ -1,8 +1,9 @@
 // Path: neural_nexus_frontend/src/components/marketing/home/GeometricPatterns.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
+import { useClientOnly, motionVariants } from "@/lib/animations";
 
 // Add interface for the point structure
 interface Point {
@@ -25,11 +26,7 @@ const INITIAL_POINTS: Point[] = [
 ];
 
 export default function GeometricPatterns() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isClient = useClientOnly();
 
   // Add types to createPath parameters
   const createPath = (startPoint: Point, endPoint: Point) => {
@@ -67,7 +64,7 @@ export default function GeometricPatterns() {
                 stroke="currentColor"
                 className="text-primary"
                 strokeWidth="0.1"
-                initial={{ pathLength: 0, opacity: 0 }}
+                {...motionVariants.pathDraw}
                 animate={{
                   pathLength: [0, 1],
                   opacity: [0, 0.3, 0],

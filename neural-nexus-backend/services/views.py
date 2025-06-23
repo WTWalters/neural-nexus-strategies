@@ -31,26 +31,17 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ["name", "base_price", "created_at"]
     ordering = ["base_price"]
 
-
-def list(self, request, *args, **kwargs):
-    print("DEBUG: Received request in ServiceViewSet list method")
-    print(f"DEBUG: Request headers: {request.headers}")
-    try:
-        queryset = self.get_queryset()
-        print(f"DEBUG: Found {queryset.count()} active services")
-        response = super().list(request, *args, **kwargs)
-
-        # Add CORS headers
-        response["Access-Control-Allow-Origin"] = "https://nns-frontend-production.up.railway.app"
-        response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-        response["Access-Control-Allow-Credentials"] = "true"
-
-        print("DEBUG: Response headers:", dict(response.headers))
-        return response
-    except Exception as e:
-        print(f"DEBUG: Error in list view: {str(e)}")
-        return Response({"error": str(e)}, status=500)
+    def list(self, request, *args, **kwargs):
+        try:
+            response = super().list(request, *args, **kwargs)
+            # Add CORS headers
+            response["Access-Control-Allow-Origin"] = "https://nns-frontend-production.up.railway.app"
+            response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
 
     @action(detail=False, methods=["get"])
     def metadata(self, request):
@@ -82,7 +73,6 @@ def list(self, request, *args, **kwargs):
                 }
             )
         except Exception as e:
-            print(f"DEBUG: Error in metadata view: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
     @action(detail=False, methods=["get"])
@@ -99,7 +89,6 @@ def list(self, request, *args, **kwargs):
 
             return Response(list(suggestions))
         except Exception as e:
-            print(f"DEBUG: Error in search_suggestions view: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
     @action(detail=False, methods=["get"])
@@ -127,7 +116,6 @@ def list(self, request, *args, **kwargs):
 
             return Response(response)
         except Exception as e:
-            print(f"DEBUG: Error in by_category view: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
     @action(detail=True, methods=["get"])
@@ -143,7 +131,6 @@ def list(self, request, *args, **kwargs):
 
             return Response(self.get_serializer(similar, many=True).data)
         except Exception as e:
-            print(f"DEBUG: Error in similar_services view: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
 
@@ -159,10 +146,7 @@ class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ["name"]
 
     def list(self, request, *args, **kwargs):
-        print("DEBUG: Accessing ServiceCategoryViewSet list method")
         try:
-            queryset = self.get_queryset()
-            print(f"DEBUG: Found {queryset.count()} categories")
             response = super().list(request, *args, **kwargs)
             response["Access-Control-Allow-Origin"] = (
                 "https://nns-frontend-production.up.railway.app"
@@ -171,7 +155,6 @@ class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
             response["Access-Control-Allow-Headers"] = "Content-Type"
             return response
         except Exception as e:
-            print(f"DEBUG: Error in category list view: {str(e)}")
             return Response({"error": str(e)}, status=500)
 
     @action(detail=True, methods=["get"])
@@ -183,5 +166,4 @@ class ServiceCategoryViewSet(viewsets.ReadOnlyModelViewSet):
             serializer = ServiceSerializer(services, many=True)
             return Response(serializer.data)
         except Exception as e:
-            print(f"DEBUG: Error in category services view: {str(e)}")
             return Response({"error": str(e)}, status=500)

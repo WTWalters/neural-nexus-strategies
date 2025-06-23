@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useClientOnly, cssAnimations } from "@/lib/animations";
 
 interface LogoProps {
   width?: number;
@@ -19,35 +20,17 @@ export function Logo({
 }: LogoProps) {
   const pathname = usePathname();
   const [key, setKey] = useState<number>(0);
+  const isClient = useClientOnly();
   
   // Reset animation when path changes
   useEffect(() => {
-    if (showAnimation) {
+    if (showAnimation && isClient) {
       setKey(prev => prev + 1);
     }
-  }, [pathname, showAnimation]);
+  }, [pathname, showAnimation, isClient]);
 
-  // Load animation CSS if animation is enabled
-  useEffect(() => {
-    if (showAnimation) {
-      // Check if the CSS is already loaded
-      const existingLink = document.querySelector('link[href="/assets/logo-animation.css"]');
-      
-      if (!existingLink) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "/assets/logo-animation.css";
-        document.head.appendChild(link);
-        
-        return () => {
-          // Only remove if this component added it
-          if (document.querySelector('link[href="/assets/logo-animation.css"]') === link) {
-            document.head.removeChild(link);
-          }
-        };
-      }
-    }
-  }, [showAnimation]);
+  // Don't render animations on server to prevent hydration mismatches
+  const shouldAnimate = showAnimation && isClient;
 
   return (
     <svg 
@@ -67,7 +50,7 @@ export function Logo({
         stroke="#FFFFFF" 
         strokeWidth="6" 
         fill="none" 
-        className={showAnimation ? "n-path" : ""}
+        style={shouldAnimate ? cssAnimations.logoPath : undefined}
       />
       
       {/* Neural connection */}
@@ -79,7 +62,7 @@ export function Logo({
         stroke="#FFFFFF" 
         strokeWidth="2" 
         opacity="0.7" 
-        className={showAnimation ? "n-line" : ""}
+        style={shouldAnimate ? cssAnimations.logoLine : undefined}
       />
     </svg>
   );

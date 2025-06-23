@@ -1,11 +1,11 @@
 # content/urls.py
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from . import views
 from .views import (
     ABTestViewSet,
-    CampaignViewSet,  # Add TrackingView import
+    CampaignViewSet,
     LandingPageViewSet,
     TrackingView,
 )
@@ -25,4 +25,6 @@ router.register(r"case-studies", views.CaseStudyViewSet, basename="casestudy")
 # Add the tracking view to urlpatterns
 urlpatterns = router.urls + [
     path("tracking/", TrackingView.as_view(), name="tracking"),
+    # N8N API endpoints
+    path("n8n/", include("content.n8n_urls")),
 ]

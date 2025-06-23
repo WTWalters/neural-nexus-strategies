@@ -10,10 +10,11 @@ from django.db import transaction
 from django.core.mail import send_mail
 from .models import Contact, ROICalculation, Interaction, NewsletterSubscription
 from .calculator import ROICalculator
-from .serializers import ROICalculatorInputSerializer, ROICalculationSerializer, NewsletterSubscriptionSerializer
+from .serializers import ROICalculatorInputSerializer, ROICalculationSerializer, NewsletterSubscriptionSerializer, LeadScoreSerializer
 from .exports import ROIReportGenerator
 from .services.contact_management import ContactManagementService
 from .services.device_tracking import DeviceTrackingService
+from .services.lead_scoring import LeadScoringService
 import logging
 
 logger = logging.getLogger(__name__)

@@ -2,6 +2,7 @@
 "use client";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { NavLink } from "@/components/ui/nav-link";
 
 export default function Footer() {
   return (
@@ -12,28 +13,28 @@ export default function Footer() {
             <h3 className="font-bold text-lg mb-4">Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link
+                <NavLink
                   href="/services/fractional-cdo"
-                  className="hover:text-blue-400"
+                  variant="footer"
                 >
                   Fractional CDO
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link
+                <NavLink
                   href="/services/data-strategy"
-                  className="hover:text-blue-400"
+                  variant="footer"
                 >
                   Data Strategy
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link
+                <NavLink
                   href="/services/ai-readiness"
-                  className="hover:text-blue-400"
+                  variant="footer"
                 >
                   AI Readiness
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </div>
@@ -41,19 +42,19 @@ export default function Footer() {
             <h3 className="font-bold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/blog" className="hover:text-blue-400">
+                <NavLink href="/blog" variant="footer">
                   Blog
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link href="/case-studies" className="hover:text-blue-400">
+                <NavLink href="/case-studies" variant="footer">
                   Case Studies
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link href="/resources" className="hover:text-blue-400">
+                <NavLink href="/resources" variant="footer">
                   Downloads
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </div>
@@ -61,19 +62,19 @@ export default function Footer() {
             <h3 className="font-bold text-lg mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="hover:text-blue-400">
+                <NavLink href="/about" variant="footer">
                   About Us
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-blue-400">
+                <NavLink href="/contact" variant="footer">
                   Contact Us
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link href="/careers" className="hover:text-blue-400">
+                <NavLink href="/careers" variant="footer">
                   Careers
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </div>

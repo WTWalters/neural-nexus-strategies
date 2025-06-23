@@ -1,9 +1,8 @@
 // src/components/marketing/home/enhanced-features-section.tsx
 
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ActionLink } from "@/components/ui/action-link";
 
 interface FeatureCardProps {
   title: string;
@@ -34,9 +33,12 @@ const FeatureCard = ({
 
       {/* Button container with consistent top margin */}
       <div className="mt-8">
-        <Button className="w-full bg-primary hover:bg-primary/90" asChild>
-          <Link href={href}>Learn More</Link>
-        </Button>
+        <ActionLink 
+          href={href}
+          className="w-full bg-primary hover:bg-primary/90"
+        >
+          Learn More
+        </ActionLink>
       </div>
     </CardContent>
   </Card>

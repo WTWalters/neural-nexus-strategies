@@ -2,72 +2,37 @@
 
 "use client";
 
-import { useState } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-type NewsletterFormData = {
-  firstName: string;
-  email: string;
-  source: string;
-};
-
-type NewsletterStatus = "idle" | "submitting" | "success" | "error";
-type AlertType = "default" | "destructive" | "success"; // Added success variant
+import { FormFeedback } from "@/components/ui/form-feedback";
+import { FormInput } from "@/components/ui/form-input";
+import { useForm } from "@/hooks/useForm";
+import { subscribeToNewsletter, NewsletterData } from "@/lib/api";
 
 export default function NewsletterBanner() {
-  const [formData, setFormData] = useState<NewsletterFormData>({
-    firstName: "",
-    email: "",
-    source: "banner",
+  const {
+    values,
+    feedback,
+    isSubmitting,
+    updateValue,
+    handleSubmit,
+  } = useForm<NewsletterData>({
+    initialValues: {
+      firstName: "",
+      email: "",
+      source: "banner",
+    },
+    onSubmit: subscribeToNewsletter,
+    onSuccess: () => {
+      // Custom success message for newsletter
+    },
   });
 
-  const [status, setStatus] = useState<NewsletterStatus>("idle");
-  const [feedback, setFeedback] = useState<{
-    type: AlertType | null;
-    message: string;
-  }>({ type: null, message: "" });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("submitting");
-    setFeedback({ type: null, message: "" });
-
-    try {
-      const response = await fetch(
-        "http://localhost:8000/api/leads/newsletter/subscribe/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
-
-      setStatus("success");
-      setFeedback({
-        type: "success",
-        message: "Thank you for subscribing! Check your email for updates.",
-      });
-      setFormData({ firstName: "", email: "", source: "banner" });
-    } catch (error) {
-      setStatus("error");
-      setFeedback({
-        type: "destructive",
-        message:
-          error instanceof Error
-            ? error.message
-            : "There was an error processing your subscription. Please try again.",
-      });
-    }
+  // Override default success message for newsletter context
+  const displayFeedback = {
+    ...feedback,
+    message: feedback.type === "success" 
+      ? "Thank you for subscribing! Check your email for updates."
+      : feedback.message,
   };
 
   return (
@@ -82,55 +47,37 @@ export default function NewsletterBanner() {
             expert insights in data leadership and AI innovation.
           </p>
 
-          {feedback.type && (
-            <Alert
-              variant={feedback.type === "success" ? "default" : "destructive"}
-              className={cn(
-                feedback.type === "success"
-                  ? "bg-success-50 border-success-200"
-                  : "bg-destructive-50 border-destructive-200",
-              )}
-            >
-              <AlertDescription>{feedback.message}</AlertDescription>
-            </Alert>
-          )}
+          <FormFeedback
+            type={displayFeedback.type}
+            message={displayFeedback.message}
+          />
 
           <form
             onSubmit={handleSubmit}
             className="flex flex-col md:flex-row gap-3 max-w-2xl mx-auto"
           >
-            <input
+            <FormInput
               type="text"
               placeholder="First Name"
-              value={formData.firstName}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  firstName: e.target.value,
-                }))
-              }
-              className="flex-1 rounded-md border border-gray-300 px-4 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              value={values.firstName}
+              onChange={(e) => updateValue("firstName", e.target.value)}
+              className="flex-1"
               required
             />
-            <input
+            <FormInput
               type="email"
               placeholder="Email Address"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  email: e.target.value,
-                }))
-              }
-              className="flex-1 rounded-md border border-gray-300 px-4 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              value={values.email}
+              onChange={(e) => updateValue("email", e.target.value)}
+              className="flex-1"
               required
             />
             <Button
               type="submit"
-              disabled={status === "submitting"}
+              disabled={isSubmitting}
               className="whitespace-nowrap"
             >
-              {status === "submitting" ? "Subscribing..." : "Subscribe"}
+              {isSubmitting ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
 

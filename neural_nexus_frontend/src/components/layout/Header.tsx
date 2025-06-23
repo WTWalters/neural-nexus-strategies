@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { tracking } from "@/lib/tracking";
 import { Logo } from "@/components/ui/logo";
+import { NavLink } from "@/components/ui/nav-link";
 
 export default function Header() {
   return (
@@ -32,13 +33,13 @@ export default function Header() {
               { href: "/about", text: "About" },
               { href: "/contact", text: "Contact" },
             ].map((link) => (
-              <Link
+              <NavLink
                 key={link.href}
                 href={link.href}
-                className="text-muted-foreground hover:text-primary transition-colors"
+                variant="header"
               >
                 {link.text}
-              </Link>
+              </NavLink>
             ))}
           </div>
         </div>

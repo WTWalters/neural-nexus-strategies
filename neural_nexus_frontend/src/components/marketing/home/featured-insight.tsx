@@ -1,7 +1,6 @@
 // src/components/marketing/home/featured-insight.tsx
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { ActionLink } from "@/components/ui/action-link";
 import { Lightbulb } from "lucide-react";
 
 export default function FeaturedInsight() {
@@ -19,16 +18,14 @@ export default function FeaturedInsight() {
                             data leadership in 2024
                         </span>
                     </div>
-                    <Button
+                    <ActionLink
+                        href="/blog/data-leadership-trends"
                         variant="ghost"
                         size="sm"
                         className="text-primary-600 shrink-0"
-                        asChild
                     >
-                        <Link href="/blog/data-leadership-trends">
-                            Read More
-                        </Link>
-                    </Button>
+                        Read More
+                    </ActionLink>
                 </div>
             </div>
         </div>
